@@ -5,3 +5,4 @@ __pycache__/
 .cognee_system/
 watched_runs/
 .DS_Store
+node_modules/
