@@ -1,0 +1,7 @@
+cognee
+fastapi
+uvicorn
+watchdog
+python-dotenv
+pydantic
+pyyaml
