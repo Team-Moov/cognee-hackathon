@@ -1,0 +1,4 @@
+staging/
+wandb/
+.env
+__pycache__/
