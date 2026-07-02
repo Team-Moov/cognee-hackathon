@@ -48,7 +48,7 @@ export default function Sidebar() {
         <div className="text-xs text-zinc-600 space-y-1">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>
-            Live — Firebase + Gemini
+            Live — Firebase + Groq
           </div>
           <div className="text-zinc-700">Run backend: uvicorn app.main:app</div>
         </div>

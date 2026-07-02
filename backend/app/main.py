@@ -1,4 +1,4 @@
-﻿"""Groundhog — App Layer Backend (PostgreSQL + pgvector + Gemini)."""
+﻿"""Groundhog — App Layer Backend (PostgreSQL + pgvector + Groq + local embeddings)."""
 from __future__ import annotations
 
 import logging
@@ -21,7 +21,7 @@ logger = logging.getLogger("groundhog.api")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
-    logger.info("Groundhog started — PostgreSQL + pgvector + Gemini")
+    logger.info("Groundhog started — PostgreSQL + pgvector + Groq")
     yield
     await close_db()
     logger.info("Groundhog shut down")
@@ -31,7 +31,7 @@ app = FastAPI(
     title="Groundhog — ML Experiment Memory",
     description=(
         "REST API backed by PostgreSQL 16 + pgvector (HNSW cosine) "
-        "+ tsvector full-text + recursive CTE graph traversal + Gemini embeddings."
+        "+ tsvector full-text + recursive CTE graph traversal + Groq generation + local deterministic embeddings."
     ),
     version="3.0.0",
     lifespan=lifespan,

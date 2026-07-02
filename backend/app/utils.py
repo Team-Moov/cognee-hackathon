@@ -5,6 +5,8 @@ import asyncio
 import hashlib
 import json
 import logging
+import math
+import re
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger("groundhog.utils")
@@ -42,30 +44,36 @@ def generate_config_summary(config: Dict[str, Any]) -> str:
     return "Config: " + ", ".join(parts) if parts else "Config: (empty)"
 
 
-# ── Gemini generative model ────────────────────────────────────────────────
+# ── Groq generative model (chat completions) ───────────────────────────────
 
-_gen_model = None
+_groq_client = None
 
 
-def _get_gen_model():
-    global _gen_model
-    if _gen_model is None:
-        import google.generativeai as genai
+def _get_groq_client():
+    global _groq_client
+    if _groq_client is None:
+        from groq import Groq
         from app.config import settings
         key = settings.effective_llm_api_key
         if not key:
-            raise RuntimeError("No LLM API key. Set LLM_API_KEY in .env")
-        genai.configure(api_key=key)
-        _gen_model = genai.GenerativeModel(settings.effective_llm_model)
-        logger.info("Gemini generative model ready: %s", settings.effective_llm_model)
-    return _gen_model
+            raise RuntimeError("No Groq API key. Set GROQ_API_KEY in .env")
+        _groq_client = Groq(api_key=key)
+        logger.info("Groq client ready: %s", settings.effective_llm_model)
+    return _groq_client
 
 
 async def llm_generate(prompt: str) -> str:
-    model = _get_gen_model()
+    from app.config import settings
+    client = _get_groq_client()
     loop = asyncio.get_event_loop()
-    response = await loop.run_in_executor(None, lambda: model.generate_content(prompt))
-    return response.text
+    response = await loop.run_in_executor(
+        None,
+        lambda: client.chat.completions.create(
+            model=settings.effective_llm_model,
+            messages=[{"role": "user", "content": prompt}],
+        ),
+    )
+    return response.choices[0].message.content
 
 
 async def llm_generate_json(prompt: str) -> Any:
@@ -77,62 +85,58 @@ async def llm_generate_json(prompt: str) -> Any:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        logger.warning("Gemini returned non-JSON, falling back to raw")
+        logger.warning("Groq returned non-JSON, falling back to raw")
         return {"raw": text}
 
 
-# ── Gemini embedding (text-embedding-004, 768-dim) ─────────────────────────
+_TOKEN_RE = re.compile(r"[A-Za-z0-9_]+")
+
+
+def _local_embed(text: str, dimensions: int, role: str) -> List[float]:
+    if dimensions <= 0:
+        raise ValueError("embedding dimensions must be positive")
+
+    vector = [0.0] * dimensions
+    tokens = _TOKEN_RE.findall(f"{role} {text.lower()}")
+    if not tokens:
+        return vector
+
+    for token in tokens:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        index = int.from_bytes(digest[:4], "big") % dimensions
+        sign = 1.0 if digest[4] % 2 == 0 else -1.0
+        weight = 1.0 + (len(token) / 16.0)
+        vector[index] += sign * weight
+
+    norm = math.sqrt(sum(value * value for value in vector))
+    if norm == 0:
+        return vector
+    return [value / norm for value in vector]
 
 async def embed_text(text: str) -> Optional[List[float]]:
     """
-    Embed text using Gemini text-embedding-004 (768 dim).
-    Returns None gracefully if no API key is configured.
+    Embed text using a local deterministic hash embedding.
+    Returns None gracefully if the input is empty.
     """
-    from app.config import settings
-    key = settings.effective_llm_api_key
-    if not key:
+    if not text.strip():
         return None
-
-    import google.generativeai as genai
-    genai.configure(api_key=key)
 
     loop = asyncio.get_event_loop()
-    try:
-        result = await loop.run_in_executor(
-            None,
-            lambda: genai.embed_content(
-                model="models/text-embedding-004",
-                content=text,
-                task_type="RETRIEVAL_DOCUMENT",
-            ),
-        )
-        return result["embedding"]
-    except Exception as e:
-        logger.warning("embed_text failed: %s", e)
-        return None
+    from app.config import settings
+    return await loop.run_in_executor(
+        None,
+        lambda: _local_embed(text, settings.embedding_dimensions, "document"),
+    )
 
 
 async def embed_query(text: str) -> Optional[List[float]]:
-    """Embed a search query (different task_type for better retrieval)."""
-    from app.config import settings
-    key = settings.effective_llm_api_key
-    if not key:
+    """Embed a search query with the same local deterministic embedding path."""
+    if not text.strip():
         return None
-
-    import google.generativeai as genai
-    genai.configure(api_key=key)
 
     loop = asyncio.get_event_loop()
-    try:
-        result = await loop.run_in_executor(
-            None,
-            lambda: genai.embed_content(
-                model="models/text-embedding-004",
-                content=text,
-                task_type="RETRIEVAL_QUERY",
-            ),
-        )
-        return result["embedding"]
-    except Exception as e:
-        logger.warning("embed_query failed: %s", e)
-        return None
+    from app.config import settings
+    return await loop.run_in_executor(
+        None,
+        lambda: _local_embed(text, settings.embedding_dimensions, "query"),
+    )

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS runs (
     artifacts       JSONB       NOT NULL DEFAULT '[]',
     status          TEXT        NOT NULL DEFAULT 'completed',
     error_message   TEXT,
-    -- pgvector: 768-dim Gemini text-embedding-004
+    -- pgvector: 768-dim deterministic local embedding
     embedding       vector(768),
     -- tsvector: full-text search over rationale + config_summary
     ts              tsvector    GENERATED ALWAYS AS (

@@ -4,7 +4,7 @@ seed_demo_data.py — Groundhog Demo Data Seeder (Day 2 requirement)
 Generates ~15 synthetic ML run documents with plausible variety, including
 explicitly failed/aborted runs, and near-duplicate configs for the 
 Pre-flight Guard demo. Calls remember_run for each, with a small delay
-to respect Gemini free-tier rate limits.
+to respect Groq free-tier rate limits.
 """
 
 import asyncio
@@ -87,17 +87,11 @@ def _generate_synthetic_run(is_duplicate=False, parent_params=None):
     }
 
 async def run_seed():
-    logger.info("Configuring Cognee with Google API...")
+    logger.info("Configuring Cognee with Groq API...")
     cognee.config.llm_config = {
-        "provider": os.getenv("LLM_PROVIDER", "gemini"),
-        "model": os.getenv("LLM_MODEL", "gemini/gemini-2.0-flash"),
-        "api_key": os.getenv("LLM_API_KEY", ""),
-    }
-    cognee.config.vector_db_config = {
-        "embedding_provider": os.getenv("EMBEDDING_PROVIDER", "gemini"),
-        "embedding_model": os.getenv("EMBEDDING_MODEL", "gemini/gemini-embedding-001"),
-        "embedding_api_key": os.getenv("EMBEDDING_API_KEY", ""),
-        "embedding_dimensions": int(os.getenv("EMBEDDING_DIMENSIONS", "768")),
+        "provider": os.getenv("LLM_PROVIDER", "groq"),
+        "model": os.getenv("LLM_MODEL", "groq/llama-3.3-70b-versatile"),
+        "api_key": os.getenv("GROQ_API_KEY", ""),
     }
     
     # Non-destructive initialization
@@ -142,8 +136,8 @@ async def run_seed():
     logger.info("You can now test the API endpoints.")
 
 if __name__ == "__main__":
-    if not os.getenv("LLM_API_KEY"):
-        logger.error("LLM_API_KEY not found in environment. Please set it in .env first.")
+    if not os.getenv("GROQ_API_KEY"):
+        logger.error("GROQ_API_KEY not found in environment. Please set it in .env first.")
         sys.exit(1)
         
     asyncio.run(run_seed())

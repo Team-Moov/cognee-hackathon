@@ -1,6 +1,6 @@
 ﻿"""
 Config Proposer — suggests the next experiment configuration.
-Reads all prior runs for the experiment, calls Gemini to identify
+Reads all prior runs for the experiment, calls Groq to identify
 unexplored parameter regions, and writes a dismissible suggestion card.
 """
 from __future__ import annotations

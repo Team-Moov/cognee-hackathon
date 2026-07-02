@@ -52,29 +52,17 @@ logger = logging.getLogger("groundhog.api")
 # ---------------------------------------------------------------------------
 
 def _configure_cognee():
-    """Set Cognee LLM + embedding provider from environment variables."""
-    llm_provider = os.getenv("LLM_PROVIDER", "gemini")
-    llm_model = os.getenv("LLM_MODEL", "gemini/gemini-2.0-flash")
-    llm_api_key = os.getenv("LLM_API_KEY", "")
-
-    emb_provider = os.getenv("EMBEDDING_PROVIDER", "gemini")
-    emb_model = os.getenv("EMBEDDING_MODEL", "gemini/gemini-embedding-001")
-    emb_api_key = os.getenv("EMBEDDING_API_KEY", "")
-    emb_dimensions = int(os.getenv("EMBEDDING_DIMENSIONS", "768"))
+    """Set Cognee LLM settings from environment variables."""
+    llm_provider = os.getenv("LLM_PROVIDER", "groq")
+    llm_model = os.getenv("LLM_MODEL", "groq/llama-3.3-70b-versatile")
+    llm_api_key = os.getenv("GROQ_API_KEY", "")
 
     cognee.config.llm_config = {
         "provider": llm_provider,
         "model": llm_model,
         "api_key": llm_api_key,
     }
-    cognee.config.vector_db_config = {
-        "embedding_provider": emb_provider,
-        "embedding_model": emb_model,
-        "embedding_api_key": emb_api_key,
-        "embedding_dimensions": emb_dimensions,
-    }
-    logger.info("Cognee configured: LLM=%s/%s  Embeddings=%s/%s",
-                llm_provider, llm_model, emb_provider, emb_model)
+    logger.info("Cognee configured: LLM=%s/%s", llm_provider, llm_model)
 
 
 # ---------------------------------------------------------------------------
@@ -132,7 +120,7 @@ app = FastAPI(
     title="Groundhog — ML Experiment Memory API",
     description=(
         "Data/memory layer for ML experiment reproducibility. "
-        "Built on Cognee (graph memory) + Gemini LLM. "
+        "Built on Cognee (graph memory) + Groq LLM. "
         "All graph operations go through this API — no other service should import cognee directly."
     ),
     version="1.0.0",
@@ -629,8 +617,8 @@ async def health():
         status="ok",
         cognee_version=cognee_version,
         storage_backend="SQLite (relational) + Kuzu (graph)",
-        llm_provider=os.getenv("LLM_PROVIDER", "gemini"),
-        embedding_provider=os.getenv("EMBEDDING_PROVIDER", "gemini"),
+        llm_provider=os.getenv("LLM_PROVIDER", "groq"),
+        embedding_provider="local",
     )
 
 

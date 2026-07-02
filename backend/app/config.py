@@ -1,4 +1,5 @@
 ﻿from __future__ import annotations
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,13 +14,16 @@ class Settings(BaseSettings):
     # PostgreSQL — asyncpg connection string
     database_url:  str = "postgresql://postgres:postgres@localhost:5432/groundhog"
 
-    # Gemini
-    llm_api_key:   str = ""          # primary: GEMINI_API_KEY or LLM_API_KEY
-    llm_model:     str = "gemini-2.0-flash"
+    # Groq — text generation (chat completions)
+    llm_api_key:   str = Field(default="", validation_alias="GROQ_API_KEY")
+    llm_model:     str = "llama-3.3-70b-versatile"
 
     # Backwards-compat aliases (Ganesh's .env naming)
     cloud_llm_api_key: str = ""
     cloud_llm_model:   str = ""
+
+    # Local deterministic embeddings for vector recall
+    embedding_dimensions: int = 768
 
     # Orchestrator tuning
     improve_every_n_runs: int = 10
@@ -31,7 +35,7 @@ class Settings(BaseSettings):
 
     @property
     def effective_llm_model(self) -> str:
-        return self.llm_model or self.cloud_llm_model or "gemini-2.0-flash"
+        return self.llm_model or self.cloud_llm_model or "llama-3.3-70b-versatile"
 
 
 settings = Settings()

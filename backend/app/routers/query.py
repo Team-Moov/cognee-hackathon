@@ -1,9 +1,9 @@
 ﻿"""
 Hybrid RAG query endpoint:
-  1. Embed the question with Gemini text-embedding-004
+    1. Embed the question with the local deterministic embedding path
   2. HNSW cosine ANN search (pgvector) → top semantic hits
   3. tsvector GIN full-text search → top keyword hits
-  4. Merge + deduplicate → pass to Gemini as context
+  4. Merge + deduplicate → pass to Groq as context
 """
 from __future__ import annotations
 

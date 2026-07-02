@@ -92,11 +92,11 @@ async def get_ancestors(run_id: str, max_depth: int = 10) -> List[Dict[str, Any]
                        created_at, 0 AS depth
                 FROM runs WHERE id = $1
                 UNION ALL
-                SELECT r.id, r.experiment, r.status, r.metrics, r.config, r.rationale,
-                       r.created_at, a.depth + 1
-                FROM runs r
-                JOIN run_lineage l ON l.child_run_id = r.id
-                JOIN ancestors a   ON a.id           = l.parent_run_id
+              SELECT parent.id, parent.experiment, parent.status, parent.metrics, parent.config, parent.rationale,
+                  parent.created_at, a.depth + 1
+              FROM ancestors a
+              JOIN run_lineage l ON l.child_run_id = a.id
+              JOIN runs parent   ON parent.id = l.parent_run_id
                 WHERE a.depth < $2
             )
             SELECT * FROM ancestors ORDER BY depth
@@ -118,11 +118,11 @@ async def get_descendants(run_id: str, max_depth: int = 10) -> List[Dict[str, An
                        created_at, 0 AS depth
                 FROM runs WHERE id = $1
                 UNION ALL
-                SELECT r.id, r.experiment, r.status, r.metrics, r.config, r.rationale,
-                       r.created_at, d.depth + 1
-                FROM runs r
-                JOIN run_lineage l ON l.parent_run_id = r.id
-                JOIN descendants d ON d.id            = l.child_run_id
+              SELECT child.id, child.experiment, child.status, child.metrics, child.config, child.rationale,
+                  child.created_at, d.depth + 1
+              FROM descendants d
+              JOIN run_lineage l ON l.parent_run_id = d.id
+              JOIN runs child    ON child.id = l.child_run_id
                 WHERE d.depth < $2
             )
             SELECT * FROM descendants ORDER BY depth

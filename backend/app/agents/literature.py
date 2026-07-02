@@ -1,6 +1,6 @@
 ﻿"""
 Literature Agent — suggests relevant papers for the active research thread.
-Uses Gemini knowledge to propose papers matching the model/dataset/technique.
+Uses Groq knowledge to propose papers matching the model/dataset/technique.
 """
 from __future__ import annotations
 

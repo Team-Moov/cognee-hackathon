@@ -5,7 +5,7 @@ This is the data and memory layer for Groundhog, built on **Cognee** (open-sourc
 ## Architecture & Constraints
 
 *   **Single Gatekeeper:** To avoid SQLite/Kuzu file locking issues with concurrent access, **only the FastAPI server imports and calls `cognee`**. All other components (Dashboard, MCP server, File Watcher) must route through this API.
-*   **Tech Stack:** Python 3.11+, Cognee (local SQLite/Kuzu), FastAPI, Google Gemini for LLM and Embeddings, and Watchdog.
+*   **Tech Stack:** Python 3.11+, Cognee (local SQLite/Kuzu), FastAPI, Groq for LLM generation, local deterministic embeddings for vector recall, and Watchdog.
 
 ## Setup Instructions
 
@@ -18,14 +18,13 @@ This is the data and memory layer for Groundhog, built on **Cognee** (open-sourc
     ```
 
 2.  **API Keys**
-    Rename `.env.example` to `.env` or edit the existing `.env` file and insert your Google API key for Gemini.
+    Rename `.env.example` to `.env` or edit the existing `.env` file and insert your Groq API key.
     ```env
-    LLM_API_KEY="your_api_key_here"
-    EMBEDDING_API_KEY="your_api_key_here"
+    GROQ_API_KEY="your_groq_api_key_here"
     ```
 
 3.  **Verification (Day 1 check)**
-    Run the Day 1 test script to ensure Cognee can successfully connect to Gemini for embeddings and graph generation.
+    Run the Day 1 test script to ensure Cognee can successfully connect to Groq for generation.
     ```bash
     python test_day1.py
     ```
@@ -35,7 +34,7 @@ This is the data and memory layer for Groundhog, built on **Cognee** (open-sourc
     ```bash
     python seed_demo_data.py
     ```
-    *Note: The script includes brief delays between insertions to respect Gemini's free-tier rate limits.*
+    *Note: The script includes brief delays between insertions to respect Groq's free-tier rate limits.*
 
 5.  **Run the API Server**
     Start the FastAPI application. It will automatically start the file watcher in a background thread.
