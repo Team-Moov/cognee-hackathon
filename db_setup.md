@@ -1,22 +1,24 @@
 # Groundhog — Database Setup Reference
 
-> **Last updated:** 2026-07-03  
-> **Maintainer:** Ganesh (Person 1 — Data Layer)  
-> **Status:** PostgreSQL backend ✅ **PRIMARY API on port 8000**. Frontend (Vite, port 5173) proxies `/api/*` → `localhost:8000`. Cognee layer (`main.py`) is standalone memory tool — not used by frontend. pgvector ⏭️ SKIPPED — tsvector full-text + recent-runs fallback active.
+> **Last updated:** 2026-07-03 (revised)
+> **Maintainer:** Ganesh (Person 1 — Data Layer)
+> **Status:** Two servers now run side by side: `backend/app` (Postgres + Groq, port **8000**, what the frontend/MCP talk to) and the cognee memory server (root `main.py`, port **8010**). `backend/app` calls the cognee server over HTTP for `/remember`, `/check-config`, and `/query` (see `backend/app/cognee_client.py`) — it no longer reimplements those with Postgres alone. Postgres remains the fast local cache for `agent_suggestions` and lineage/listing reads. pgvector ⏭️ still SKIPPED — tsvector full-text is only used as a fallback if the cognee server is unreachable.
 
 ---
 
 ## Overview — Two DB Tiers
 
-Groundhog uses **two independent database tiers** that serve different purposes and are managed separately:
+Groundhog uses **two independent database tiers** that serve different purposes, run as two separate processes, and talk to each other over HTTP (not by sharing a DB connection):
 
 | Tier | Component | Technology | Used by |
 |---|---|---|---|
-| **1 — Cognee Memory Layer** | Relational store | SQLite (`aiosqlite` + SQLAlchemy) | `memory.py`, `schema.py` — the graph/recall engine |
-| **1 — Cognee Memory Layer** | Graph store | NetworkX (in-process) | Entity/relationship traversal during `cognify` |
+| **1 — Cognee Memory Layer** | Relational store | SQLite (`aiosqlite` + SQLAlchemy) | `memory.py`, `schema.py` — the graph/recall engine, served by root `main.py` on port 8010 |
+| **1 — Cognee Memory Layer** | Graph store | Kuzu (embedded) | Entity/relationship traversal during `cognify` |
 | **1 — Cognee Memory Layer** | Vector store | LanceDB (embedded) | Embedding index for semantic recall |
 | **1 — Cognee Memory Layer** | Cache | SQLite (`cache.db`) | Cognee's internal caching layer |
-| **2 — App Backend** | Primary store | PostgreSQL 16 + pgvector | `backend/app/` REST API, HNSW vector search |
+| **2 — App Backend** | Primary store | PostgreSQL 16 | `backend/app/` REST API (port 8000) — fast local cache for `agent_suggestions`, lineage snapshots, and run listing; calls Tier 1 over HTTP for the actual memory operations |
+
+**Run both:** `uvicorn main:app --port 8010` (repo root) and `uvicorn app.main:app --port 8000` (from `backend/`). If the cognee server (8010) isn't running, `backend/app` falls back to Postgres-only behavior (`COGNEE_FALLBACK_ON_ERROR=true` by default) rather than failing every request — but the Pre-flight Guard / NL query / remember operations are only checking the cross-connector cognee graph when it's actually up.
 
 **Rule:** `memory.py` / `main.py` (root) use **Tier 1 only**. `backend/app/main.py` uses **Tier 2 only**. They do not cross-call each other at the DB level.
 
@@ -153,7 +155,7 @@ Cognee reads these environment variable names directly — no prefix wrapping ne
 
 ## Section 2 — Backend PostgreSQL Layer (Tier 2)
 
-The `backend/` directory is a separate FastAPI service with its own `requirements.txt` and its own database. It does **not** import `cognee` for its primary data path — it uses PostgreSQL + pgvector for the runs/lineage/suggestions tables exposed to the frontend.
+The `backend/` directory is a separate FastAPI service (own database, own port) but shares the root `requirements.txt` / venv — see Section 4. It does **not** import `cognee` directly — for the memory operations (`/remember`, `/check-config`, `/query`) it calls the cognee server over HTTP via `app/cognee_client.py`; PostgreSQL + pgvector remain for the runs/lineage/suggestions tables exposed to the frontend.
 
 ### 2.1 Schema (backend/app/db/schema.sql)
 
@@ -217,15 +219,18 @@ Four tables, applied automatically by `init_db()` at startup:
    # Then edit backend\.env with your password
    ```
 
-### 2.3 Backend Python packages (backend/requirements.txt)
+### 2.3 Backend Python packages
 
-Install into the venv **from the project root**:
+Backend deps (`asyncpg`, `pgvector`, `groq`, etc.) are now part of the single
+root `requirements.txt` (see Section 4) — `backend/requirements.txt` is just
+a pointer back to it, don't install it separately.
 
 ```powershell
-.\venv\Scripts\pip.exe install -r backend\requirements.txt
+.\venv\Scripts\pip.exe install -r requirements.txt
 ```
 
-Installed into the venv on 2026-07-03 via:
+Historical note — originally installed into the venv on 2026-07-03, before
+the two files were merged, via:
 ```powershell
 .\venv\Scripts\pip.exe install asyncpg pgvector groq httpx pydantic-settings
 ```
@@ -266,62 +271,68 @@ curl http://localhost:8000/api/health
 
 ## Section 3 — Running Both Tiers Together
 
-The two tiers run as separate processes on different ports:
+The two tiers run as separate processes, on separate ports, from **one shared
+venv and one requirements.txt** (see Section 4):
 
 | Service | Port | Start command |
 |---|---|---|
-| Cognee/memory API (root `main.py`) | `8000` | `.\venv\Scripts\python.exe main.py` |
-| Backend API (`backend/app/main.py`) | `8000` (same port, different service) | See 2.4 |
+| Cognee/memory API (root `main.py`) | `8010` | `.\venv\Scripts\python.exe main.py` (or `uvicorn main:app --port 8010`) |
+| Backend API (`backend/app/main.py`) | `8000` | See 2.4 |
 
-> **They share port 8000 by default — only one should run at a time, or change one port.** The frontend at `backend/` targets the backend API. The MCP server targets the root `main.py` API. Configure accordingly.
-
-To run on separate ports, change `PORT=8001` in root `.env` (for `main.py`) and keep `backend/.env` at `8000`.
+Both must be running for the frontend and MCP server to work fully: the
+frontend/MCP call `backend/app` on 8000, and `backend/app` calls the cognee
+server on 8010 for `/remember`, `/check-config`, and `/query` (see
+`backend/app/cognee_client.py`). If the cognee server is down, `backend/app`
+falls back to Postgres-only behavior rather than failing outright
+(`COGNEE_FALLBACK_ON_ERROR=true` by default) — but Pre-flight Guard and the
+NL query bar only see the cross-connector graph memory when it's actually up.
 
 ---
 
 ## Section 4 — Quick-Start Checklist
 
-### Cognee layer (no install needed beyond `pip install -r requirements.txt`)
+### One-time setup (one venv, one requirements.txt, for both services)
 
 ```powershell
 # 1. Create venv (if not already done)
 python -m venv venv
 
-# 2. Install root dependencies
+# 2. Install ALL dependencies for both services — one file, one step
 .\venv\Scripts\pip.exe install -r requirements.txt
 
-# 3. Copy .env and fill in API key
+# 3. Copy both .env files and fill in API keys
 Copy-Item .env.example .env
-# Edit .env: set LLM_API_KEY and EMBEDDING_API_KEY to your Gemini key
+Copy-Item backend\.env.example backend\.env
+# Edit .env: set GROQ_API_KEY
+# Edit backend\.env: set GROQ_API_KEY and DATABASE_URL (see Section 2.2)
 
 # 4. Verify schema imports
 .\venv\Scripts\python.exe -c "from schema import Experiment, Result, Config, Dataset, Artifact, Hypothesis, Decision, AgentAction, ResearchThread; print('OK')"
+```
 
-# 5. Start the Cognee API
+`backend/requirements.txt` still exists but only points back at the root
+file now — don't install it separately, and don't add packages to it.
+
+### Start the Cognee memory server (root)
+
+```powershell
 .\venv\Scripts\python.exe main.py
-# → Server on http://localhost:8000
+# → Server on http://localhost:8010
 # → Databases auto-created on first request to /remember
 ```
 
-### Backend PostgreSQL layer
+### Start the backend PostgreSQL layer
 
 ```powershell
-# 1. Install PostgreSQL 16 + pgvector (see Section 2.2)
+# 1. Install PostgreSQL 16 + pgvector (see Section 2.2) — one-time
+# 2. Create the groundhog database (see Section 2.2 step 4) — one-time
 
-# 2. Create the groundhog database (see Section 2.2 step 4)
+cd backend
+..\venv\Scripts\python.exe -m uvicorn app.main:app --port 8000
+# → Server on http://localhost:8000, calls the cognee server on 8010
 
-# 3. Install backend Python deps
-.\venv\Scripts\pip.exe install -r backend\requirements.txt
-
-# 4. Set up backend/.env
-Copy-Item backend\.env.example backend\.env
-# Edit: set DATABASE_URL with your PG password, and GROQ_API_KEY or LLM_API_KEY
-
-# 5. Start the backend API
-.\venv\Scripts\python.exe -m uvicorn app.main:app --reload --app-dir backend --port 8001
-
-# 6. Health check
-curl http://localhost:8001/api/health
+# Health check (from another terminal)
+curl http://localhost:8000/api/health
 ```
 
 ---

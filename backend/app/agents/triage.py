@@ -21,6 +21,10 @@ New run (JSON):
 Prior runs for this experiment (JSON):
 {prior_runs_json}
 
+Prior graph memory — decisions, hypotheses, and other agents' findings for
+this experiment, recalled from the shared knowledge graph:
+{graph_context}
+
 Check for anomalies:
 1. Is the new result suspiciously good compared to prior results (possible data leak, label leakage, or eval set contamination)?
 2. Does the result contradict an established trend in the prior runs?
@@ -40,7 +44,7 @@ Only return the JSON object, no markdown fences."""
 
 
 async def triage_run(
-    new_run: Dict[str, Any], prior_runs: List[Dict[str, Any]]
+    new_run: Dict[str, Any], prior_runs: List[Dict[str, Any]], graph_context: str = ""
 ) -> Optional[Dict[str, Any]]:
     new_for_prompt = {
         "run_id": new_run.get("run_id"),
@@ -64,6 +68,7 @@ async def triage_run(
     prompt = PROMPT.format(
         new_run_json=json.dumps(new_for_prompt, indent=2),
         prior_runs_json=json.dumps(prior_for_prompt, indent=2),
+        graph_context=graph_context or "(no prior graph memory yet)",
     )
 
     try:

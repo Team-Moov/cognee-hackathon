@@ -9,6 +9,8 @@ import logging
 from typing import Any, Dict, List
 
 from app.utils import llm_generate
+from app.config import settings
+from app import cognee_client
 
 logger = logging.getLogger("groundhog.agents.report")
 
@@ -18,6 +20,10 @@ Generate a comprehensive retrospective report for experiment "{experiment}".
 
 All runs (sorted by timestamp):
 {runs_json}
+
+Prior graph memory — decisions, hypotheses, and other agents' findings for
+this experiment, recalled from the shared knowledge graph:
+{graph_context}
 
 Your report should include:
 
@@ -42,7 +48,9 @@ Best model summary: architecture, training procedure, eval results, known limita
 Use markdown formatting. Be specific — include actual metric values and config parameters."""
 
 
-async def generate_report(experiment: str, runs: List[Dict[str, Any]]) -> str:
+async def generate_report(
+    experiment: str, runs: List[Dict[str, Any]], graph_context: str = ""
+) -> str:
     if not runs:
         return f"# {experiment}\n\nNo runs recorded yet."
 
@@ -63,10 +71,25 @@ async def generate_report(experiment: str, runs: List[Dict[str, Any]]) -> str:
     prompt = PROMPT.format(
         experiment=experiment,
         runs_json=json.dumps(runs_for_prompt, indent=2),
+        graph_context=graph_context or "(no prior graph memory yet)",
     )
 
     try:
-        return await llm_generate(prompt)
+        report_text = await llm_generate(prompt)
+        # Write the report itself back into the graph so a future "catch me
+        # up" query or another agent's graph_context lookup can find it.
+        if settings.cognee_api_url:
+            try:
+                await cognee_client.remember_agent_finding(
+                    settings.cognee_api_url,
+                    agent_type="report",
+                    experiment=experiment,
+                    content=report_text,
+                    timeout=settings.cognee_call_timeout_seconds,
+                )
+            except Exception as e:
+                logger.warning("report: graph write-back failed (non-fatal): %s", e)
+        return report_text
     except Exception as e:
         logger.error("Report agent failed: %s", e)
         return f"# {experiment} — Report generation failed\n\nError: {e}"

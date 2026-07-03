@@ -1,10 +1,18 @@
 venv/
+.venv/
+# venv created in-place at the project root (python -m venv .) — Windows layout.
+# pyvenv.cfg is the marker file; Lib/Scripts/Include are its contents.
+pyvenv.cfg
+Lib/
+Scripts/
+Include/
+.env
 .env.*
+!.env.example
 __pycache__/
 *.pyc
 .cognee_system/
 watched_runs/
+staging/
 .DS_Store
 node_modules/
-.env.example
-env.example

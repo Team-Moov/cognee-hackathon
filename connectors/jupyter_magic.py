@@ -99,4 +99,7 @@ def load_ipython_extension(ipython):
     print("      - %groundhog_hypothesis <statement>")
     print("      - %groundhog_decision <rationale>")
     print("      - %%groundhog_watch  (Place at top of code cells)")
+    print("    These write to a local staging cache, not memory yet.")
+    print("    Run `python connectors/flush_staging_to_cognee.py` (cognee")
+    print("    server up on port 8010) to ingest them into the graph.")
     print("=======================================================\n")

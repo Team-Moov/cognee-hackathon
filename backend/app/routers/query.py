@@ -14,6 +14,9 @@ from pydantic import BaseModel
 
 from app.db.runs import fulltext_search, get_all_runs
 from app.utils import llm_generate
+from app.config import settings
+from app import cognee_client
+from app.cognee_client import CogneeClientError
 
 router = APIRouter(tags=["Query"])
 logger = logging.getLogger("groundhog.routers.query")
@@ -31,6 +34,35 @@ class QueryRequest(BaseModel):
 
 @router.post("/query")
 async def query(req: QueryRequest):
+    """
+    Free-form NL query.
+
+    Primary path: cognee.recall() via the cognee-backed memory server — real
+    graph-aware retrieval (auto-routed SearchType) across every connector's
+    data, not just what this backend's Postgres table has cached.
+
+    Fallback: Postgres full-text search + Groq completion over the retrieved
+    rows, used only if the cognee server is unreachable (or disabled in
+    config), so the query bar keeps working during local dev without the
+    cognee process running.
+    """
+    if settings.cognee_api_url:
+        try:
+            cognee_result = await cognee_client.query(
+                settings.cognee_api_url, question=req.question,
+                timeout=settings.cognee_call_timeout_seconds,
+            )
+            return {
+                "answer": cognee_result.get("answer", "No relevant information found."),
+                "citations": cognee_result.get("sources", []),
+                "chunks": [],
+                "source": "cognee",
+            }
+        except CogneeClientError as e:
+            logger.warning("query: cognee unreachable, falling back to Postgres full-text: %s", e)
+            if not settings.cognee_fallback_on_error:
+                raise HTTPException(status_code=502, detail=f"Cognee query failed: {e}")
+
     # NOTE: pgvector/HNSW semantic search is disabled until the embedding
     # column is added to the DB. Full-text + recent-runs fallback covers all
     # demo queries for the hackathon.
@@ -93,6 +125,7 @@ Answer:"""
             "answer": answer.strip(),
             "citations": citations,
             "chunks": [{"run_id": r["run_id"], "score": r.get("similarity", r.get("text_rank", 0))} for r in runs],
+            "source": "postgres_fallback",
         }
     except Exception as e:
         logger.error("Query LLM failed: %s", e)

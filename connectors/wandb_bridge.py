@@ -79,8 +79,11 @@ class WandbBridge:
 
         with open(self.staging_file, "w", encoding="utf-8") as f:
             json.dump(payload, f, indent=4, default=str)
-            
+
         print(f"[+] Extraction complete! Cached {len(payload['configs'])} runs to: {self.staging_file}")
+        print("[*] This file is a staging cache, not memory yet. Run "
+              "`python connectors/flush_staging_to_cognee.py` (with the cognee "
+              "server up on port 8010) to actually ingest these runs into the graph.")
 
 if __name__ == "__main__":
     # ⚠️ EDIT THIS LINE: Replace with your actual W&B account/entity name and a project name

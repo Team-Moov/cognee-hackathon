@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://groundhog.ai/ontology/ml#"
+     xml:base="http://groundhog.ai/ontology/ml"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+    <!--
+        Groundhog ML Domain Ontology
+
+        Grounds cognee's entity extraction so that "AdamW" and "ResNet" are
+        recognized as instances of known ML concept hierarchies (Optimizer,
+        Architecture) rather than opaque strings, and so that recall() can
+        reason hierarchically (e.g. a query about "Adam-family optimizers"
+        can match AdamW runs even if the word "Adam" never appears verbatim).
+
+        Loaded via cognee.cognify(ontology_file_path=".../ml_ontology.owl")
+        in memory.py's _remember_with_ontology(). See ontology/ml_ontology.py
+        for the Python-side path constant and a smoke-test entry point.
+    -->
+
+    <owl:Ontology rdf:about="http://groundhog.ai/ontology/ml"/>
+
+    <!-- Classes -->
+
+    <owl:Class rdf:about="#Optimizer">
+        <rdfs:comment>Base mathematical algorithm for neural network weight updates.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Architecture">
+        <rdfs:comment>Base structural design of a neural network.</rdfs:comment>
+    </owl:Class>
+
+    <!-- Optimizers -->
+
+    <owl:Class rdf:about="#Adam">
+        <rdfs:subClassOf rdf:resource="#Optimizer"/>
+        <rdfs:comment>Adaptive Moment Estimation optimizer.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AdamW">
+        <rdfs:subClassOf rdf:resource="#Adam"/>
+        <rdfs:comment>Adam with decoupled weight decay. Extends Adam.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SGD">
+        <rdfs:subClassOf rdf:resource="#Optimizer"/>
+        <rdfs:comment>Stochastic Gradient Descent, optionally with momentum.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#RMSprop">
+        <rdfs:subClassOf rdf:resource="#Optimizer"/>
+        <rdfs:comment>Root Mean Square Propagation adaptive-learning-rate optimizer.</rdfs:comment>
+    </owl:Class>
+
+    <!-- Architectures -->
+
+    <owl:Class rdf:about="#CNN">
+        <rdfs:subClassOf rdf:resource="#Architecture"/>
+        <rdfs:comment>Convolutional Neural Network for spatial/grid-structured data.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ResNet">
+        <rdfs:subClassOf rdf:resource="#CNN"/>
+        <rdfs:comment>Residual network architecture using skip/shortcut connections. A CNN variant.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#MobileNet">
+        <rdfs:subClassOf rdf:resource="#CNN"/>
+        <rdfs:comment>Depthwise-separable-convolution CNN designed for mobile/edge inference.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EfficientNet">
+        <rdfs:subClassOf rdf:resource="#CNN"/>
+        <rdfs:comment>CNN family scaled via compound depth/width/resolution scaling.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Transformer">
+        <rdfs:subClassOf rdf:resource="#Architecture"/>
+        <rdfs:comment>Attention-based neural sequence architecture.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#VisionTransformer">
+        <rdfs:subClassOf rdf:resource="#Transformer"/>
+        <rdfs:comment>Transformer architecture applied to image patch sequences (ViT). A Transformer variant.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#BERT">
+        <rdfs:subClassOf rdf:resource="#Transformer"/>
+        <rdfs:comment>Bidirectional encoder Transformer pretrained via masked language modeling.</rdfs:comment>
+    </owl:Class>
+
+</rdf:RDF>

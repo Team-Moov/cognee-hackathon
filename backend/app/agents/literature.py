@@ -20,6 +20,7 @@ Experiment context:
 - Optimizers used: {optimizers}
 - Best result so far: {best_result}
 - Researcher's notes: {rationale_summary}
+- Prior graph memory (decisions, hypotheses, other agents' findings): {graph_context}
 
 Suggest 3–5 highly relevant research papers that could:
 1. Provide theoretical grounding for the current approach
@@ -38,7 +39,9 @@ Return a JSON array of these objects.
 Only return the JSON array, no markdown fences."""
 
 
-async def suggest_papers(experiment: str, runs: List[Dict[str, Any]]) -> Optional[List[Dict[str, Any]]]:
+async def suggest_papers(
+    experiment: str, runs: List[Dict[str, Any]], graph_context: str = ""
+) -> Optional[List[Dict[str, Any]]]:
     if not runs:
         return None
 
@@ -62,6 +65,7 @@ async def suggest_papers(experiment: str, runs: List[Dict[str, Any]]) -> Optiona
         optimizers=", ".join(optimizers) or "unknown",
         best_result=best_result,
         rationale_summary=rationale_summary or "No notes available",
+        graph_context=graph_context or "(no prior graph memory yet)",
     )
 
     try:

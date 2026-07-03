@@ -163,6 +163,14 @@ class RememberRequest(BaseModel):
     git_commit: str = Field(default="unknown")
     derived_from_config_hash: Optional[str] = Field(default=None)
     dataset: str = Field(default="main_dataset", description="Cognee dataset name for storage")
+    session_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "If set, this is a private/exploratory write into cognee's session cache "
+            "instead of the permanent graph (native session_id mechanism). Promote it "
+            "later via POST /promote with the same session_id."
+        ),
+    )
 
 
 class RememberResponse(BaseModel):
@@ -174,6 +182,8 @@ class RememberResponse(BaseModel):
     artifact_paths: List[str]
     elapsed_seconds: float
     improved: bool = False
+    node_set: Optional[List[str]] = None
+    session_id: Optional[str] = None
 
 
 class CheckConfigRequest(BaseModel):
@@ -192,6 +202,10 @@ class CheckConfigResponse(BaseModel):
 class QueryRequest(BaseModel):
     question: str = Field(..., description="Natural language question")
     dataset: Optional[str] = Field(default=None, description="Restrict to this dataset or None for all")
+    node_name: Optional[List[str]] = Field(
+        default=None,
+        description="Scope to specific node_set tags, e.g. ['experiment:resnet_sweep']",
+    )
 
 
 class QueryResponse(BaseModel):
@@ -199,6 +213,23 @@ class QueryResponse(BaseModel):
     sources: List[str]
     result_count: int
     dataset: Optional[str] = None
+
+
+class AgentFindingRequest(BaseModel):
+    """Subagent write-back into the shared graph (blackboard architecture, Section 7)."""
+    agent_type: str = Field(..., description="e.g. config_proposer | triage | dataset_steward | literature | report")
+    experiment_name: str = Field(..., description="Experiment this finding belongs to")
+    content: str = Field(..., description="The finding/suggestion text, in the agent's own words")
+    dataset: str = Field(default="main_dataset")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Structured extras (severity, config, etc.)")
+
+
+class AgentFindingResponse(BaseModel):
+    status: str
+    agent_type: str
+    experiment_name: str
+    node_set: Optional[List[str]] = None
+    error: Optional[str] = None
 
 
 class FindFileResponse(BaseModel):
@@ -240,16 +271,25 @@ class ForgetResponse(BaseModel):
 
 
 class PromoteRequest(BaseModel):
-    node_id: str
-    from_dataset: str
+    node_id: str = Field(default="", description="Legacy dataset-copy mode only")
+    from_dataset: str = Field(default="", description="Legacy dataset-copy mode only")
     to_dataset: str = Field(default="main_dataset")
+    session_id: Optional[str] = Field(
+        default=None,
+        description=(
+            "Preferred: the session_id used in a prior POST /remember call. "
+            "Bridges that session's content into to_dataset via cognee.improve(session_ids=[...])."
+        ),
+    )
 
 
 class PromoteResponse(BaseModel):
     status: str
-    node_id: str
-    from_dataset: str
-    to_dataset: str
+    mode: Optional[str] = None
+    node_id: Optional[str] = None
+    from_dataset: Optional[str] = None
+    to_dataset: Optional[str] = None
+    session_id: Optional[str] = None
     new_node_id: Optional[str] = None
     error: Optional[str] = None
 
@@ -311,8 +351,8 @@ async def remember(req: RememberRequest):
     from memory import remember_run, scan_and_register_artifacts
 
     try:
-        run_data = req.model_dump(exclude={"dataset"})
-        result = await remember_run(run_data, dataset_name=req.dataset)
+        run_data = req.model_dump(exclude={"dataset", "session_id"})
+        result = await remember_run(run_data, dataset_name=req.dataset, session_id=req.session_id)
 
         # Register artifacts in in-memory registry
         for fpath in result.get("artifact_paths", []):
@@ -391,11 +431,40 @@ async def query(req: QueryRequest):
     """
     from memory import query_memory
     try:
-        result = await query_memory(req.question, dataset_name=req.dataset)
+        result = await query_memory(req.question, dataset_name=req.dataset, node_name=req.node_name)
         return QueryResponse(**result)
     except Exception as e:
         logger.exception("query_memory() failed")
         _error(500, "query_failed", str(e))
+
+
+# ---------------------------------------------------------------------------
+# POST /agent-finding
+# ---------------------------------------------------------------------------
+
+@app.post("/agent-finding", response_model=AgentFindingResponse, tags=["Core"])
+async def agent_finding(req: AgentFindingRequest):
+    """
+    Subagent write-back into the shared graph.
+
+    This is what makes the blackboard architecture (plan Section 7) real:
+    a subagent's finding becomes a graph node other subagents (or a human,
+    via POST /query) can recall() later — not just a row in a private table
+    only that one agent's own UI can see.
+    """
+    from memory import remember_agent_finding
+    try:
+        result = await remember_agent_finding(
+            agent_type=req.agent_type,
+            experiment_name=req.experiment_name,
+            content=req.content,
+            dataset_name=req.dataset,
+            metadata=req.metadata,
+        )
+        return AgentFindingResponse(**result)
+    except Exception as e:
+        logger.exception("remember_agent_finding() failed")
+        _error(500, "agent_finding_failed", str(e))
 
 
 # ---------------------------------------------------------------------------
@@ -525,14 +594,20 @@ async def forget(req: ForgetRequest):
 @app.post("/promote", response_model=PromoteResponse, tags=["Core"])
 async def promote(req: PromoteRequest):
     """
-    Promote a node from a private/exploratory dataset into the shared dataset.
+    Promote exploratory memory into the shared graph.
 
-    The original node is kept with a promoted=True flag; the content is
-    re-ingested into the target dataset for team-wide access.
+    Preferred: pass session_id (from a prior POST /remember call made with
+    session_id set) — bridges that session into to_dataset natively via
+    cognee.improve(session_ids=[...]).
+
+    Legacy: pass node_id + from_dataset to recall() + remember()-copy across
+    datasets, for content that was never session-scoped.
     """
     from memory import promote_to_shared
     try:
-        result = await promote_to_shared(req.node_id, req.from_dataset, req.to_dataset)
+        result = await promote_to_shared(
+            req.node_id, req.from_dataset, req.to_dataset, session_id=req.session_id
+        )
         return PromoteResponse(**result)
     except Exception as e:
         logger.exception("promote_to_shared() failed")
@@ -629,5 +704,9 @@ async def health():
 if __name__ == "__main__":
     import uvicorn
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8000"))
+    # Default changed from 8000 -> 8010: backend/app/main.py (the Postgres app
+    # layer the frontend/MCP talk to) also defaults to 8000. Both processes
+    # need to run side by side — backend/app calls this server over HTTP for
+    # the memory-backed endpoints (see backend/app/cognee_client.py).
+    port = int(os.getenv("PORT", "8010"))
     uvicorn.run("main:app", host=host, port=port, reload=False, log_level="info")

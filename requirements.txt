@@ -1,7 +1,37 @@
-cognee
-fastapi
-uvicorn
-watchdog
-python-dotenv
-pydantic
+# Groundhog — single requirements file for BOTH processes.
+#
+# Two servers still run as separate processes (root main.py = cognee memory
+# server, port 8010; backend/app/main.py = Postgres+Groq app layer, port
+# 8000) — that split is intentional (see db_setup.md, "single gatekeeper").
+# But they now share one venv and one install step: `pip install -r
+# requirements.txt` from the repo root covers everything either process needs.
+
+# ── Core web framework (both servers) ─────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+
+# ── Cognee memory server (root main.py) ───────────────────────────────────────
+cognee>=1.2.0
+watchdog>=4.0.0
+rdflib
+
+# ── App backend (backend/app/main.py) — Postgres + Groq ───────────────────────
+asyncpg>=0.29.0
+pgvector>=0.3.2
+groq>=0.11.0
+numpy>=1.26.0
+
+# ── Shared utilities ───────────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+httpx>=0.27.0
 pyyaml
+
+# ── Connectors — standalone scripts run from the repo root, not by either server
+wandb>=0.17.0
+
+# ── Testing / Dev ──────────────────────────────────────────────────────────────
+pytest>=8.2.0
+pytest-asyncio>=0.23.0
+ruff>=0.4.0

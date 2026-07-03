@@ -39,9 +39,11 @@ This is the data and memory layer for Groundhog, built on **Cognee** (open-sourc
 5.  **Run the API Server**
     Start the FastAPI application. It will automatically start the file watcher in a background thread.
     ```bash
-    uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    uvicorn main:app --host 0.0.0.0 --port 8010 --reload
     ```
-    The API contract (OpenAPI spec) is available at `http://localhost:8000/docs` and `http://localhost:8000/openapi.json`.
+    Port 8010, not 8000 — `backend/app/main.py` (the Postgres app layer the frontend/MCP server call) also runs on 8000 and needs to run alongside this one; see `backend/app/cognee_client.py`.
+
+    The API contract (OpenAPI spec) is available at `http://localhost:8010/docs` and `http://localhost:8010/openapi.json`.
 
 ## API Endpoints
 

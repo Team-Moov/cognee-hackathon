@@ -17,6 +17,10 @@ PROMPT = """You are an ML experiment design assistant.
 
 Experiment: {experiment}
 
+Prior graph memory — decisions, hypotheses, and other agents' findings for
+this experiment, recalled from the shared knowledge graph:
+{graph_context}
+
 Completed runs so far (JSON):
 {runs_json}
 
@@ -37,7 +41,9 @@ Be specific — include concrete hyperparameter values, not ranges.
 Only return the JSON object, no markdown fences."""
 
 
-async def propose_config(experiment: str, runs: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+async def propose_config(
+    experiment: str, runs: List[Dict[str, Any]], graph_context: str = ""
+) -> Optional[Dict[str, Any]]:
     if not runs:
         return None
 
@@ -55,6 +61,7 @@ async def propose_config(experiment: str, runs: List[Dict[str, Any]]) -> Optiona
 
     prompt = PROMPT.format(
         experiment=experiment,
+        graph_context=graph_context or "(no prior graph memory yet)",
         runs_json=json.dumps(runs_for_prompt, indent=2),
     )
 
