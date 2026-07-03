@@ -50,19 +50,25 @@ logger = logging.getLogger("groundhog.api")
 # ---------------------------------------------------------------------------
 # Cognee configuration (must happen before any cognee call)
 # ---------------------------------------------------------------------------
+# The real, multi-provider configuration lives in llm_setup.configure_cognee().
+# _CONFIG holds what was actually applied, so /health can report it truthfully.
+from llm_setup import configure_cognee
+
+_CONFIG: Dict[str, Any] = {}
+
 
 def _configure_cognee():
-    """Set Cognee LLM settings from environment variables."""
-    llm_provider = os.getenv("LLM_PROVIDER", "groq")
-    llm_model = os.getenv("LLM_MODEL", "groq/llama-3.3-70b-versatile")
-    llm_api_key = os.getenv("GROQ_API_KEY", "")
-
-    cognee.config.llm_config = {
-        "provider": llm_provider,
-        "model": llm_model,
-        "api_key": llm_api_key,
-    }
-    logger.info("Cognee configured: LLM=%s/%s", llm_provider, llm_model)
+    """Configure Cognee's LLM + embeddings via the real setters (groq/gemini/aimlapi)."""
+    global _CONFIG
+    _CONFIG = configure_cognee()
+    # Cognee's own pipeline tracing — observability into how memory was built
+    # (plan §4.5, the "@observe" beat). Best-effort; never fatal.
+    try:
+        if os.getenv("GROUNDHOG_TRACING", "true").strip().lower() in {"1", "true", "yes"}:
+            cognee.enable_tracing()
+            logger.info("Cognee pipeline tracing enabled")
+    except Exception as e:
+        logger.warning("Could not enable cognee tracing: %s", e)
 
 
 # ---------------------------------------------------------------------------
@@ -229,6 +235,7 @@ class AgentFindingResponse(BaseModel):
     agent_type: str
     experiment_name: str
     node_set: Optional[List[str]] = None
+    finding_id: Optional[str] = None
     error: Optional[str] = None
 
 
@@ -343,20 +350,43 @@ async def remember(req: RememberRequest):
     """
     global _run_counter
 
-    from memory import remember_run, scan_and_register_artifacts
+    import run_index
+    from memory import remember_run
 
     try:
         run_data = req.model_dump(exclude={"dataset", "session_id"})
         result = await remember_run(run_data, dataset_name=req.dataset, session_id=req.session_id)
 
-        # Register artifacts in in-memory registry
-        for fpath in result.get("artifact_paths", []):
+        # Register artifacts in the in-memory registry AND the persistent index
+        artifact_dicts = result.get("artifacts", [])
+        for art in artifact_dicts:
+            fpath = art["file_path"]
             _artifact_registry[fpath] = {
                 "result_id": result["node_id"],
-                "artifact_type": _infer_artifact_type(fpath),
-                "description": f"Auto-indexed artifact from run {result['node_id'][:12]}",
+                "artifact_type": art.get("artifact_type", _infer_artifact_type(fpath)),
+                "description": art.get("description", f"Auto-indexed artifact from run {result['node_id'][:12]}"),
                 "exists_on_disk": os.path.exists(fpath),
             }
+        run_index.record_artifacts(artifact_dicts)
+
+        # Deterministic, restart-safe structured record for /runs and /lineage
+        run_index.record_run({
+            "run_id": result["node_id"],
+            "config_hash": result["config_hash"],
+            "experiment": req.experiment_name,
+            "thread": req.thread_name,
+            "config": req.config_params,
+            "metrics": req.result_metrics,
+            "status": req.status,
+            "rationale": req.rationale,
+            "gpu_hours": req.gpu_hours,
+            "wall_clock_seconds": req.wall_clock_seconds,
+            "git_commit": req.git_commit,
+            "config_summary": result["config_summary"],
+            "result_summary": result["result_summary"],
+            "derived_from_config_hash": req.derived_from_config_hash,
+            "artifact_paths": result.get("artifact_paths", []),
+        })
 
         _run_counter += 1
         improved = False
@@ -447,6 +477,7 @@ async def agent_finding(req: AgentFindingRequest):
     via POST /query) can recall() later — not just a row in a private table
     only that one agent's own UI can see.
     """
+    import run_index
     from memory import remember_agent_finding
     try:
         result = await remember_agent_finding(
@@ -456,10 +487,76 @@ async def agent_finding(req: AgentFindingRequest):
             dataset_name=req.dataset,
             metadata=req.metadata,
         )
-        return AgentFindingResponse(**result)
+        # Also index it deterministically so the dashboard can list findings
+        # without asking the LLM to re-emit them as JSON. Dedup per agent+
+        # experiment so re-running agents surface ONE current card, not a pile.
+        # Triage is per-run, so its dedup key includes the run_id when present.
+        run_id = (req.metadata or {}).get("run_id")
+        dedup_key = f"{req.agent_type}:{req.experiment_name}"
+        if req.agent_type == "triage" and run_id:
+            dedup_key = f"triage:{req.experiment_name}:{run_id}"
+        indexed = run_index.record_finding(
+            {
+                "agent_type": req.agent_type,
+                "experiment": req.experiment_name,
+                "content": req.content,
+                "metadata": req.metadata,
+                "severity": (req.metadata or {}).get("severity"),
+            },
+            dedup_key=dedup_key,
+        )
+        payload = dict(result)
+        payload["finding_id"] = indexed["id"]
+        return AgentFindingResponse(**payload)
     except Exception as e:
         logger.exception("remember_agent_finding() failed")
         _error(500, "agent_finding_failed", str(e))
+
+
+# ---------------------------------------------------------------------------
+# GET /runs  and  GET /agent-findings  (deterministic, index-backed)
+# ---------------------------------------------------------------------------
+
+@app.get("/runs", tags=["Core"])
+async def list_runs(
+    experiment: Optional[str] = Query(default=None),
+    status: Optional[str] = Query(default=None),
+    limit: int = Query(default=200),
+):
+    """
+    Deterministic run listing straight from the structured index.
+
+    Cognee stays the semantic memory; exact "list my runs" is served from the
+    index instead of asking the LLM to hallucinate a JSON array.
+    """
+    import run_index
+    return run_index.list_runs(experiment=experiment, status=status, limit=limit)
+
+
+@app.get("/agent-findings", tags=["Core"])
+async def list_agent_findings(
+    experiment: Optional[str] = Query(default=None),
+    limit: int = Query(default=200),
+    include_dismissed: bool = Query(default=False),
+):
+    """Deterministic agent-finding listing from the structured index."""
+    import run_index
+    return run_index.list_findings(
+        experiment=experiment, limit=limit, include_dismissed=include_dismissed
+    )
+
+
+@app.post("/agent-findings/{finding_id}/dismiss", tags=["Core"])
+async def dismiss_agent_finding(finding_id: str):
+    """Persistently dismiss an agent finding (survives restart)."""
+    import run_index
+    found = run_index.dismiss_finding(finding_id)
+    if not found:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "finding_not_found", "detail": finding_id},
+        )
+    return {"status": "dismissed", "id": finding_id}
 
 
 # ---------------------------------------------------------------------------
@@ -474,18 +571,23 @@ async def find_file(description: str = Query(..., description="Text description 
     Searches the registered artifact registry and the memory graph.
     Returns the file path, artifact ID, and whether the file still exists.
     """
-    # First check in-memory registry with token overlap
+    # Check the persistent artifact index (survives restart) with token overlap
+    import run_index
     from memory import _rough_similarity
+    candidates = {a["file_path"]: a for a in run_index.list_artifacts()}
+    for fpath, info in _artifact_registry.items():
+        candidates.setdefault(fpath, {"file_path": fpath, **info})
+
     best_score = 0.0
     best_fpath = None
-    for fpath, info in _artifact_registry.items():
+    for fpath, info in candidates.items():
         score = _rough_similarity(description, info.get("description", ""))
         if score > best_score:
             best_score = score
             best_fpath = fpath
 
     if best_fpath and best_score > 0.1:
-        info = _artifact_registry[best_fpath]
+        info = candidates[best_fpath]
         return FindFileResponse(
             file_path=best_fpath,
             artifact_id=best_fpath,
@@ -524,19 +626,42 @@ async def lineage(run_id: str):
 
     run_id can be a config_hash or any node ID returned by /remember.
     """
+    import run_index
     from memory import query_memory
+
+    # Deterministic structural chain from the index: walk derived_from links.
+    chain: List[Dict[str, Any]] = []
+    seen = set()
+    cur = run_index.get_run(run_id)
+    while cur and cur.get("run_id") not in seen:
+        seen.add(cur.get("run_id"))
+        chain.append({
+            "run_id": cur.get("run_id"),
+            "experiment": cur.get("experiment"),
+            "config_summary": cur.get("config_summary"),
+            "status": cur.get("status"),
+            "metrics": cur.get("metrics"),
+            "derived_from_config_hash": cur.get("derived_from_config_hash"),
+        })
+        parent_hash = cur.get("derived_from_config_hash")
+        cur = run_index.get_run(parent_hash) if parent_hash and parent_hash != "none" else None
+
     try:
         result = await query_memory(
             f"What is the full lineage, decision chain, and config history for run {run_id}?"
         )
-        return {
-            "run_id": run_id,
-            "lineage": result.get("answer", "No lineage found."),
-            "sources": result.get("sources", []),
-        }
+        narrative = result.get("answer", "No lineage found.")
+        sources = result.get("sources", [])
     except Exception as e:
-        logger.exception("lineage() failed")
-        _error(500, "lineage_failed", str(e))
+        logger.warning("lineage narrative recall failed: %s", e)
+        narrative, sources = "(semantic narrative unavailable)", []
+
+    return {
+        "run_id": run_id,
+        "config_chain": chain,          # deterministic, from the index
+        "lineage": narrative,           # semantic narrative, from cognee.recall
+        "sources": sources,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -617,10 +742,16 @@ async def orphans():
 
     Includes total size in bytes for each list — useful for "X MB of untracked files" demo beat.
     """
+    import run_index
     watch_dir = os.path.abspath(os.getenv("WATCHED_DIR", "./watched_runs"))
     os.makedirs(watch_dir, exist_ok=True)
 
-    known_paths = set(_artifact_registry.keys())
+    # Known artifacts come from the persistent index (survives restart) merged
+    # with anything registered this process lifetime.
+    indexed = {a["file_path"]: a for a in run_index.list_artifacts()}
+    for fpath, info in _artifact_registry.items():
+        indexed.setdefault(fpath, {"file_path": fpath, **info})
+    known_paths = set(indexed.keys())
 
     # Walk disk to find untracked files
     untracked: List[ArtifactInfo] = []
@@ -640,9 +771,9 @@ async def orphans():
                     result_id=None,
                 ))
 
-    # Find broken references (registered but no longer on disk)
+    # Find broken references (indexed but no longer on disk)
     broken: List[ArtifactInfo] = []
-    for fpath, info in _artifact_registry.items():
+    for fpath, info in indexed.items():
         if not os.path.exists(fpath):
             broken.append(ArtifactInfo(
                 file_path=fpath,
@@ -682,8 +813,9 @@ async def health():
         status="ok",
         cognee_version=cognee_version,
         storage_backend="SQLite (relational) + Kuzu (graph)",
-        llm_provider=os.getenv("LLM_PROVIDER", "groq"),
-        embedding_provider="local",
+        llm_provider=f"{_CONFIG.get('llm_provider_alias', '?')} ({_CONFIG.get('llm_model', '?')})"
+        + ("" if _CONFIG.get("llm_key_present") else " [NO KEY]"),
+        embedding_provider=f"{_CONFIG.get('embedding_provider', '?')}/{_CONFIG.get('embedding_model', '?')}",
     )
 
 

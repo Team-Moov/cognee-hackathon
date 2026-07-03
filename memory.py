@@ -59,6 +59,11 @@ from ontology.ml_ontology import ONTOLOGY_FILE_PATH
 
 logger = logging.getLogger("groundhog.memory")
 
+# Whether to also persist typed DataPoint nodes + edges (schema.py) alongside the
+# text document. Defaults on: it runs on local embeddings (no LLM/key needed) and
+# is what makes the typed schema a real, traversable graph instead of dead code.
+_TYPED_NODES = os.getenv("GROUNDHOG_TYPED_NODES", "true").strip().lower() in {"1", "true", "yes"}
+
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
@@ -200,6 +205,89 @@ def _build_run_document(run_data: Dict[str, Any], config_hash: str, config_summa
     return "\n".join(doc_lines)
 
 
+async def _write_typed_nodes(
+    run_data: Dict[str, Any],
+    config_hash: str,
+    config_summary: str,
+    result_summary: str,
+    status: str,
+    artifact_dicts: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """
+    Persist the run as real typed DataPoint nodes (schema.py) with real edges,
+    via cognee.tasks.storage.add_data_points().
+
+    This is the fix for the "typed schema is dead code" gap: previously the 9
+    DataPoint classes were only ever used in a test, and the actual graph was
+    whatever the LLM happened to extract from a markdown blob. Now every run
+    also lands as an enforced, typed subgraph:
+
+        Experiment <- belongs_to - ResearchThread
+        Config     - belongs_to  -> ResearchThread
+        Result     - produced_by -> Config
+        Result     - used_dataset-> Dataset
+        Artifact   - produced_by -> Result
+
+    Runs entirely on local embeddings (embed_triplets=False → no LLM call), so
+    it works with any provider key. Best-effort: any failure is logged and does
+    NOT abort ingestion (the text path already succeeded by the time we get here).
+    """
+    from schema import (
+        Experiment, ResearchThread, Config, Dataset, Result, Artifact,
+    )
+    from cognee.tasks.storage import add_data_points
+
+    exp = Experiment(
+        name=run_data.get("experiment_name", "unnamed"),
+        description=run_data.get("experiment_description", "") or run_data.get("experiment_name", "unnamed"),
+        owner=run_data.get("owner", "unknown"),
+    )
+    thread = ResearchThread(
+        name=run_data.get("thread_name", "default"),
+        hypothesis_summary=run_data.get("hypothesis", "") or "default thread",
+        belongs_to=exp,
+    )
+    cfg = Config(
+        parameters=run_data.get("config_params", {}),
+        summary_text=config_summary,
+        config_hash=config_hash,
+        belongs_to=thread,
+    )
+    dataset = Dataset(
+        name=run_data.get("dataset_name_label", "unknown"),
+        version=run_data.get("dataset_version", "v1"),
+        preprocessing_notes=run_data.get("preprocessing_notes", ""),
+        split_rationale=run_data.get("split_rationale", ""),
+        quality_issues=run_data.get("quality_issues", ""),
+    )
+    result = Result(
+        metrics=run_data.get("result_metrics", {}),
+        gpu_hours=run_data.get("gpu_hours"),
+        wall_clock_seconds=run_data.get("wall_clock_seconds"),
+        status=status,
+        summary_text=result_summary,
+        produced_by=cfg,
+        used_dataset=dataset,
+        belongs_to=thread,
+    )
+    nodes: List[Any] = [exp, thread, cfg, dataset, result]
+    for art in artifact_dicts:
+        nodes.append(Artifact(
+            file_path=art["file_path"],
+            artifact_type=art.get("artifact_type", "other"),
+            description=art.get("description", ""),
+            exists_on_disk=art.get("exists_on_disk", True),
+            produced_by=result,
+        ))
+
+    await add_data_points(nodes, embed_triplets=False)
+    return {
+        "typed_nodes_written": len(nodes),
+        "result_node_id": str(result.id),
+        "config_node_id": str(cfg.id),
+    }
+
+
 def _scan_artifacts(directory: str) -> List[str]:
     """Walk a directory and return all file paths found."""
     paths = []
@@ -237,7 +325,7 @@ def _extract_result_snippet(result_obj: Any) -> Dict[str, Any]:
 
 
 def _rough_similarity(a: str, b: str) -> float:
-    """Token overlap (Jaccard) — used only as a display heuristic on top of real recall() hits."""
+    """Token overlap (Jaccard) — display-only heuristic, used solely by find_file."""
     tokens_a = set(a.lower().split())
     tokens_b = set(b.lower().split())
     if not tokens_a or not tokens_b:
@@ -245,6 +333,28 @@ def _rough_similarity(a: str, b: str) -> float:
     intersection = tokens_a & tokens_b
     union = tokens_a | tokens_b
     return len(intersection) / len(union)
+
+
+def _extract_recall_score(result_obj: Any) -> Optional[float]:
+    """
+    Pull cognee's real vector-similarity score off a recall() hit.
+
+    CHUNKS/graph recall entries carry a `score` field (0..1, higher = closer).
+    This is the actual embedding similarity from the vector store — used instead
+    of the old token-overlap guess so the Pre-flight Guard reports a meaningful
+    number. Returns None when no real score is present.
+    """
+    for attr in ("score", "similarity", "distance"):
+        val = getattr(result_obj, attr, None)
+        if val is None and isinstance(result_obj, dict):
+            val = result_obj.get(attr)
+        if isinstance(val, (int, float)):
+            score = float(val)
+            # `distance` is inverted (lower = closer); convert to a similarity.
+            if attr == "distance":
+                score = max(0.0, 1.0 - score)
+            return round(score, 3)
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -300,28 +410,56 @@ async def remember_run(
         status=status,
     )
 
-    if session_id:
-        logger.info("remember_run: session write session_id=%s config_hash=%s",
-                    session_id, config_hash[:12])
-        remember_result = await cognee.remember(
-            document,
-            dataset_name=dataset_name,
-            session_id=session_id,
-        )
-        raw_result: Dict[str, Any] = {"mode": "session", "session_id": session_id}
-        if hasattr(remember_result, "to_dict"):
-            raw_result.update(remember_result.to_dict())
-    else:
-        logger.info("remember_run: permanent write dataset=%s config_hash=%s node_set=%s",
-                    dataset_name, config_hash[:12], node_set)
-        raw_result = await _remember_with_ontology(document, dataset_name, node_set)
-
     # --- Artifact scanning (filesystem side-effect, unrelated to cognee) ---
-    artifact_paths: List[str] = []
+    artifact_dicts: List[Dict[str, Any]] = []
     output_dir = run_data.get("output_dir")
     if output_dir and os.path.isdir(output_dir):
-        artifact_paths = _scan_artifacts(output_dir)
-        logger.info("Scanned %d artifacts from %s", len(artifact_paths), output_dir)
+        artifact_dicts = scan_and_register_artifacts(output_dir, result_id=config_hash)
+        logger.info("Scanned %d artifacts from %s", len(artifact_dicts), output_dir)
+    artifact_paths = [a["file_path"] for a in artifact_dicts]
+
+    # --- Typed DataPoint graph (schema.py) FIRST — real nodes + edges, local ---
+    # embeddings, no LLM needed. Done before the text/LLM path so the enforced
+    # structured graph is captured even if LLM extraction later fails (e.g. no
+    # key). This is what turns schema.py into a real, traversable graph.
+    typed_result: Dict[str, Any] = {"typed_nodes_written": 0}
+    if _TYPED_NODES and not session_id:
+        try:
+            typed_result = await _write_typed_nodes(
+                run_data, config_hash, config_summary, result_summary, status, artifact_dicts
+            )
+            logger.info("Wrote %d typed nodes for config_hash=%s",
+                        typed_result.get("typed_nodes_written", 0), config_hash[:12])
+        except Exception as e:
+            logger.warning("Typed-node write failed: %s", e)
+            typed_result = {"typed_nodes_written": 0, "error": str(e)}
+
+    # --- Text document → cognee (semantic layer; needs the LLM/key) ----------
+    # Non-fatal: if the LLM step fails, the typed graph + structured index above
+    # still succeeded, so the run is not lost — only the semantic recall layer
+    # is degraded for this run. raw_result records what happened.
+    raw_result: Dict[str, Any]
+    try:
+        if session_id:
+            logger.info("remember_run: session write session_id=%s config_hash=%s",
+                        session_id, config_hash[:12])
+            remember_result = await cognee.remember(
+                document,
+                dataset_name=dataset_name,
+                session_id=session_id,
+            )
+            raw_result = {"mode": "session", "session_id": session_id, "status": "ok"}
+            if hasattr(remember_result, "to_dict"):
+                raw_result.update(remember_result.to_dict())
+        else:
+            logger.info("remember_run: permanent write dataset=%s config_hash=%s node_set=%s",
+                        dataset_name, config_hash[:12], node_set)
+            raw_result = await _remember_with_ontology(document, dataset_name, node_set)
+            raw_result["status"] = "ok"
+    except Exception as e:
+        logger.warning("Semantic (text) ingestion failed for %s — typed graph + index "
+                       "still recorded. Error: %s", config_hash[:12], e)
+        raw_result = {"mode": "degraded", "status": "semantic_failed", "error": str(e)}
 
     elapsed = time.time() - start
 
@@ -332,10 +470,12 @@ async def remember_run(
         "result_summary": result_summary,
         "dataset_name": dataset_name,
         "artifact_paths": artifact_paths,
+        "artifacts": artifact_dicts,
         "elapsed_seconds": round(elapsed, 2),
         "node_set": node_set,
         "session_id": session_id,
         "cognee_result": raw_result,
+        "typed_result": typed_result,
     }
 
 
@@ -420,21 +560,28 @@ async def check_config(
     try:
         semantic_results = await cognee.recall(
             query_text=f"Experiment with config: {config_summary}",
+            query_type=SearchType.CHUNKS,
             datasets=[dataset_name] if dataset_name else None,
-            auto_route=True,
             top_k=5,
         )
         if semantic_results:
             top = semantic_results[0]
-            score = _rough_similarity(config_summary, _result_to_text(top))
-            if score > 0.4:
-                logger.info("Semantic config match found (score=%.2f)", score)
+            # Prefer cognee's real vector-similarity score; only fall back to a
+            # clearly-labelled token-overlap heuristic if the store gave none.
+            score = _extract_recall_score(top)
+            heuristic = score is None
+            if heuristic:
+                score = _rough_similarity(config_summary, _result_to_text(top))
+            threshold = float(os.getenv("PREFLIGHT_SIMILARITY_THRESHOLD", "0.55"))
+            if score is not None and score > threshold:
+                logger.info("Semantic config match found (score=%.3f, heuristic=%s)", score, heuristic)
                 return {
                     "already_tried": True,
                     "match_type": "similar",
                     "config_hash": config_hash,
                     "prior_result": _extract_result_snippet(top),
                     "similarity_score": round(score, 3),
+                    "score_is_heuristic": heuristic,
                 }
     except Exception as e:
         logger.warning("Semantic config lookup failed: %s", e)
@@ -510,20 +657,46 @@ async def query_memory(
 # ---------------------------------------------------------------------------
 
 
-async def improve_memory(dataset_name: str = "main_dataset") -> Dict[str, Any]:
+async def improve_memory(
+    dataset_name: str = "main_dataset",
+    generate_retrospective: bool = True,
+) -> Dict[str, Any]:
     """
-    Trigger cognee's real graph enrichment: triplet embeddings + indexing.
+    Enrich the graph (cognee.improve) and, optionally, produce a short
+    "lab meeting" retrospective summary (plan §9.1).
 
-    This is NOT the same as re-running cognify() — cognee.improve() is its own
-    operation (memify enrichment), distinct from ingestion.
+    Two distinct steps:
+      1. cognee.improve() — real graph enrichment (memify-family operation:
+         triplet embeddings + indexing), distinct from ingestion/cognify.
+      2. A retrospective completion — recall() asked to summarise what has been
+         learned, which is the human-facing "every 10 runs" summary the plan
+         calls for. This is skipped if generate_retrospective=False (e.g. the
+         auto-trigger path, to avoid spending LLM tokens on every N-th run).
     """
-    logger.info("improve_memory: dataset=%s", dataset_name)
+    logger.info("improve_memory: dataset=%s retrospective=%s", dataset_name, generate_retrospective)
     try:
         result = await cognee.improve(dataset=dataset_name)
+        retrospective = ""
+        if generate_retrospective:
+            try:
+                recall_out = await cognee.recall(
+                    query_text=(
+                        "Summarise what has been learned across these ML experiment runs so far: "
+                        "which directions worked, which configs failed, and where to look next. "
+                        "Write it as a short lab-meeting-style retrospective."
+                    ),
+                    datasets=[dataset_name],
+                    auto_route=True,
+                    top_k=15,
+                )
+                retrospective = "\n\n".join(_result_to_text(r) for r in recall_out) if recall_out else ""
+            except Exception as e:  # retrospective is best-effort
+                logger.warning("Retrospective generation failed: %s", e)
         return {
             "status": "completed",
             "dataset": dataset_name,
             "message": "Graph enrichment triggered via cognee.improve()",
+            "retrospective": retrospective,
             "raw_result": {str(k): str(v) for k, v in (result or {}).items()} if isinstance(result, dict) else str(result),
         }
     except Exception as e:

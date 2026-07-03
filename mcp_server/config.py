@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # URL of the Groundhog PostgreSQL REST API (the backend on port 8000)
+    # URL of the Groundhog app backend REST API (Cognee-backed, port 8000)
     groundhog_api_url: str = "http://localhost:8000"
 
     # Port this MCP server itself listens on

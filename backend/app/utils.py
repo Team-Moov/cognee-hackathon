@@ -35,6 +35,27 @@ def config_similarity(a: Dict[str, Any], b: Dict[str, Any]) -> float:
     return len(pairs_a & pairs_b) / len(union) if union else 0.0
 
 
+_METRIC_ALIASES = {
+    "val_accuracy": ["val_accuracy", "val_acc", "validation_accuracy", "accuracy", "acc"],
+    "val_loss": ["val_loss", "validation_loss", "loss"],
+    "train_accuracy": ["train_accuracy", "train_acc"],
+}
+
+
+def get_metric(metrics: Dict[str, Any], name: str, default: Any = None) -> Any:
+    """
+    Read a metric by canonical name, tolerating common aliases.
+
+    Ingestion, W&B, and hand-written runs disagree on naming (val_acc vs
+    val_accuracy vs accuracy). Agents should read through this so "best run"
+    selection doesn't silently see 0 because of a key mismatch.
+    """
+    for key in _METRIC_ALIASES.get(name, [name]):
+        if key in metrics and metrics[key] is not None:
+            return metrics[key]
+    return default
+
+
 def generate_config_summary(config: Dict[str, Any]) -> str:
     primary = ["model", "architecture", "model_name", "optimizer",
                "learning_rate", "lr", "batch_size", "epochs", "num_epochs"]
@@ -44,35 +65,33 @@ def generate_config_summary(config: Dict[str, Any]) -> str:
     return "Config: " + ", ".join(parts) if parts else "Config: (empty)"
 
 
-# ── Groq generative model (chat completions) ───────────────────────────────
-
-_groq_client = None
-
-
-def _get_groq_client():
-    global _groq_client
-    if _groq_client is None:
-        from groq import Groq
-        from app.config import settings
-        key = settings.effective_llm_api_key
-        if not key:
-            raise RuntimeError("No Groq API key. Set GROQ_API_KEY in .env")
-        _groq_client = Groq(api_key=key)
-        logger.info("Groq client ready: %s", settings.effective_llm_model)
-    return _groq_client
+# ── Multi-provider generative model (chat completions) via litellm ──────────
+# Routed through litellm so the subagents work with any one of groq / gemini /
+# aimlapi keys — the provider is chosen by GROUNDHOG_LLM_PROVIDER (see
+# app.config.Settings.resolve_llm), matching the root cognee server's provider.
 
 
 async def llm_generate(prompt: str) -> str:
+    import litellm
     from app.config import settings
-    client = _get_groq_client()
+
+    cfg = settings.resolve_llm()
+    if not cfg.get("api_key"):
+        raise RuntimeError(
+            f"No API key for provider '{settings.groundhog_llm_provider}'. "
+            "Set the matching *_API_KEY in .env."
+        )
+
+    kwargs = {
+        "model": cfg["model"],
+        "api_key": cfg["api_key"],
+        "messages": [{"role": "user", "content": prompt}],
+    }
+    if cfg.get("api_base"):
+        kwargs["api_base"] = cfg["api_base"]
+
     loop = asyncio.get_event_loop()
-    response = await loop.run_in_executor(
-        None,
-        lambda: client.chat.completions.create(
-            model=settings.effective_llm_model,
-            messages=[{"role": "user", "content": prompt}],
-        ),
-    )
+    response = await loop.run_in_executor(None, lambda: litellm.completion(**kwargs))
     return response.choices[0].message.content
 
 

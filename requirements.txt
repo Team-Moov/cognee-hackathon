@@ -16,9 +16,14 @@ pydantic-settings>=2.3.0
 cognee>=1.2.0
 watchdog>=4.0.0
 rdflib
+# Local, offline embeddings (BAAI/bge-small-en-v1.5, 384-dim) so the graph can
+# be built with ANY single chat key (Groq has no embeddings API of its own).
+fastembed>=0.3.0
 
-# ── App backend (backend/app/main.py) — Cognee gateway + Groq ────────────────
-groq>=0.11.0
+# ── App backend (backend/app/main.py) — Cognee gateway ───────────────────────
+# Chat completions go through litellm (multi-provider: groq | gemini | aimlapi).
+litellm>=1.40.0
+groq>=0.11.0  # kept for backwards-compat; no longer the only path
 
 # ── Shared utilities ───────────────────────────────────────────────────────────
 python-dotenv>=1.0.0

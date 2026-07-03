@@ -17,13 +17,19 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import Field, field_validator
+from pydantic import Field, SkipValidation, field_validator
 
 try:
     from cognee.infrastructure.engine.models.DataPoint import DataPoint
 except ImportError:
     # Fallback for slightly different SDK versions
     from cognee.base_data_point import DataPoint  # type: ignore
+
+# Relationship fields below are typed SkipValidation[Any] and point at other
+# DataPoint instances. When passed to cognee.tasks.storage.add_data_points(),
+# a populated relationship field becomes a real typed EDGE in the graph (the
+# field name is the edge label). This is what turns schema.py from documentation
+# into an enforced, traversable graph structure — see memory.build_typed_nodes().
 
 
 # ---------------------------------------------------------------------------
@@ -53,6 +59,9 @@ class ResearchThread(DataPoint):
     hypothesis_summary: str  # embeddable — the "what we're testing" text
     status: str = "active"  # active | abandoned | promoted — structural enum
     experiment_id: Optional[str] = None  # UUID string, structural FK
+
+    # edges
+    belongs_to: SkipValidation[Any] = None   # ResearchThread -> Experiment
 
     metadata: dict = {"index_fields": ["hypothesis_summary"]}
 
@@ -84,6 +93,10 @@ class Config(DataPoint):
     config_hash: str  # SHA-256 hex — structural, exact-match key
     research_thread_id: Optional[str] = None  # structural FK
 
+    # edges (populate with DataPoint instances to create real graph edges)
+    derived_from: SkipValidation[Any] = None   # Config -> prior Config
+    belongs_to: SkipValidation[Any] = None      # Config -> Experiment / ResearchThread
+
     metadata: dict = {"index_fields": ["summary_text"]}
 
 
@@ -100,6 +113,9 @@ class Dataset(DataPoint):
     split_rationale: str = ""      # embeddable — why this train/val/test split
     quality_issues: str = ""       # embeddable — known problems / caveats
     parent_dataset_id: Optional[str] = None  # nullable FK for transform chains
+
+    # edges
+    derived_from: SkipValidation[Any] = None   # Dataset -> parent Dataset
 
     metadata: dict = {
         "index_fields": ["preprocessing_notes", "split_rationale", "quality_issues"]
@@ -128,6 +144,11 @@ class Result(DataPoint):
     summary_text: str = ""  # embeddable — NL narrative of what happened
     promoted: bool = False  # structural flag set by promote_to_shared
 
+    # edges
+    produced_by: SkipValidation[Any] = None    # Result -> Config that produced it
+    used_dataset: SkipValidation[Any] = None    # Result -> Dataset
+    belongs_to: SkipValidation[Any] = None       # Result -> Experiment / ResearchThread
+
     metadata: dict = {"index_fields": ["summary_text"]}
 
     @field_validator("status")
@@ -151,6 +172,9 @@ class Artifact(DataPoint):
     result_id: Optional[str] = None  # structural FK
     description: str = ""  # embeddable — human or auto NL description
     exists_on_disk: bool = True  # structural, updated by orphan detection
+
+    # edges
+    produced_by: SkipValidation[Any] = None    # Artifact -> Result
 
     metadata: dict = {"index_fields": ["description"]}
 

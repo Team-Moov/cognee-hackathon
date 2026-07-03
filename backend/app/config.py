@@ -17,13 +17,16 @@ class Settings(BaseSettings):
     api_port:      int = 8000
     api_log_level: str = "info"
 
-    # Groq — text generation (chat completions)
+    # ── Multi-provider chat LLM (groq | gemini | aimlapi) ────────────────────
+    # The subagents call this via litellm, so one provider selector drives both
+    # the root cognee server (llm_setup.py) and this app's own LLM calls.
+    groundhog_llm_provider: str = Field(default="groq", validation_alias="GROUNDHOG_LLM_PROVIDER")
+    groq_api_key:    str = Field(default="", validation_alias="GROQ_API_KEY")
+    gemini_api_key:  str = Field(default="", validation_alias="GEMINI_API_KEY")
+    aimlapi_api_key: str = Field(default="", validation_alias="AIMLAPI_API_KEY")
+
+    # Legacy alias kept so older code/.env referencing GROQ_API_KEY still works.
     llm_api_key:   str = Field(default="", validation_alias="GROQ_API_KEY")
-    # NOTE: distinct env var name from root's LLM_MODEL on purpose — root's
-    # cognee config wants the litellm-style "groq/llama-3.3-70b-versatile"
-    # prefix, while this app's raw `groq` SDK client wants the bare model
-    # name. Sharing one .env with one LLM_MODEL variable would silently
-    # break whichever process reads the other's format.
     llm_model:     str = Field(default="llama-3.3-70b-versatile", validation_alias="BACKEND_LLM_MODEL")
 
     # Backwards-compat aliases (Ganesh's .env naming)
@@ -48,6 +51,34 @@ class Settings(BaseSettings):
     @property
     def effective_llm_model(self) -> str:
         return self.llm_model or self.cloud_llm_model or "llama-3.3-70b-versatile"
+
+    def resolve_llm(self) -> dict:
+        """
+        Resolve the selected provider into litellm call kwargs so the subagents
+        work with any one of groq / gemini / aimlapi keys.
+
+        Returns dict: {model, api_key, api_base|None}.
+        """
+        provider = (self.groundhog_llm_provider or "groq").strip().lower()
+        if provider == "gemini":
+            return {
+                "model": "gemini/gemini-2.0-flash",
+                "api_key": self.gemini_api_key,
+                "api_base": None,
+            }
+        if provider == "aimlapi":
+            # OpenAI-compatible endpoint.
+            return {
+                "model": "openai/gpt-4o-mini",
+                "api_key": self.aimlapi_api_key,
+                "api_base": "https://api.aimlapi.com/v1",
+            }
+        # default: groq
+        return {
+            "model": f"groq/{self.effective_llm_model}",
+            "api_key": self.groq_api_key or self.effective_llm_api_key,
+            "api_base": None,
+        }
 
 
 settings = Settings()

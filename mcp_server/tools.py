@@ -2,8 +2,9 @@
 Groundhog MCP Tool Implementations.
 
 Each function here is one MCP tool. They make async HTTP calls to the
-Groundhog PostgreSQL backend (default: http://localhost:8000) and return
-plain-text responses that MCP clients (Claude Code, Cursor, etc.) can read.
+Groundhog app backend (Cognee-backed gateway, default: http://localhost:8000)
+and return plain-text responses that MCP clients (Claude Code, Cursor, etc.)
+can read.
 
 Backend endpoints used:
   POST /api/runs/check-config  → groundhog_check_config

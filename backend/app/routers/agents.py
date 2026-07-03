@@ -12,11 +12,15 @@ from app.cognee_client import CogneeClientError
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 logger = logging.getLogger("groundhog.routers.agents")
-_DISMISSED_SUGGESTIONS: set[str] = set()
 
 
 @router.get("/suggestions")
 async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = False):
+    """
+    List agent suggestion cards. Dismissal state is persisted on the Cognee
+    server's structured index (not an in-memory set), so it survives restart.
+    Pass dismissed=true to include already-dismissed cards.
+    """
     if not settings.cognee_api_url:
         return {"suggestions": [], "total": 0}
 
@@ -24,11 +28,10 @@ async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = F
         result = await cognee_client.list_agent_suggestions(
             settings.cognee_api_url,
             experiment=experiment,
+            include_dismissed=dismissed,
             timeout=settings.cognee_call_timeout_seconds,
         )
         suggestions = result.get("suggestions", []) if isinstance(result, dict) else []
-        if not dismissed:
-            suggestions = [s for s in suggestions if str(s.get("id", "")) not in _DISMISSED_SUGGESTIONS]
         return {"suggestions": suggestions, "total": len(suggestions)}
     except CogneeClientError as e:
         logger.warning("suggestions: cognee unreachable: %s", e)
@@ -37,8 +40,18 @@ async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = F
 
 @router.post("/suggestions/{suggestion_id}/dismiss")
 async def dismiss(suggestion_id: str):
-    _DISMISSED_SUGGESTIONS.add(suggestion_id)
-    return {"status": "dismissed", "id": suggestion_id}
+    if not settings.cognee_api_url:
+        raise HTTPException(status_code=503, detail="Cognee server is not configured")
+    try:
+        await cognee_client.dismiss_finding(
+            settings.cognee_api_url,
+            finding_id=suggestion_id,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+        return {"status": "dismissed", "id": suggestion_id}
+    except CogneeClientError as e:
+        logger.warning("dismiss: cognee unreachable: %s", e)
+        raise HTTPException(status_code=502, detail=str(e))
 
 
 class ReportRequest(BaseModel):

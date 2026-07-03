@@ -3,15 +3,17 @@ Orchestrator — event router for the blackboard architecture.
 
 On every `run_remembered` event, the orchestrator fans out to whichever
 subagents care about that event. No subagent talks to another directly —
-coordination flows through two shared stores with different jobs:
+coordination flows through the Cognee memory server, which keeps two views of
+each finding (Postgres was removed):
 
-  - Postgres `agent_suggestions` — the UI-facing cache of dismissible cards.
+  - The structured index (run_index) on the Cognee server — the UI-facing,
+    deduplicated, dismissible cards served via GET /agent-findings.
   - The cognee graph — the actual blackboard. Each agent READS prior graph
     context (decisions, hypotheses, other agents' findings) before reasoning,
-    and WRITES its own finding back via remember_agent_finding(), so the next
-    agent — or a human via the NL query bar — can recall() it later. This is
-    what makes "the graph is the coordination layer" (plan Section 7) true,
-    instead of every agent only ever seeing its own private Postgres row.
+    and WRITES its own finding back via /agent-finding (remember_agent_finding),
+    so the next agent — or a human via the NL query bar — can recall() it
+    later. This is what makes "the graph is the coordination layer" (plan
+    Section 7) true, instead of every agent only ever seeing its own private row.
 
 This runs as a FastAPI BackgroundTask, so it never blocks the API response.
 """
@@ -124,6 +126,9 @@ async def _run_triage(run_data, prior_runs, graph_context):
         from app.agents.triage import triage_run
         result = await triage_run(run_data, prior_runs, graph_context)
         if result and result.get("anomaly_detected"):
+            # Carry run_id in metadata so the card dedups per-run (each run can
+            # legitimately raise its own anomaly) rather than per-experiment.
+            result["run_id"] = run_data.get("run_id", "")
             await _write_back(
                 "triage", run_data.get("experiment", ""), result.get("message", ""), result
             )

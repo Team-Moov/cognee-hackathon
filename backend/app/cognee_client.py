@@ -148,38 +148,23 @@ async def list_runs(
     limit: int = 200,
     timeout: float = 60.0,
 ) -> Dict[str, Any]:
-    """Ask the Cognee graph for run records and coerce the answer into a JSON list."""
-    scope: List[str] = []
-    if experiment:
-        scope.append(f"experiment:{_slug(experiment)}")
-    if status:
-        scope.append(f"status:{_slug(status)}")
+    """
+    Fetch run records from the deterministic GET /runs index.
 
-    prompt_parts = [
-        "Return the most recent ML experiment runs as JSON.",
-        f"Return at most {limit} runs.",
-        "Each item must include run_id, experiment, config, metrics, status, rationale, gpu_hours, and timestamp.",
-        "Return ONLY a JSON object with keys 'runs' and 'total'.",
-    ]
+    This replaces the old approach of asking the LLM to *emit* a JSON array of
+    runs from a completion query (slow, token-costly, and prone to hallucinating
+    rows). Structured listing is served from the index; Cognee is still used for
+    semantic recall via /query.
+    """
+    params: List[str] = [f"limit={limit}"]
     if experiment:
-        prompt_parts.append(f"Focus on experiment '{experiment}'.")
+        params.append(f"experiment={quote(experiment, safe='')}")
     if status:
-        prompt_parts.append(f"Filter to runs with status '{status}'.")
-
-    result = await query(
-        base_url,
-        question=" ".join(prompt_parts),
-        node_name=scope or None,
-        timeout=timeout,
-    )
-    answer = result.get("answer", "") or ""
-    parsed = _extract_json_payload(answer)
-    if isinstance(parsed, dict) and isinstance(parsed.get("runs"), list):
-        parsed.setdefault("total", len(parsed["runs"]))
-        return parsed
-    if isinstance(parsed, list):
-        return {"runs": parsed[:limit], "total": len(parsed[:limit]), "raw_answer": answer}
-    return {"runs": [], "total": 0, "raw_answer": answer}
+        params.append(f"status={quote(status, safe='')}")
+    path = "/runs?" + "&".join(params)
+    result = await _get(base_url, path, timeout)
+    runs = result.get("runs", []) if isinstance(result, dict) else []
+    return {"runs": runs, "total": result.get("total", len(runs)) if isinstance(result, dict) else len(runs)}
 
 
 async def health(base_url: str, timeout: float = 5.0) -> Dict[str, Any]:
@@ -234,25 +219,18 @@ async def list_agent_suggestions(
     base_url: str,
     *,
     experiment: Optional[str] = None,
+    include_dismissed: bool = False,
     timeout: float = 45.0,
 ) -> Dict[str, Any]:
-    scope = [f"experiment:{_slug(experiment)}"] if experiment else None
-    prompt_parts = [
-        "Return active agent findings as JSON.",
-        "Each item should include id, agent_type, experiment, title, content, metadata, severity, dismissed.",
-        "Return ONLY a JSON object with keys 'suggestions' and 'total'.",
-    ]
+    params: List[str] = []
     if experiment:
-        prompt_parts.append(f"Focus on experiment '{experiment}'.")
-    result = await query(base_url, question=" ".join(prompt_parts), node_name=scope, timeout=timeout)
-    answer = result.get("answer", "") or ""
-    parsed = _extract_json_payload(answer)
-    if isinstance(parsed, dict) and isinstance(parsed.get("suggestions"), list):
-        parsed.setdefault("total", len(parsed["suggestions"]))
-        return parsed
-    if isinstance(parsed, list):
-        return {"suggestions": parsed, "total": len(parsed), "raw_answer": answer}
-    return {"suggestions": [], "total": 0, "raw_answer": answer}
+        params.append(f"experiment={quote(experiment, safe='')}")
+    if include_dismissed:
+        params.append("include_dismissed=true")
+    path = "/agent-findings" + ("?" + "&".join(params) if params else "")
+    result = await _get(base_url, path, timeout)
+    suggestions = result.get("suggestions", []) if isinstance(result, dict) else []
+    return {"suggestions": suggestions, "total": result.get("total", len(suggestions)) if isinstance(result, dict) else len(suggestions)}
 
 
 async def remember_agent_finding(
@@ -277,6 +255,11 @@ async def remember_agent_finding(
         "metadata": metadata or {},
     }
     return await _post(base_url, "/agent-finding", payload, timeout)
+
+
+async def dismiss_finding(base_url: str, *, finding_id: str, timeout: float = 15.0) -> Dict[str, Any]:
+    """Persistently dismiss an agent finding on the Cognee server (survives restart)."""
+    return await _post(base_url, f"/agent-findings/{quote(finding_id, safe='')}/dismiss", {}, timeout)
 
 
 async def find_file(base_url: str, *, description: str, timeout: float = 45.0) -> Dict[str, Any]:

@@ -8,7 +8,7 @@ import json
 import logging
 from typing import Any, Dict, List, Optional
 
-from app.utils import llm_generate_json
+from app.utils import llm_generate_json, get_metric
 
 logger = logging.getLogger("groundhog.agents.literature")
 
@@ -51,8 +51,9 @@ async def suggest_papers(
     
     best_result = "none yet"
     if completed:
-        # Find run with best val_acc or lowest val_loss
-        best = max(completed, key=lambda r: r.get("metrics", {}).get("val_acc", 0))
+        # Find run with best validation accuracy (alias-tolerant so val_acc /
+        # val_accuracy / accuracy all count instead of silently scoring 0).
+        best = max(completed, key=lambda r: get_metric(r.get("metrics", {}), "val_accuracy", 0) or 0)
         best_result = json.dumps(best.get("metrics", {}))
 
     rationale_summary = ". ".join(
