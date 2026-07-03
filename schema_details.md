@@ -1,3 +1,5 @@
+python test.py
+python test.py
 # Groundhog Graph Schema Details
 
 This document outlines the 9 core `DataPoint` node types that make up the Groundhog memory graph. Each node type is designed with a deliberate separation between **structural** fields (used for exact lookups, foreign keys, and metrics) and **embeddable** fields (indexed by the LLM for semantic, fuzzy recall).
