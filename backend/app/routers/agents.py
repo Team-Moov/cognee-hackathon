@@ -1,23 +1,43 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
+import logging
 from typing import Optional
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.db.suggestions import get_suggestions, save_suggestion, dismiss_suggestion
+from app.config import settings
+from app import cognee_client
+from app.cognee_client import CogneeClientError
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
+logger = logging.getLogger("groundhog.routers.agents")
+_DISMISSED_SUGGESTIONS: set[str] = set()
 
 
 @router.get("/suggestions")
 async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = False):
-    suggestions = await get_suggestions(experiment=experiment, dismissed=dismissed)
-    return {"suggestions": suggestions, "total": len(suggestions)}
+    if not settings.cognee_api_url:
+        return {"suggestions": [], "total": 0}
+
+    try:
+        result = await cognee_client.list_agent_suggestions(
+            settings.cognee_api_url,
+            experiment=experiment,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+        suggestions = result.get("suggestions", []) if isinstance(result, dict) else []
+        if not dismissed:
+            suggestions = [s for s in suggestions if str(s.get("id", "")) not in _DISMISSED_SUGGESTIONS]
+        return {"suggestions": suggestions, "total": len(suggestions)}
+    except CogneeClientError as e:
+        logger.warning("suggestions: cognee unreachable: %s", e)
+        raise HTTPException(status_code=502, detail=str(e))
 
 
 @router.post("/suggestions/{suggestion_id}/dismiss")
 async def dismiss(suggestion_id: str):
-    await dismiss_suggestion(suggestion_id)
+    _DISMISSED_SUGGESTIONS.add(suggestion_id)
     return {"status": "dismissed", "id": suggestion_id}
 
 

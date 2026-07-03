@@ -1,8 +1,10 @@
 # Groundhog — Database Setup Reference
 
+> **Status:** Historical reference only. This repository no longer uses Postgres or pgvector in the backend path; the backend now proxies to the Cognee memory server and relies on Cognee's own embedded storage.
+
 > **Last updated:** 2026-07-03 (revised)
 > **Maintainer:** Ganesh (Person 1 — Data Layer)
-> **Status:** Two servers now run side by side: `backend/app` (Postgres + Groq, port **8000**, what the frontend/MCP talk to) and the cognee memory server (root `main.py`, port **8010**). `backend/app` calls the cognee server over HTTP for `/remember`, `/check-config`, and `/query` (see `backend/app/cognee_client.py`) — it no longer reimplements those with Postgres alone. Postgres remains the fast local cache for `agent_suggestions` and lineage/listing reads. pgvector ⏭️ still SKIPPED — tsvector full-text is only used as a fallback if the cognee server is unreachable.
+> **Status:** The active runtime is the Cognee memory server (root `main.py`, port **8010**) plus the Cognee-backed API gateway (`backend/app/main.py`, port **8000**). The backend no longer uses Postgres for runs, lineage, suggestions, or search.
 
 ---
 

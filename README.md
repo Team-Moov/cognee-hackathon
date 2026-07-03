@@ -1,11 +1,11 @@
-# Groundhog — Data Layer & API Server
+# Groundhog — Cognee Data Layer & API Server
 
 This is the data and memory layer for Groundhog, built on **Cognee** (open-source memory layer for AI agents). It provides a REST API for the frontend dashboard and MCP server to interact with the ML experiment memory graph.
 
 ## Architecture & Constraints
 
-*   **Single Gatekeeper:** To avoid SQLite/Kuzu file locking issues with concurrent access, **only the FastAPI server imports and calls `cognee`**. All other components (Dashboard, MCP server, File Watcher) must route through this API.
-*   **Tech Stack:** Python 3.11+, Cognee (local SQLite/Kuzu), FastAPI, Groq for LLM generation, local deterministic embeddings for vector recall, and Watchdog.
+*   **Single Gatekeeper:** To avoid SQLite/Kuzu file locking issues with concurrent access, **only the Cognee memory server imports and calls `cognee`**. All other components (Dashboard, MCP server, File Watcher) must route through this API.
+*   **Tech Stack:** Python 3.11+, Cognee (local SQLite/Kuzu), FastAPI, Groq for LLM generation, and Watchdog.
 
 ## Setup Instructions
 
@@ -41,7 +41,7 @@ This is the data and memory layer for Groundhog, built on **Cognee** (open-sourc
     ```bash
     uvicorn main:app --host 0.0.0.0 --port 8010 --reload
     ```
-    Port 8010, not 8000 — `backend/app/main.py` (the Postgres app layer the frontend/MCP server call) also runs on 8000 and needs to run alongside this one; see `backend/app/cognee_client.py`.
+    Port 8010, not 8000 — `backend/app/main.py` is now a Cognee-backed API gateway on 8000 that proxies the frontend/MCP requests over HTTP; see `backend/app/cognee_client.py`.
 
     The API contract (OpenAPI spec) is available at `http://localhost:8010/docs` and `http://localhost:8010/openapi.json`.
 

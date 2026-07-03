@@ -4,21 +4,19 @@ HTTP client for the cognee-backed memory server (root main.py, memory.py).
 Why HTTP and not an in-process import: main.py's own docstring establishes a
 "single gatekeeper" constraint — only one process should touch cognee's local
 SQLite/Kuzu/LanceDB files, to avoid concurrent-access file locking issues.
-backend/app is a separate FastAPI process (Postgres + Groq), so it reaches
-cognee over HTTP instead of importing it directly — same pattern the MCP
-server already uses.
+backend/app is a separate FastAPI process, so it reaches cognee over HTTP
+instead of importing it directly — same pattern the MCP server already uses.
 
-Before this module existed, backend/app had zero cognee involvement: /remember,
-/check-config, and /query were pure Postgres + hand-rolled similarity/full-text
-search. Now those three hot paths call through to the real cognee-backed
-remember()/recall() operations here, with Postgres kept only for the
-agent_suggestions table and a fast local lineage/listing cache — not as a
-Cognee substitute.
+This module keeps the backend API focused on transport and response shaping
+while the actual memory and graph work stays inside the Cognee server.
 """
 
 from __future__ import annotations
 
+import json
 import logging
+import re
+from urllib.parse import quote
 from typing import Any, Dict, List, Optional
 
 import httpx
@@ -52,6 +50,39 @@ async def _get(base_url: str, path: str, timeout: float) -> Dict[str, Any]:
         raise CogneeClientError(f"cognee server returned {e.response.status_code}: {e.response.text[:300]}") from e
     except httpx.RequestError as e:
         raise CogneeClientError(f"cognee server unreachable at {base_url}{path}: {e}") from e
+
+
+def _extract_json_payload(text: str) -> Any:
+    """Best-effort extraction of a JSON object or array from Cognee's answer text."""
+    if not text:
+        return None
+    candidate = text.strip()
+    if candidate.startswith("```"):
+        lines = candidate.splitlines()
+        if lines and lines[0].startswith("```"):
+            candidate = "\n".join(lines[1:])
+        if candidate.endswith("```"):
+            candidate = candidate[:-3].strip()
+
+    for opener, closer in (("[", "]"), ("{", "}")):
+        start = candidate.find(opener)
+        end = candidate.rfind(closer)
+        if start != -1 and end != -1 and end > start:
+            snippet = candidate[start:end + 1]
+            try:
+                return json.loads(snippet)
+            except json.JSONDecodeError:
+                continue
+
+    try:
+        return json.loads(candidate)
+    except json.JSONDecodeError:
+        return None
+
+
+def _slug(text: str) -> str:
+    text = (text or "unknown").strip().lower()
+    return re.sub(r"[^a-z0-9]+", "_", text).strip("_") or "unknown"
 
 
 async def remember_run(
@@ -109,8 +140,68 @@ async def query(
     return await _post(base_url, "/query", payload, timeout)
 
 
+async def list_runs(
+    base_url: str,
+    *,
+    experiment: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = 200,
+    timeout: float = 60.0,
+) -> Dict[str, Any]:
+    """Ask the Cognee graph for run records and coerce the answer into a JSON list."""
+    scope: List[str] = []
+    if experiment:
+        scope.append(f"experiment:{_slug(experiment)}")
+    if status:
+        scope.append(f"status:{_slug(status)}")
+
+    prompt_parts = [
+        "Return the most recent ML experiment runs as JSON.",
+        f"Return at most {limit} runs.",
+        "Each item must include run_id, experiment, config, metrics, status, rationale, gpu_hours, and timestamp.",
+        "Return ONLY a JSON object with keys 'runs' and 'total'.",
+    ]
+    if experiment:
+        prompt_parts.append(f"Focus on experiment '{experiment}'.")
+    if status:
+        prompt_parts.append(f"Filter to runs with status '{status}'.")
+
+    result = await query(
+        base_url,
+        question=" ".join(prompt_parts),
+        node_name=scope or None,
+        timeout=timeout,
+    )
+    answer = result.get("answer", "") or ""
+    parsed = _extract_json_payload(answer)
+    if isinstance(parsed, dict) and isinstance(parsed.get("runs"), list):
+        parsed.setdefault("total", len(parsed["runs"]))
+        return parsed
+    if isinstance(parsed, list):
+        return {"runs": parsed[:limit], "total": len(parsed[:limit]), "raw_answer": answer}
+    return {"runs": [], "total": 0, "raw_answer": answer}
+
+
 async def health(base_url: str, timeout: float = 5.0) -> Dict[str, Any]:
     return await _get(base_url, "/health", timeout)
+
+
+async def agent_finding(
+    base_url: str,
+    *,
+    agent_type: str,
+    experiment: str,
+    content: str,
+    metadata: Optional[Dict[str, Any]] = None,
+    timeout: float = 30.0,
+) -> Dict[str, Any]:
+    payload = {
+        "agent_type": agent_type,
+        "experiment_name": experiment,
+        "content": content,
+        "metadata": metadata or {},
+    }
+    return await _post(base_url, "/agent-finding", payload, timeout)
 
 
 async def query_graph_context(
@@ -124,11 +215,11 @@ async def query_graph_context(
     Read half of the subagent <-> graph loop: pull graph context (prior
     decisions, hypotheses, agent findings, ontology-grounded relationships)
     scoped to one experiment, via the real cognee.recall(), instead of the
-    agent only ever seeing flat Postgres rows.
+    agent only ever seeing a local database cache.
 
     Returns just the answer text (empty string on any failure) since callers
-    fold this into an LLM prompt alongside their Postgres-sourced run rows —
-    a failed/empty graph lookup should degrade gracefully, not break the agent.
+    fold this into an LLM prompt alongside run history from the graph — a
+    failed/empty graph lookup should degrade gracefully, not break the agent.
     """
     node_name = [f"experiment:{_slug(experiment)}"]
     try:
@@ -137,6 +228,31 @@ async def query_graph_context(
     except CogneeClientError as e:
         logger.warning("query_graph_context: cognee unreachable for experiment=%s: %s", experiment, e)
         return ""
+
+
+async def list_agent_suggestions(
+    base_url: str,
+    *,
+    experiment: Optional[str] = None,
+    timeout: float = 45.0,
+) -> Dict[str, Any]:
+    scope = [f"experiment:{_slug(experiment)}"] if experiment else None
+    prompt_parts = [
+        "Return active agent findings as JSON.",
+        "Each item should include id, agent_type, experiment, title, content, metadata, severity, dismissed.",
+        "Return ONLY a JSON object with keys 'suggestions' and 'total'.",
+    ]
+    if experiment:
+        prompt_parts.append(f"Focus on experiment '{experiment}'.")
+    result = await query(base_url, question=" ".join(prompt_parts), node_name=scope, timeout=timeout)
+    answer = result.get("answer", "") or ""
+    parsed = _extract_json_payload(answer)
+    if isinstance(parsed, dict) and isinstance(parsed.get("suggestions"), list):
+        parsed.setdefault("total", len(parsed["suggestions"]))
+        return parsed
+    if isinstance(parsed, list):
+        return {"suggestions": parsed, "total": len(parsed), "raw_answer": answer}
+    return {"suggestions": [], "total": 0, "raw_answer": answer}
 
 
 async def remember_agent_finding(
@@ -152,8 +268,7 @@ async def remember_agent_finding(
     Write half of the subagent <-> graph loop: persist a subagent's finding
     into the real graph (POST /agent-finding -> memory.remember_agent_finding),
     tagged experiment/agent/kind so it's recall()-able later by any other
-    agent or by a human via the NL query bar — not just visible in this one
-    agent's private Postgres suggestion row.
+    agent or by a human via the NL query bar.
     """
     payload = {
         "agent_type": agent_type,
@@ -162,6 +277,31 @@ async def remember_agent_finding(
         "metadata": metadata or {},
     }
     return await _post(base_url, "/agent-finding", payload, timeout)
+
+
+async def find_file(base_url: str, *, description: str, timeout: float = 45.0) -> Dict[str, Any]:
+    encoded = quote(description, safe="")
+    return await _get(base_url, f"/find-file?description={encoded}", timeout)
+
+
+async def get_orphans(base_url: str, timeout: float = 45.0) -> Dict[str, Any]:
+    return await _get(base_url, "/orphans", timeout)
+
+
+async def lineage(base_url: str, *, run_id: str, timeout: float = 45.0) -> Dict[str, Any]:
+    return await _get(base_url, f"/lineage/{run_id}", timeout)
+
+
+async def improve(base_url: str, *, dataset_name: str = "main_dataset", timeout: float = 60.0) -> Dict[str, Any]:
+    return await _post(base_url, "/improve", {"dataset_name": dataset_name}, timeout)
+
+
+async def forget(base_url: str, *, dataset_name: str, criteria: Dict[str, Any], timeout: float = 60.0) -> Dict[str, Any]:
+    return await _post(base_url, "/forget", {"dataset_name": dataset_name, "criteria": criteria}, timeout)
+
+
+async def promote(base_url: str, *, to_dataset: str, session_id: str, timeout: float = 60.0) -> Dict[str, Any]:
+    return await _post(base_url, "/promote", {"to_dataset": to_dataset, "session_id": session_id}, timeout)
 
 
 def _slug(text: str) -> str:

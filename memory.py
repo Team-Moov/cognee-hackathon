@@ -635,24 +635,19 @@ async def forget_stale(dataset_name: str, criteria: Dict[str, Any]) -> Dict[str,
 
 
 async def promote_to_shared(
-    node_id: str,
-    from_dataset: str,
     to_dataset: str = "main_dataset",
     session_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Promote exploratory memory into the shared team graph.
 
-    Preferred / native path: if this promotion follows a session-scoped
-    remember_run(..., session_id=...), pass that same session_id. This calls
-    cognee.improve(dataset=to_dataset, session_ids=[session_id]) — cognee's
-    own mechanism for bridging session-cache content into the permanent graph.
-    That IS the "explicit promote action" from the plan; no bespoke
-    dataset-copy logic needed.
+    Native path only: pass the same session_id that was used in the prior
+    session-scoped remember_run(..., session_id=...) call. This bridges that
+    session into the shared dataset via cognee.improve(dataset=..., session_ids=[...]).
 
-    Legacy fallback: if no session_id is available (e.g. promoting from an
-    older private *dataset* rather than a session), recall() the matching
-    content from from_dataset and remember() it into to_dataset.
+    The older dataset-copy fallback has been removed because it duplicated
+    Cognee's own session promotion semantics and created a second promotion
+    model that the rest of the app no longer needs.
     """
     if session_id:
         logger.info("promote_to_shared: session bridge session_id=%s -> %s", session_id, to_dataset)
@@ -669,43 +664,11 @@ async def promote_to_shared(
             logger.error("promote_to_shared (session bridge) failed: %s", e)
             return {"status": "failed", "session_id": session_id, "error": str(e)}
 
-    logger.info("promote_to_shared: legacy dataset copy %s -> %s | node=%s",
-                from_dataset, to_dataset, node_id)
-    try:
-        results = await cognee.recall(
-            query_text=node_id,
-            datasets=[from_dataset],
-            auto_route=True,
-            top_k=3,
-        )
-        if not results:
-            return {
-                "status": "not_found",
-                "node_id": node_id,
-                "from_dataset": from_dataset,
-                "error": f"Node {node_id} not found in dataset {from_dataset}",
-            }
-
-        content = "\n".join(_result_to_text(r) for r in results[:3])
-        promotion_doc = (
-            f"## Promoted Node: {node_id}\n"
-            f"Promoted from dataset '{from_dataset}' to '{to_dataset}'.\n"
-            f"Timestamp: {datetime.utcnow().isoformat()}\n\n"
-            f"Content:\n{content}"
-        )
-        await cognee.remember(promotion_doc, dataset_name=to_dataset, node_set=["promoted"])
-
-        return {
-            "status": "promoted",
-            "mode": "dataset_copy",
-            "node_id": node_id,
-            "from_dataset": from_dataset,
-            "to_dataset": to_dataset,
-            "new_node_id": f"promoted_{node_id}",
-        }
-    except Exception as e:
-        logger.error("promote_to_shared (legacy) failed: %s", e)
-        return {"status": "failed", "node_id": node_id, "error": str(e)}
+    return {
+        "status": "unsupported",
+        "to_dataset": to_dataset,
+        "error": "session_id is required for promotion; the dataset-copy fallback was removed",
+    }
 
 
 # ---------------------------------------------------------------------------

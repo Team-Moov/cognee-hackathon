@@ -271,14 +271,12 @@ class ForgetResponse(BaseModel):
 
 
 class PromoteRequest(BaseModel):
-    node_id: str = Field(default="", description="Legacy dataset-copy mode only")
-    from_dataset: str = Field(default="", description="Legacy dataset-copy mode only")
     to_dataset: str = Field(default="main_dataset")
-    session_id: Optional[str] = Field(
-        default=None,
+    session_id: str = Field(
+        ...,
         description=(
-            "Preferred: the session_id used in a prior POST /remember call. "
-            "Bridges that session's content into to_dataset via cognee.improve(session_ids=[...])."
+            "The session_id used in a prior POST /remember call. "
+            "Promotes that session into to_dataset via cognee.improve(session_ids=[...])."
         ),
     )
 
@@ -286,11 +284,8 @@ class PromoteRequest(BaseModel):
 class PromoteResponse(BaseModel):
     status: str
     mode: Optional[str] = None
-    node_id: Optional[str] = None
-    from_dataset: Optional[str] = None
     to_dataset: Optional[str] = None
     session_id: Optional[str] = None
-    new_node_id: Optional[str] = None
     error: Optional[str] = None
 
 
@@ -596,18 +591,13 @@ async def promote(req: PromoteRequest):
     """
     Promote exploratory memory into the shared graph.
 
-    Preferred: pass session_id (from a prior POST /remember call made with
-    session_id set) — bridges that session into to_dataset natively via
-    cognee.improve(session_ids=[...]).
-
-    Legacy: pass node_id + from_dataset to recall() + remember()-copy across
-    datasets, for content that was never session-scoped.
+    Native path only: pass the session_id from a prior POST /remember call
+    made with session_id set. That session is bridged into to_dataset natively
+    via cognee.improve(session_ids=[...]).
     """
     from memory import promote_to_shared
     try:
-        result = await promote_to_shared(
-            req.node_id, req.from_dataset, req.to_dataset, session_id=req.session_id
-        )
+        result = await promote_to_shared(req.to_dataset, session_id=req.session_id)
         return PromoteResponse(**result)
     except Exception as e:
         logger.exception("promote_to_shared() failed")

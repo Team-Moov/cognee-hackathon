@@ -43,13 +43,25 @@ async def _read_graph_context(experiment: str) -> str:
     )
 
 
+async def _load_runs(experiment: str) -> List[Dict[str, Any]]:
+    if not settings.cognee_api_url:
+        return []
+    result = await cognee_client.list_runs(
+        settings.cognee_api_url,
+        experiment=experiment,
+        timeout=settings.cognee_call_timeout_seconds,
+    )
+    runs = result.get("runs", []) if isinstance(result, dict) else []
+    return runs if isinstance(runs, list) else []
+
+
 async def _write_back(agent_type: str, experiment: str, content: str, metadata: Dict[str, Any]) -> None:
     """Best-effort write of an agent's finding into the graph. Never raises —
     a cognee outage should degrade the blackboard, not break the agent."""
     if not settings.cognee_api_url or not content:
         return
     try:
-        await cognee_client.remember_agent_finding(
+        await cognee_client.agent_finding(
             settings.cognee_api_url,
             agent_type=agent_type,
             experiment=experiment,
@@ -69,21 +81,18 @@ async def on_run_remembered(run_data: Dict[str, Any]) -> None:
     run_id = run_data.get("run_id", "")
     logger.info("Orchestrator: run_remembered  experiment=%s  run_id=%s", experiment, run_id)
 
-    from app.db.runs import get_runs_for_experiment
-    from app.db.suggestions import save_suggestion
-
     # Load all runs for the experiment once — agents share this context
-    all_runs: List[Dict[str, Any]] = await get_runs_for_experiment(experiment)
+    all_runs: List[Dict[str, Any]] = await _load_runs(experiment)
     prior_runs = [r for r in all_runs if r.get("run_id") != run_id]
     graph_context = await _read_graph_context(experiment)
 
     # Run all agents concurrently
     await asyncio.gather(
-        _run_config_proposer(experiment, all_runs, graph_context, save_suggestion),
-        _run_triage(run_data, prior_runs, graph_context, save_suggestion),
-        _run_dataset_steward(experiment, all_runs, graph_context, save_suggestion),
+        _run_config_proposer(experiment, all_runs, graph_context),
+        _run_triage(run_data, prior_runs, graph_context),
+        _run_dataset_steward(experiment, all_runs, graph_context),
         # Literature agent runs every 5 runs to avoid LLM spam
-        _run_literature_if_due(experiment, all_runs, graph_context, save_suggestion),
+        _run_literature_if_due(experiment, all_runs, graph_context),
         return_exceptions=True,
     )
     logger.info("Orchestrator: all agents completed for run %s", run_id)
@@ -91,9 +100,8 @@ async def on_run_remembered(run_data: Dict[str, Any]) -> None:
 
 async def on_report_requested(experiment: str) -> str:
     """Called by POST /api/agents/report. Returns the markdown report."""
-    from app.db.runs import get_runs_for_experiment
     from app.agents.report import generate_report
-    runs = await get_runs_for_experiment(experiment)
+    runs = await _load_runs(experiment)
     graph_context = await _read_graph_context(experiment)
     # generate_report() writes the report itself back into the graph.
     return await generate_report(experiment, runs, graph_context)
@@ -101,36 +109,21 @@ async def on_report_requested(experiment: str) -> str:
 
 # ── Private helpers ────────────────────────────────────────────────────────
 
-async def _run_config_proposer(experiment, all_runs, graph_context, save):
+async def _run_config_proposer(experiment, all_runs, graph_context):
     try:
         from app.agents.config_proposer import propose_config
         result = await propose_config(experiment, all_runs, graph_context)
         if result:
-            await save({
-                "type": "config_proposer",
-                "experiment": experiment,
-                "title": "Next config suggestion",
-                "content": result.get("rationale", ""),
-                "metadata": result,
-            })
             await _write_back("config_proposer", experiment, result.get("rationale", ""), result)
     except Exception as e:
         logger.error("config_proposer failed: %s", e)
 
 
-async def _run_triage(run_data, prior_runs, graph_context, save):
+async def _run_triage(run_data, prior_runs, graph_context):
     try:
         from app.agents.triage import triage_run
         result = await triage_run(run_data, prior_runs, graph_context)
         if result and result.get("anomaly_detected"):
-            await save({
-                "type": "triage",
-                "experiment": run_data.get("experiment", ""),
-                "run_id": run_data.get("run_id", ""),
-                "title": f"Anomaly: {result.get('anomaly_type', 'unknown')}",
-                "content": result.get("message", ""),
-                "metadata": result,
-            })
             await _write_back(
                 "triage", run_data.get("experiment", ""), result.get("message", ""), result
             )
@@ -138,24 +131,17 @@ async def _run_triage(run_data, prior_runs, graph_context, save):
         logger.error("triage failed: %s", e)
 
 
-async def _run_dataset_steward(experiment, all_runs, graph_context, save):
+async def _run_dataset_steward(experiment, all_runs, graph_context):
     try:
         from app.agents.dataset_steward import check_dataset_health
         result = await check_dataset_health(experiment, all_runs, graph_context)
         if result and result.get("issues_detected"):
-            await save({
-                "type": "dataset_steward",
-                "experiment": experiment,
-                "title": f"Dataset health: {result.get('overall_health', 'warning')}",
-                "content": result.get("recommendation", ""),
-                "metadata": result,
-            })
             await _write_back("dataset_steward", experiment, result.get("recommendation", ""), result)
     except Exception as e:
         logger.error("dataset_steward failed: %s", e)
 
 
-async def _run_literature_if_due(experiment, all_runs, graph_context, save):
+async def _run_literature_if_due(experiment, all_runs, graph_context):
     # Only run every 5 completed runs to cap LLM cost
     completed = [r for r in all_runs if r.get("status") == "completed"]
     if len(completed) % 5 != 0 or len(completed) == 0:
@@ -166,13 +152,6 @@ async def _run_literature_if_due(experiment, all_runs, graph_context, save):
         if papers:
             import json
             content = json.dumps(papers, indent=2)
-            await save({
-                "type": "literature",
-                "experiment": experiment,
-                "title": f"Related papers ({len(papers)} suggestions)",
-                "content": content,
-                "metadata": {"papers": papers},
-            })
             await _write_back("literature", experiment, content, {"papers": papers})
     except Exception as e:
         logger.error("literature failed: %s", e)

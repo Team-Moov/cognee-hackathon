@@ -1,4 +1,4 @@
-﻿"""Groundhog — App Layer Backend (PostgreSQL + pgvector + Groq + local embeddings)."""
+﻿"""Groundhog — App Layer Backend (Cognee-backed API gateway + Groq)."""
 from __future__ import annotations
 
 import logging
@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.db.connection import init_db, close_db
+from app import cognee_client
 from app.routers import runs, query, files, lineage, agents
 
 logging.basicConfig(
@@ -20,18 +20,15 @@ logger = logging.getLogger("groundhog.api")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await init_db()
-    logger.info("Groundhog started — PostgreSQL + pgvector + Groq")
+    logger.info("Groundhog started — Cognee-backed API gateway")
     yield
-    await close_db()
     logger.info("Groundhog shut down")
 
 
 app = FastAPI(
     title="Groundhog — ML Experiment Memory",
     description=(
-        "REST API backed by PostgreSQL 16 + pgvector (HNSW cosine) "
-        "+ tsvector full-text + recursive CTE graph traversal + Groq generation + local deterministic embeddings."
+        "REST API backed by Cognee memory and Groq generation."
     ),
     version="3.0.0",
     lifespan=lifespan,
@@ -54,12 +51,14 @@ app.include_router(agents.router,  prefix="/api")
 
 @app.get("/api/health")
 async def health():
-    from app.db.connection import get_pool
     try:
-        pool = get_pool()
-        async with pool.acquire() as conn:
-            pg_version = await conn.fetchval("SELECT version()")
-        return {"status": "ok", "db": "postgres", "pg_version": pg_version, "version": "3.0.0"}
+        cognee_health = await cognee_client.health(settings.cognee_api_url, timeout=5.0)
+        return {
+            "status": "ok",
+            "db": "cognee",
+            "cognee": cognee_health,
+            "version": "3.0.0",
+        }
     except Exception as e:
         return {"status": "degraded", "error": str(e), "version": "3.0.0"}
 

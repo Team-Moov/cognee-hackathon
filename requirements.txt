@@ -17,11 +17,8 @@ cognee>=1.2.0
 watchdog>=4.0.0
 rdflib
 
-# ── App backend (backend/app/main.py) — Postgres + Groq ───────────────────────
-asyncpg>=0.29.0
-pgvector>=0.3.2
+# ── App backend (backend/app/main.py) — Cognee gateway + Groq ────────────────
 groq>=0.11.0
-numpy>=1.26.0
 
 # ── Shared utilities ───────────────────────────────────────────────────────────
 python-dotenv>=1.0.0

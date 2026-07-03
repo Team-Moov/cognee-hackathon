@@ -1,4 +1,6 @@
-The genuinely Cognee-based code (memory.py's five wrapper functions, the DataPoint schema, the file watcher) is complete and well-written, but it's an orphaned module nobody calls. For a "Best Use of Cognee" track, this is the fire to put out first — right now a judge running the actual app would see no Cognee activity at all.
+> **Historical note:** This file was written before the Cognee-only backend migration. The Postgres-specific recommendations below are no longer current; the active backend now routes through Cognee directly.
+
+The genuinely Cognee-based code (memory.py's five wrapper functions, the DataPoint schema, the file watcher) is complete and well-written, but it's an orphaned module nobody calls. For a "Best Use of Cognee" track, this was the fire to put out first — at the time, a judge running the app would have seen no Cognee activity at all.
 
 What's genuinely solid, either way
 Frontend (frontend/src): real React app, 6 pages (Dashboard, Pre-flight Guard, Lineage Explorer, Query, Files, Agents), clean Tailwind UI, actually calls real endpoints — not a mockup.
