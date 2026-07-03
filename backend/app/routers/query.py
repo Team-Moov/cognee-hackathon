@@ -1,4 +1,4 @@
-﻿"""
+"""
 Hybrid RAG query endpoint:
     1. Embed the question with the local deterministic embedding path
   2. HNSW cosine ANN search (pgvector) → top semantic hits
@@ -12,8 +12,8 @@ import logging
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.db.runs import semantic_search, fulltext_search, get_all_runs
-from app.utils import llm_generate, embed_query
+from app.db.runs import fulltext_search, get_all_runs
+from app.utils import llm_generate
 
 router = APIRouter(tags=["Query"])
 logger = logging.getLogger("groundhog.routers.query")
@@ -31,18 +31,10 @@ class QueryRequest(BaseModel):
 
 @router.post("/query")
 async def query(req: QueryRequest):
-    # 1. Try semantic search
+    # NOTE: pgvector/HNSW semantic search is disabled until the embedding
+    # column is added to the DB. Full-text + recent-runs fallback covers all
+    # demo queries for the hackathon.
     seen: dict[str, dict] = {}
-    q_vec = await embed_query(req.question)
-
-    if q_vec:
-        import numpy as np
-        semantic_hits = await semantic_search(np.array(q_vec, dtype="float32"), limit=15)
-        for r in semantic_hits:
-            seen[r["run_id"]] = r
-        logger.debug("Semantic search: %d hits", len(semantic_hits))
-
-    # 2. Full-text search (always runs — good fallback when embedding is NULL)
     try:
         ft_hits = await fulltext_search(req.question, limit=15)
         for r in ft_hits:

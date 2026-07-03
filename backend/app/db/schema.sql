@@ -1,7 +1,7 @@
-﻿-- Groundhog PostgreSQL schema
+-- Groundhog PostgreSQL schema
 -- Requires: pgvector extension, pg_trgm extension (both bundled with most PG16 installs)
 
-CREATE EXTENSION IF NOT EXISTS vector;
+-- CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 -- ── runs ───────────────────────────────────────────────────────────────────
@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS runs (
     artifacts       JSONB       NOT NULL DEFAULT '[]',
     status          TEXT        NOT NULL DEFAULT 'completed',
     error_message   TEXT,
-    -- pgvector: 768-dim deterministic local embedding
-    embedding       vector(768),
+    -- pgvector: skipped for hackathon
+    -- embedding       vector(768),
     -- tsvector: full-text search over rationale + config_summary
     ts              tsvector    GENERATED ALWAYS AS (
                         to_tsvector('english', coalesce(rationale,'') || ' ' || coalesce(config_summary,''))
@@ -34,9 +34,8 @@ CREATE INDEX IF NOT EXISTS runs_status_idx       ON runs (status);
 CREATE INDEX IF NOT EXISTS runs_config_hash_idx  ON runs (config_hash);
 CREATE INDEX IF NOT EXISTS runs_created_at_idx   ON runs (created_at DESC);
 CREATE INDEX IF NOT EXISTS runs_ts_idx           ON runs USING GIN (ts);
--- HNSW cosine index for ANN vector search (build once, then reads are O(log n))
-CREATE INDEX IF NOT EXISTS runs_embedding_hnsw   ON runs USING hnsw (embedding vector_cosine_ops)
-    WITH (m = 16, ef_construction = 64);
+-- CREATE INDEX IF NOT EXISTS runs_embedding_hnsw   ON runs USING hnsw (embedding vector_cosine_ops)
+--     WITH (m = 16, ef_construction = 64);
 
 -- ── run lineage: directed adjacency list ──────────────────────────────────
 -- Lets us do recursive CTE graph traversal for ancestor/descendant queries.

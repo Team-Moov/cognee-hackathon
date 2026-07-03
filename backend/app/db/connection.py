@@ -1,4 +1,4 @@
-﻿"""
+"""
 asyncpg connection pool + schema bootstrap.
 call await init_db() once at startup.
 """
@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional
 
 import asyncpg
-from pgvector.asyncpg import register_vector
 
 logger = logging.getLogger("groundhog.db")
 _pool: Optional[asyncpg.Pool] = None
@@ -18,8 +17,8 @@ SCHEMA_PATH = Path(__file__).parent / "schema.sql"
 
 
 async def _init_conn(conn: asyncpg.Connection) -> None:
-    """Per-connection init: register the vector type codec."""
-    await register_vector(conn)
+    """Per-connection init hook — reserved for future codec registration."""
+    pass
 
 
 async def init_db() -> None:

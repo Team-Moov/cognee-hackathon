@@ -1,4 +1,4 @@
-﻿/** API service — always calls the real FastAPI backend via /api prefix. */
+/** API service — always calls the real FastAPI backend via /api prefix. */
 const BASE = "/api";
 
 async function post(path, body) {
@@ -26,7 +26,7 @@ async function get(path) {
 // --- Runs ---
 export async function listRuns(params = {}) {
   const qs = new URLSearchParams(params).toString();
-  return get(`/runs/${qs ? "?" + qs : ""}`);
+  return get(`/runs${qs ? "?" + qs : ""}`);
 }
 export async function rememberRun(data) {
   return post("/runs/remember", data);

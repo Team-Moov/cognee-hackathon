@@ -1,4 +1,4 @@
-﻿"""
+"""
 PostgreSQL CRUD for the `runs` table.
 Combines: exact config_hash lookup, HNSW vector similarity search, tsvector full-text search.
 """
@@ -9,8 +9,6 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-
-import numpy as np
 
 from app.db.connection import get_pool
 from app.utils import compute_config_hash, generate_config_summary
@@ -44,29 +42,12 @@ def _row_to_dict(row) -> Dict[str, Any]:
 
 
 async def save_run(data: Dict[str, Any]) -> str:
-    """Upsert a run. Generates embedding asynchronously (best-effort)."""
-    from app.utils import embed_text
-
+    """Upsert a run into PostgreSQL."""
     run_id = data.get("run_id") or str(uuid.uuid4())[:8]
     config = data.get("config") or {}
     config_hash = compute_config_hash(config)
     config_summary = generate_config_summary(config)
-
-    # Build text for embedding: rationale + config summary + top metrics
     metrics = data.get("metrics") or {}
-    metrics_str = ", ".join(f"{k}={v}" for k, v in list(metrics.items())[:5])
-    embed_text_input = (
-        f"{data.get('experiment', '')} {data.get('rationale', '')} "
-        f"{config_summary} {metrics_str} status={data.get('status', '')}"
-    ).strip()
-
-    embedding: Optional[np.ndarray] = None
-    try:
-        vec = await embed_text(embed_text_input)
-        if vec:
-            embedding = np.array(vec, dtype=np.float32)
-    except Exception as e:
-        logger.warning("Embedding failed (stored as NULL): %s", e)
 
     pool = get_pool()
     async with pool.acquire() as conn:
@@ -75,8 +56,8 @@ async def save_run(data: Dict[str, Any]) -> str:
             INSERT INTO runs (
                 id, experiment, config, config_hash, config_summary,
                 metrics, rationale, git_commit, gpu_hours, artifacts,
-                status, error_message, embedding, updated_at
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,NOW())
+                status, error_message, updated_at
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,NOW())
             ON CONFLICT (id) DO UPDATE SET
                 experiment     = EXCLUDED.experiment,
                 config         = EXCLUDED.config,
@@ -89,7 +70,6 @@ async def save_run(data: Dict[str, Any]) -> str:
                 artifacts      = EXCLUDED.artifacts,
                 status         = EXCLUDED.status,
                 error_message  = EXCLUDED.error_message,
-                embedding      = COALESCE(EXCLUDED.embedding, runs.embedding),
                 updated_at     = NOW()
             """,
             run_id,
@@ -103,8 +83,7 @@ async def save_run(data: Dict[str, Any]) -> str:
             data.get("gpu_hours"),
             json.dumps([a if isinstance(a, dict) else vars(a) for a in (data.get("artifacts") or [])]),
             data.get("status", "completed"),
-            data.get("error_message"),
-            embedding,
+            data.get("error_message")
         )
     logger.info("Saved run %s (hash=%s…)", run_id, config_hash[:8])
     return run_id
