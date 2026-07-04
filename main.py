@@ -177,7 +177,11 @@ class RememberRequest(BaseModel):
     output_dir: Optional[str] = Field(default=None, description="Directory to scan for artifacts")
     git_commit: str = Field(default="unknown")
     derived_from_config_hash: Optional[str] = Field(default=None)
-    dataset: str = Field(default="main_dataset", description="Cognee dataset name for storage")
+    dataset: str = Field(default="main_dataset", description="Cognee dataset name (== project_id) for storage")
+    significant_keys: Optional[List[str]] = Field(
+        default=None,
+        description="Config keys that define the experiment; others treated as noise in the hash",
+    )
     session_id: Optional[str] = Field(
         default=None,
         description=(
@@ -204,6 +208,7 @@ class RememberResponse(BaseModel):
 class CheckConfigRequest(BaseModel):
     config_params: Dict[str, Any] = Field(..., description="Hyperparameter dict to check")
     dataset: str = Field(default="main_dataset")
+    significant_keys: Optional[List[str]] = Field(default=None)
 
 
 class CheckConfigResponse(BaseModel):
@@ -382,6 +387,7 @@ async def remember(req: RememberRequest):
         run_index.record_run({
             "run_id": result["node_id"],
             "config_hash": result["config_hash"],
+            "project": req.dataset,  # dataset == project_id (isolation key)
             "experiment": req.experiment_name,
             "thread": req.thread_name,
             "config": req.config_params,
@@ -394,6 +400,15 @@ async def remember(req: RememberRequest):
             "config_summary": result["config_summary"],
             "result_summary": result["result_summary"],
             "derived_from_config_hash": req.derived_from_config_hash,
+            "hypothesis": req.hypothesis,
+            "dataset": {
+                "name": req.dataset_name_label,
+                "version": req.dataset_version,
+                "preprocessing": req.preprocessing_notes,
+                "split_rationale": req.split_rationale,
+                "quality_issues": req.quality_issues,
+            },
+            "artifacts": result.get("artifacts", []),
             "artifact_paths": result.get("artifact_paths", []),
         })
 
@@ -444,7 +459,8 @@ async def check_config(req: CheckConfigRequest):
     """
     from memory import check_config as _check_config
     try:
-        result = await _check_config(req.config_params, dataset_name=req.dataset)
+        result = await _check_config(req.config_params, dataset_name=req.dataset,
+                                     significant_keys=req.significant_keys)
         return CheckConfigResponse(**result)
     except Exception as e:
         logger.exception("check_config() failed")
@@ -507,6 +523,7 @@ async def agent_finding(req: AgentFindingRequest):
         indexed = run_index.record_finding(
             {
                 "agent_type": req.agent_type,
+                "project": req.dataset,
                 "experiment": req.experiment_name,
                 "content": req.content,
                 "metadata": req.metadata,
@@ -530,28 +547,31 @@ async def agent_finding(req: AgentFindingRequest):
 async def list_runs(
     experiment: Optional[str] = Query(default=None),
     status: Optional[str] = Query(default=None),
+    project: Optional[str] = Query(default=None),
     limit: int = Query(default=200),
 ):
     """
     Deterministic run listing straight from the structured index.
 
     Cognee stays the semantic memory; exact "list my runs" is served from the
-    index instead of asking the LLM to hallucinate a JSON array.
+    index instead of asking the LLM to hallucinate a JSON array. Scope to one
+    project (== Cognee dataset) via `project`.
     """
     import run_index
-    return run_index.list_runs(experiment=experiment, status=status, limit=limit)
+    return run_index.list_runs(experiment=experiment, status=status, project=project, limit=limit)
 
 
 @app.get("/agent-findings", tags=["Core"])
 async def list_agent_findings(
     experiment: Optional[str] = Query(default=None),
+    project: Optional[str] = Query(default=None),
     limit: int = Query(default=200),
     include_dismissed: bool = Query(default=False),
 ):
     """Deterministic agent-finding listing from the structured index."""
     import run_index
     return run_index.list_findings(
-        experiment=experiment, limit=limit, include_dismissed=include_dismissed
+        experiment=experiment, project=project, limit=limit, include_dismissed=include_dismissed
     )
 
 

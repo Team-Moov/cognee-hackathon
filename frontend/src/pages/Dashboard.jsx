@@ -31,19 +31,20 @@ export default function Dashboard() {
     if (search) {
       const s = search.toLowerCase();
       return (
-        r.run_id.includes(s) ||
-        r.experiment.includes(s) ||
-        r.rationale.toLowerCase().includes(s) ||
-        JSON.stringify(r.config).toLowerCase().includes(s)
+        (r.run_id || "").includes(s) ||
+        (r.experiment || "").includes(s) ||
+        (r.rationale || "").toLowerCase().includes(s) ||
+        JSON.stringify(r.config || {}).toLowerCase().includes(s)
       );
     }
     return true;
   });
 
+  const metricAcc = (r) => r.metrics?.val_accuracy ?? r.metrics?.val_acc ?? r.metrics?.accuracy ?? 0;
   const totalGpuH = runs.reduce((s, r) => s + (r.gpu_hours || 0), 0);
   const failedCount = runs.filter(r => r.status === "failed" || r.status === "aborted").length;
   const totalArtifacts = runs.reduce((s, r) => s + (r.artifacts?.length || 0), 0);
-  const bestAcc = Math.max(...runs.map(r => r.metrics?.val_acc || 0));
+  const bestAcc = runs.length ? Math.max(...runs.map(metricAcc)) : 0;
 
   return (
     <div className="p-6 max-w-5xl mx-auto">

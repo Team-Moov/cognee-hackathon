@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.config import settings
-from app import cognee_client
+from app import cognee_client, projects
 from app.cognee_client import CogneeClientError
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
@@ -15,7 +15,8 @@ logger = logging.getLogger("groundhog.routers.agents")
 
 
 @router.get("/suggestions")
-async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = False):
+async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = False,
+                           project_id: Optional[str] = None):
     """
     List agent suggestion cards. Dismissal state is persisted on the Cognee
     server's structured index (not an in-memory set), so it survives restart.
@@ -28,6 +29,7 @@ async def list_suggestions(experiment: Optional[str] = None, dismissed: bool = F
         result = await cognee_client.list_agent_suggestions(
             settings.cognee_api_url,
             experiment=experiment,
+            project=projects.resolve_dataset(project_id) if project_id else None,
             include_dismissed=dismissed,
             timeout=settings.cognee_call_timeout_seconds,
         )
@@ -56,13 +58,15 @@ async def dismiss(suggestion_id: str):
 
 class ReportRequest(BaseModel):
     experiment: str
+    project_id: Optional[str] = None
 
 
 @router.post("/report")
 async def generate_report(req: ReportRequest):
     from app.agents.orchestrator import on_report_requested
     try:
-        report_md = await on_report_requested(req.experiment)
+        project = projects.resolve_dataset(req.project_id) if req.project_id else None
+        report_md = await on_report_requested(req.experiment, project)
         return {"experiment": req.experiment, "report": report_md}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

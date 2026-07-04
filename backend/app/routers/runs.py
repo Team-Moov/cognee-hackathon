@@ -8,7 +8,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel, Field
 
 from app.config import settings
-from app import cognee_client
+from app import cognee_client, projects
 from app.cognee_client import CogneeClientError
 from app.utils import compute_config_hash
 
@@ -21,29 +21,48 @@ class ArtifactIn(BaseModel):
     path: str
 
 
+class DatasetIn(BaseModel):
+    name: Optional[str] = None
+    version: Optional[str] = "v1"
+    preprocessing: Optional[str] = ""
+    split_rationale: Optional[str] = ""
+    quality_issues: Optional[str] = ""
+
+
 class RememberRequest(BaseModel):
     run_id: Optional[str] = None
+    project_id: Optional[str] = Field(default=None, description="Project to scope this run to (isolates memory)")
     experiment: str = "unnamed"
+    thread: str = "default"
     config: Dict[str, Any] = Field(default_factory=dict)
     metrics: Dict[str, Any] = Field(default_factory=dict)
     rationale: str = ""
     git_commit: str = "unknown"
     gpu_hours: Optional[float] = None
+    wall_clock_seconds: Optional[float] = None
     artifacts: List[ArtifactIn] = Field(default_factory=list)
+    output_dir: Optional[str] = Field(default=None, description="Directory to scan for output files/artifacts")
+    dataset: Optional[DatasetIn] = Field(default=None, description="Dataset used (name/version/preprocessing/split/quality)")
+    hypothesis: Optional[str] = Field(default=None, description="What this run is testing")
+    derived_from: Optional[str] = Field(default=None, description="config_hash/run_id this config was adapted from")
     status: str = "completed"
     error_message: Optional[str] = None
 
 
 class CheckConfigRequest(BaseModel):
     config: Dict[str, Any]
+    project_id: Optional[str] = None
     experiment: Optional[str] = None
 
 
 @router.post("/remember")
 async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
     run_data = req.model_dump()
+    dataset = projects.resolve_dataset(req.project_id)
+    sig_keys = projects.significant_keys_for(req.project_id)
+    run_data["project"] = dataset
     cognee_status = "skipped (no cognee_api_url configured)"
-    stored_run_id = req.run_id or compute_config_hash(req.config)
+    stored_run_id = req.run_id or compute_config_hash(req.config, sig_keys)
 
     if settings.cognee_api_url:
         try:
@@ -52,10 +71,18 @@ async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
                 config=req.config,
                 metrics=req.metrics,
                 experiment=req.experiment,
+                thread=req.thread,
                 rationale=req.rationale,
                 status=req.status,
                 gpu_hours=req.gpu_hours,
+                wall_clock_seconds=req.wall_clock_seconds,
                 git_commit=req.git_commit,
+                output_dir=req.output_dir,
+                dataset=dataset,
+                dataset_info=req.dataset.model_dump() if req.dataset else None,
+                hypothesis=req.hypothesis,
+                derived_from=req.derived_from,
+                significant_keys=sig_keys,
                 timeout=settings.cognee_call_timeout_seconds,
             )
             cognee_status = "ok"
@@ -88,6 +115,8 @@ async def check_config(req: CheckConfigRequest):
         cognee_result = await cognee_client.check_config(
             settings.cognee_api_url,
             config=req.config,
+            dataset=projects.resolve_dataset(req.project_id),
+            significant_keys=projects.significant_keys_for(req.project_id),
             timeout=settings.cognee_call_timeout_seconds,
         )
         if cognee_result.get("already_tried"):
@@ -118,7 +147,8 @@ async def check_config(req: CheckConfigRequest):
 
 
 @router.get("/")
-async def list_runs(experiment: Optional[str] = None, status: Optional[str] = None):
+async def list_runs(experiment: Optional[str] = None, status: Optional[str] = None,
+                    project_id: Optional[str] = None):
     if not settings.cognee_api_url:
         return {"runs": [], "total": 0}
 
@@ -127,6 +157,7 @@ async def list_runs(experiment: Optional[str] = None, status: Optional[str] = No
             settings.cognee_api_url,
             experiment=experiment,
             status=status,
+            project=projects.resolve_dataset(project_id) if project_id else None,
             timeout=settings.cognee_call_timeout_seconds,
         )
         runs = result.get("runs", []) if isinstance(result, dict) else []

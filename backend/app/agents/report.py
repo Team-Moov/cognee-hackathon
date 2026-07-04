@@ -49,7 +49,7 @@ Use markdown formatting. Be specific — include actual metric values and config
 
 
 async def generate_report(
-    experiment: str, runs: List[Dict[str, Any]], graph_context: str = ""
+    experiment: str, runs: List[Dict[str, Any]], graph_context: str = "", project: str = None
 ) -> str:
     if not runs:
         return f"# {experiment}\n\nNo runs recorded yet."
@@ -85,6 +85,7 @@ async def generate_report(
                     agent_type="report",
                     experiment=experiment,
                     content=report_text,
+                    dataset=project,
                     timeout=settings.cognee_call_timeout_seconds,
                 )
             except Exception as e:

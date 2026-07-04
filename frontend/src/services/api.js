@@ -1,6 +1,27 @@
 /** API service — always calls the real FastAPI backend via /api prefix. */
 const BASE = "/api";
 
+// --- Current project (persisted) -------------------------------------------
+// Every scoped call automatically carries the selected project_id so the whole
+// dashboard shows one project's isolated memory. Empty = unscoped (all).
+let _projectId = localStorage.getItem("gh_project") || "";
+export function setCurrentProject(id) {
+  _projectId = id || "";
+  if (_projectId) localStorage.setItem("gh_project", _projectId);
+  else localStorage.removeItem("gh_project");
+}
+export function getCurrentProject() {
+  return _projectId;
+}
+function withProjectParams(params = {}) {
+  const p = { ...params };
+  if (_projectId) p.project_id = _projectId;
+  return p;
+}
+function withProjectBody(body = {}) {
+  return _projectId ? { ...body, project_id: _projectId } : body;
+}
+
 async function post(path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
@@ -23,24 +44,35 @@ async function get(path) {
   return res.json();
 }
 
-// --- Runs ---
+// --- Projects ---
+export async function listProjects() {
+  return get("/projects");
+}
+export async function createProject(body) {
+  return post("/projects", body);
+}
+export async function getProject(id) {
+  return get(`/projects/${id}`);
+}
+
+// --- Runs (scoped) ---
 export async function listRuns(params = {}) {
-  const qs = new URLSearchParams(params).toString();
+  const qs = new URLSearchParams(withProjectParams(params)).toString();
   return get(`/runs${qs ? "?" + qs : ""}`);
 }
 export async function rememberRun(data) {
-  return post("/runs/remember", data);
+  return post("/runs/remember", withProjectBody(data));
 }
 export async function checkConfig(config, experiment) {
-  return post("/runs/check-config", { config, experiment });
+  return post("/runs/check-config", withProjectBody({ config, experiment }));
 }
 export async function getLineage(runId) {
   return get(`/runs/lineage/${runId}`);
 }
 
-// --- Query ---
+// --- Query (scoped) ---
 export async function queryMemory(question, mode = "COMPLETION") {
-  return post("/query", { question, mode });
+  return post("/query", withProjectBody({ question, mode }));
 }
 
 // --- Files ---
@@ -51,16 +83,16 @@ export async function getOrphans() {
   return get("/files/orphans");
 }
 
-// --- Agents ---
+// --- Agents (scoped) ---
 export async function getAgentSuggestions(params = {}) {
-  const qs = new URLSearchParams(params).toString();
+  const qs = new URLSearchParams(withProjectParams(params)).toString();
   return get(`/agents/suggestions${qs ? "?" + qs : ""}`);
 }
 export async function dismissSuggestion(id) {
   return post(`/agents/suggestions/${id}/dismiss`, {});
 }
 export async function generateReport(experiment) {
-  return post("/agents/report", { experiment });
+  return post("/agents/report", withProjectBody({ experiment }));
 }
 
 // --- Health ---

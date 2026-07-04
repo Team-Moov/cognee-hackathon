@@ -1,33 +1,6 @@
 {
   "runs": [
     {
-      "run_id": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
-      "config_hash": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
-      "experiment": "resnet_sweep",
-      "thread": "default",
-      "config": {
-        "model": "ResNet50",
-        "optimizer": "Adam",
-        "learning_rate": 0.001,
-        "batch_size": 64
-      },
-      "metrics": {
-        "train_accuracy": 0.93,
-        "val_accuracy": 0.912,
-        "val_loss": 0.31
-      },
-      "status": "completed",
-      "rationale": "Baseline ResNet.",
-      "gpu_hours": 2.5,
-      "wall_clock_seconds": null,
-      "git_commit": "unknown",
-      "config_summary": "Config: model=ResNet50, optimizer=Adam, lr=0.001, batch_size=64",
-      "result_summary": "Result: val_accuracy=0.9120 | val_loss=0.3100 | Researcher note: Baseline ResNet.",
-      "derived_from_config_hash": null,
-      "artifact_paths": [],
-      "timestamp": "2026-07-04T06:12:54.557886"
-    },
-    {
       "run_id": "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab",
       "config_hash": "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab",
       "experiment": "resnet_sweep",
@@ -53,9 +26,131 @@
       "derived_from_config_hash": null,
       "artifact_paths": [],
       "timestamp": "2026-07-04T06:13:56.899585"
+    },
+    {
+      "run_id": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
+      "config_hash": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
+      "project": "proj_resnet_cifar_sweep_57a8c37c",
+      "experiment": "resnet_sweep",
+      "thread": "default",
+      "config": {
+        "model": "ResNet50",
+        "optimizer": "Adam",
+        "lr": 0.001,
+        "batch_size": 64,
+        "seed": 42,
+        "output_dir": "/runs/x"
+      },
+      "metrics": {
+        "val_accuracy": 0.912,
+        "val_loss": 0.31
+      },
+      "status": "completed",
+      "rationale": "Update groundhog_index.json",
+      "gpu_hours": 2.5,
+      "wall_clock_seconds": null,
+      "git_commit": "a7af7a46fcb07d9fa60af9389c0865346b5c0915",
+      "config_summary": "Config: model=ResNet50, optimizer=Adam, lr=0.001, batch_size=64, seed=42, output_dir=/runs/x",
+      "result_summary": "Result: val_accuracy=0.9120 | val_loss=0.3100 | Researcher note: Update groundhog_index.json",
+      "derived_from_config_hash": null,
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T08:48:08.804665"
+    },
+    {
+      "run_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "config_hash": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "project": "proj_demo_vision_project_b3f871c9",
+      "experiment": "resnet_sweep",
+      "thread": "default",
+      "config": {
+        "model": "ResNet50",
+        "optimizer": "AdamW",
+        "lr": 0.0005,
+        "batch_size": 128,
+        "seed": 7,
+        "output_dir": "/tmp/x"
+      },
+      "metrics": {
+        "val_accuracy": 0.934,
+        "val_loss": 0.24,
+        "train_accuracy": 0.95
+      },
+      "status": "completed",
+      "rationale": "Update groundhog_index.json",
+      "gpu_hours": null,
+      "wall_clock_seconds": 9720.0,
+      "git_commit": "a7af7a46fcb07d9fa60af9389c0865346b5c0915",
+      "config_summary": "Config: model=ResNet50, optimizer=AdamW, lr=0.0005, batch_size=128, seed=7, output_dir=/tmp/x",
+      "result_summary": "Result: val_accuracy=0.9340 | val_loss=0.2400 | Researcher note: Update groundhog_index.json",
+      "derived_from_config_hash": null,
+      "hypothesis": "AdamW with lower lr and bigger batch improves val accuracy",
+      "dataset": {
+        "name": "CIFAR-10",
+        "version": "v2",
+        "preprocessing": "random crop + horizontal flip; normalized",
+        "split_rationale": "80/10/10 stratified by class",
+        "quality_issues": "~2% mislabeled in truck class"
+      },
+      "artifacts": [
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
+          "artifact_type": "plot",
+          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "exists_on_disk": true,
+          "size_bytes": 5,
+          "description": "Auto-indexed plot from loss_curve.png"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
+          "artifact_type": "checkpoint",
+          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "exists_on_disk": true,
+          "size_bytes": 11,
+          "description": "Auto-indexed checkpoint from model_best.pt"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log",
+          "artifact_type": "log",
+          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "exists_on_disk": true,
+          "size_bytes": 4,
+          "description": "Auto-indexed log from train.log"
+        }
+      ],
+      "artifact_paths": [
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log"
+      ],
+      "timestamp": "2026-07-04T09:23:40.716885"
     }
   ],
-  "artifacts": [],
+  "artifacts": [
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
+      "artifact_type": "plot",
+      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "exists_on_disk": true,
+      "size_bytes": 5,
+      "description": "Auto-indexed plot from loss_curve.png"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
+      "artifact_type": "checkpoint",
+      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "exists_on_disk": true,
+      "size_bytes": 11,
+      "description": "Auto-indexed checkpoint from model_best.pt"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log",
+      "artifact_type": "log",
+      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "exists_on_disk": true,
+      "size_bytes": 4,
+      "description": "Auto-indexed log from train.log"
+    }
+  ],
   "findings": [
     {
       "agent_type": "triage",
@@ -74,31 +169,6 @@
       "timestamp": "2026-07-04T06:14:37.751690",
       "dismissed": false,
       "dedup_key": "triage:resnet_sweep:a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab"
-    },
-    {
-      "agent_type": "config_proposer",
-      "experiment": "resnet_sweep",
-      "content": "This configuration builds on the insights from previous runs, particularly the suggestion for a lower learning rate of 0.0001, which typically enhances convergence, especially for complex models like ResNet. Additionally, reducing the batch size to 32 allows for more frequent updates to the model weights, which can improve model learning dynamics.",
-      "metadata": {
-        "suggested_config": {
-          "model": "ResNet50",
-          "optimizer": "Adam",
-          "learning_rate": 0.0001,
-          "batch_size": 32
-        },
-        "rationale": "This configuration builds on the insights from previous runs, particularly the suggestion for a lower learning rate of 0.0001, which typically enhances convergence, especially for complex models like ResNet. Additionally, reducing the batch size to 32 allows for more frequent updates to the model weights, which can improve model learning dynamics.",
-        "expected_direction": "I expect the validation accuracy to improve, potentially reaching around 0.9250 based on prior findings and improvements from similar configurations.",
-        "unexplored_regions": [
-          "Learning rate: 0.0005",
-          "Batch size: 128",
-          "Different optimizers like SGD with momentum"
-        ]
-      },
-      "severity": null,
-      "id": "4d5e373dc61640c28357d0eff1118355",
-      "timestamp": "2026-07-04T06:14:38.079991",
-      "dismissed": false,
-      "dedup_key": "config_proposer:resnet_sweep"
     },
     {
       "agent_type": "dataset_steward",
@@ -144,6 +214,34 @@
       "timestamp": "2026-07-04T06:15:59.614730",
       "dismissed": false,
       "dedup_key": "report:resnet_sweep"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_demo_vision_project_b3f871c9",
+      "experiment": "resnet_sweep",
+      "content": "This configuration swaps back to the original learning rate of 0.001 with the same batch size of 64 that was used in the first run, allowing us to analyze the impact of the learning rate change alone, since prior findings suggest that both the optimizer and learning rate had a significant effect on performance. The seed has been changed to introduce some randomness in weight initialization.",
+      "metadata": {
+        "suggested_config": {
+          "model": "ResNet50",
+          "optimizer": "AdamW",
+          "lr": 0.001,
+          "batch_size": 64,
+          "seed": 15,
+          "output_dir": "/tmp/y"
+        },
+        "rationale": "This configuration swaps back to the original learning rate of 0.001 with the same batch size of 64 that was used in the first run, allowing us to analyze the impact of the learning rate change alone, since prior findings suggest that both the optimizer and learning rate had a significant effect on performance. The seed has been changed to introduce some randomness in weight initialization.",
+        "expected_direction": "I expect the validation accuracy to improve to approximately 0.92, as we are investigating the influence of a higher learning rate under the unchanged batch size which previously demonstrated competitive performance.",
+        "unexplored_regions": [
+          "Higher learning rates (e.g., 0.002) with smaller batch sizes (e.g., 32)",
+          "Experimenting with other optimizers such as SGD with momentum",
+          "Increasing the batch size to 256 while maintaining the current learning rate of 0.0005"
+        ]
+      },
+      "severity": null,
+      "id": "57ec0453e02c4a558ba388d8c9d9d6de",
+      "timestamp": "2026-07-04T09:24:35.922010",
+      "dismissed": false,
+      "dedup_key": "config_proposer:resnet_sweep"
     }
   ]
 }

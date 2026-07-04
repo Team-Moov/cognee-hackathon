@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.config import settings
-from app import cognee_client
+from app import cognee_client, projects
 from app.cognee_client import CogneeClientError
 
 router = APIRouter(tags=["Query"])
@@ -15,6 +16,7 @@ logger = logging.getLogger("groundhog.routers.query")
 class QueryRequest(BaseModel):
     question: str
     mode: str = "COMPLETION"
+    project_id: Optional[str] = None
 
 
 @router.post("/query")
@@ -27,6 +29,7 @@ async def query(req: QueryRequest):
         cognee_result = await cognee_client.query(
             settings.cognee_api_url,
             question=req.question,
+            dataset=projects.resolve_dataset(req.project_id) if req.project_id else None,
             timeout=settings.cognee_call_timeout_seconds,
         )
         return {

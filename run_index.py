@@ -77,10 +77,12 @@ def record_run(run: Dict[str, Any]) -> None:
 
 
 def list_runs(experiment: Optional[str] = None, status: Optional[str] = None,
-              limit: int = 200) -> Dict[str, Any]:
+              project: Optional[str] = None, limit: int = 200) -> Dict[str, Any]:
     with _LOCK:
         data = _load()
     runs = data["runs"]
+    if project:
+        runs = [r for r in runs if (r.get("project") or "main_dataset") == project]
     if experiment:
         runs = [r for r in runs if (r.get("experiment") or "").lower() == experiment.lower()]
     if status:
@@ -166,10 +168,12 @@ def dismiss_finding(finding_id: str) -> bool:
 
 
 def list_findings(experiment: Optional[str] = None, limit: int = 200,
-                  include_dismissed: bool = False) -> Dict[str, Any]:
+                  include_dismissed: bool = False, project: Optional[str] = None) -> Dict[str, Any]:
     with _LOCK:
         data = _load()
     findings = data["findings"]
+    if project:
+        findings = [f for f in findings if (f.get("project") or "main_dataset") == project]
     if experiment:
         findings = [f for f in findings if (f.get("experiment") or "").lower() == experiment.lower()]
     if not include_dismissed:

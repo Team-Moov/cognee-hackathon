@@ -23,8 +23,42 @@ def _round_floats(obj: Any) -> Any:
     return obj
 
 
-def compute_config_hash(config: Dict[str, Any]) -> str:
-    normalized = json.dumps(_round_floats(config), sort_keys=True, ensure_ascii=True)
+# Canonical config hashing — MUST match memory.py on the Cognee server so the
+# run_id computed here lines up with the Pre-flight Guard's hash. See
+# memory.canonical_config for the rationale (strip noise keys, normalise aliases).
+CONFIG_NOISE_KEYS = {
+    "seed", "random_seed", "gpu_id", "gpu", "device", "devices", "local_rank",
+    "rank", "world_size", "num_workers", "workers", "output_dir", "out_dir",
+    "save_dir", "log_dir", "checkpoint_dir", "run_name", "name", "run_id",
+    "id", "timestamp", "created_at", "date", "wandb", "wandb_project",
+    "wandb_entity", "notes", "tags", "group", "resume", "verbose", "debug",
+    "pin_memory", "prefetch_factor", "persistent_workers",
+}
+CONFIG_KEY_ALIASES = {
+    "lr": "learning_rate", "model_name": "model", "architecture": "model",
+    "arch": "model", "num_epochs": "epochs", "n_epochs": "epochs",
+    "bs": "batch_size", "opt": "optimizer", "wd": "weight_decay",
+}
+
+
+def canonical_config(config: Dict[str, Any], significant_keys: Optional[List[str]] = None) -> Dict[str, Any]:
+    sig = {k.lower() for k in significant_keys} if significant_keys else None
+    out: Dict[str, Any] = {}
+    for raw_key, value in config.items():
+        key = CONFIG_KEY_ALIASES.get(str(raw_key).lower(), str(raw_key).lower())
+        if sig is not None:
+            if key not in sig and str(raw_key).lower() not in sig:
+                continue
+        elif key in CONFIG_NOISE_KEYS:
+            continue
+        if isinstance(value, dict):
+            value = canonical_config(value)
+        out[key] = value
+    return _round_floats(out)
+
+
+def compute_config_hash(config: Dict[str, Any], significant_keys: Optional[List[str]] = None) -> str:
+    normalized = json.dumps(canonical_config(config, significant_keys), sort_keys=True, ensure_ascii=True, default=str)
     return hashlib.sha256(normalized.encode()).hexdigest()
 
 

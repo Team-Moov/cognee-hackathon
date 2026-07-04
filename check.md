@@ -1,4 +1,42 @@
-> **Historical note:** This file was written before the Cognee-only backend migration. The Postgres-specific recommendations below are no longer current; the active backend now routes through Cognee directly.
+> **Historical note:** This file is an early code review written *before* the
+> Cognee-only migration and the project overhaul. Its recommendations have since
+> been implemented — the notes below are kept for context only. **See the status
+> summary immediately below for what is actually true now.**
+
+---
+
+## ✅ Status — what has since been implemented (current)
+
+The review below flagged that the polished half of the app didn't touch Cognee
+and the Cognee half was orphaned. That has been resolved:
+
+- **Backend routes now go through Cognee.** `/remember`, `/check-config`,
+  `/query` all call `memory.py`, which uses the **native** `cognee.remember /
+  recall / improve / forget` V2 API (not hand-rolled `add`/`search` logic).
+- **Postgres removed.** Deterministic listings (runs, agent findings, artifacts,
+  projects) are served from JSON indexes; there is no asyncpg/pgvector.
+- **Ontology grounding is real** — `ontology/ml_ontology.owl` is passed into
+  `cognify(ontology_file_path=...)` during ingestion (no longer a printed list).
+- **`forget` / `improve` are native** — thin passthroughs to `cognee.forget(...)`
+  (per-item / dataset / everything) and `cognee.improve(...)`; `improve_memory`
+  also produces a retrospective. No placeholder counters.
+- **Typed schema is live** — DataPoints are written as real nodes + edges via
+  `add_data_points`, not just a text blob.
+- **`node_set` scoping + session-based private/shared memory + promote** are wired.
+- **`enable_tracing()`** is on; the 5 subagents read/write the **graph** as a
+  blackboard (not Postgres rows); the MCP server's 4 tools reach the Cognee-backed
+  gateway.
+- **Connectors are wired** — the file watcher ingests live; the W&B connector is
+  now an incremental `--watch` daemon (`connectors/wandb_sync.py`) that posts
+  straight into a project's memory.
+- **Plus new since the review:** projects (`project_id` = Cognee dataset), a
+  Python SDK, canonical config hashing, rich capture (dataset/output-files/cost/
+  lineage), multi-provider LLM (groq/gemini/aimlapi) with local embeddings,
+  in-process embedded DBs, and the frontend project switcher.
+
+The original review text follows.
+
+---
 
 The genuinely Cognee-based code (memory.py's five wrapper functions, the DataPoint schema, the file watcher) is complete and well-written, but it's an orphaned module nobody calls. For a "Best Use of Cognee" track, this was the fire to put out first — at the time, a judge running the app would have seen no Cognee activity at all.
 

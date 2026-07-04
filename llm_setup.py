@@ -96,6 +96,20 @@ def configure_cognee() -> dict:
     # (Cognee 1.2 defaults this ON. Opt out unless the user set it explicitly.)
     os.environ.setdefault("ENABLE_BACKEND_ACCESS_CONTROL", "false")
 
+    # Run Kuzu (graph) + LanceDB (vector) IN-PROCESS, not in a subprocess.
+    # Cognee's default subprocess mode makes the write path (add/cognify) and the
+    # read path (recall) contend for the same embedded-DB lock on Windows, which
+    # surfaced as intermittent "Could not set lock on file …ladybug" errors on
+    # query. With a single in-process owner there's one lock holder and the
+    # contention disappears. Overridable via env if a user needs subprocess mode.
+    try:
+        graph_sub = os.getenv("COGNEE_GRAPH_SUBPROCESS", "false").strip().lower() in {"1", "true", "yes"}
+        vector_sub = os.getenv("COGNEE_VECTOR_SUBPROCESS", "false").strip().lower() in {"1", "true", "yes"}
+        cognee.config.set_graph_database_subprocess_enabled(graph_sub)
+        cognee.config.set_vector_db_subprocess_enabled(vector_sub)
+    except Exception as e:
+        logger.warning("Could not set DB subprocess mode: %s", e)
+
     provider_key = os.getenv("GROUNDHOG_LLM_PROVIDER", "groq").strip().lower()
     preset = _PROVIDER_PRESETS.get(provider_key)
     if preset is None:

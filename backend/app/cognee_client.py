@@ -94,24 +94,42 @@ async def remember_run(
     rationale: str = "",
     status: str = "completed",
     gpu_hours: Optional[float] = None,
+    wall_clock_seconds: Optional[float] = None,
     git_commit: str = "unknown",
     output_dir: Optional[str] = None,
     session_id: Optional[str] = None,
+    dataset: str = "main_dataset",
+    dataset_info: Optional[Dict[str, Any]] = None,
+    hypothesis: Optional[str] = None,
+    derived_from: Optional[str] = None,
+    significant_keys: Optional[List[str]] = None,
+    thread: str = "default",
     timeout: float = 60.0,
 ) -> Dict[str, Any]:
     """Calls the real cognee-backed POST /remember (memory.remember_run)."""
+    di = dataset_info or {}
     payload = {
         "config_params": config,
         "result_metrics": metrics,
         "status": status,
         "rationale": rationale,
         "experiment_name": experiment,
-        "thread_name": "default",
+        "thread_name": thread,
+        "hypothesis": hypothesis or "",
         "gpu_hours": gpu_hours,
+        "wall_clock_seconds": wall_clock_seconds,
         "git_commit": git_commit,
         "output_dir": output_dir,
+        "derived_from_config_hash": derived_from,
+        # dataset provenance — the Cognee server turns these into a Dataset node
+        "dataset_name_label": di.get("name") or "unknown",
+        "dataset_version": di.get("version") or "v1",
+        "preprocessing_notes": di.get("preprocessing") or "",
+        "split_rationale": di.get("split_rationale") or "",
+        "quality_issues": di.get("quality_issues") or "",
         "session_id": session_id,
-        "dataset": "main_dataset",
+        "dataset": dataset,
+        "significant_keys": significant_keys,
     }
     return await _post(base_url, "/remember", payload, timeout)
 
@@ -120,10 +138,16 @@ async def check_config(
     base_url: str,
     *,
     config: Dict[str, Any],
+    dataset: str = "main_dataset",
+    significant_keys: Optional[List[str]] = None,
     timeout: float = 30.0,
 ) -> Dict[str, Any]:
     """Calls the real cognee-backed POST /check-config (Pre-flight Guard)."""
-    return await _post(base_url, "/check-config", {"config_params": config, "dataset": "main_dataset"}, timeout)
+    return await _post(
+        base_url, "/check-config",
+        {"config_params": config, "dataset": dataset, "significant_keys": significant_keys},
+        timeout,
+    )
 
 
 async def query(
@@ -131,12 +155,15 @@ async def query(
     *,
     question: str,
     node_name: Optional[List[str]] = None,
+    dataset: Optional[str] = None,
     timeout: float = 45.0,
 ) -> Dict[str, Any]:
     """Calls the real cognee-backed POST /query (cognee.recall)."""
     payload: Dict[str, Any] = {"question": question}
     if node_name:
         payload["node_name"] = node_name
+    if dataset:
+        payload["dataset"] = dataset
     return await _post(base_url, "/query", payload, timeout)
 
 
@@ -145,6 +172,7 @@ async def list_runs(
     *,
     experiment: Optional[str] = None,
     status: Optional[str] = None,
+    project: Optional[str] = None,
     limit: int = 200,
     timeout: float = 60.0,
 ) -> Dict[str, Any]:
@@ -161,6 +189,8 @@ async def list_runs(
         params.append(f"experiment={quote(experiment, safe='')}")
     if status:
         params.append(f"status={quote(status, safe='')}")
+    if project:
+        params.append(f"project={quote(project, safe='')}")
     path = "/runs?" + "&".join(params)
     result = await _get(base_url, path, timeout)
     runs = result.get("runs", []) if isinstance(result, dict) else []
@@ -178,6 +208,7 @@ async def agent_finding(
     experiment: str,
     content: str,
     metadata: Optional[Dict[str, Any]] = None,
+    dataset: Optional[str] = None,
     timeout: float = 30.0,
 ) -> Dict[str, Any]:
     payload = {
@@ -186,6 +217,8 @@ async def agent_finding(
         "content": content,
         "metadata": metadata or {},
     }
+    if dataset:
+        payload["dataset"] = dataset
     return await _post(base_url, "/agent-finding", payload, timeout)
 
 
@@ -194,6 +227,7 @@ async def query_graph_context(
     *,
     question: str,
     experiment: str,
+    dataset: Optional[str] = None,
     timeout: float = 45.0,
 ) -> str:
     """
@@ -208,7 +242,7 @@ async def query_graph_context(
     """
     node_name = [f"experiment:{_slug(experiment)}"]
     try:
-        result = await query(base_url, question=question, node_name=node_name, timeout=timeout)
+        result = await query(base_url, question=question, node_name=node_name, dataset=dataset, timeout=timeout)
         return result.get("answer", "") or ""
     except CogneeClientError as e:
         logger.warning("query_graph_context: cognee unreachable for experiment=%s: %s", experiment, e)
@@ -219,12 +253,15 @@ async def list_agent_suggestions(
     base_url: str,
     *,
     experiment: Optional[str] = None,
+    project: Optional[str] = None,
     include_dismissed: bool = False,
     timeout: float = 45.0,
 ) -> Dict[str, Any]:
     params: List[str] = []
     if experiment:
         params.append(f"experiment={quote(experiment, safe='')}")
+    if project:
+        params.append(f"project={quote(project, safe='')}")
     if include_dismissed:
         params.append("include_dismissed=true")
     path = "/agent-findings" + ("?" + "&".join(params) if params else "")
@@ -240,6 +277,7 @@ async def remember_agent_finding(
     experiment: str,
     content: str,
     metadata: Optional[Dict[str, Any]] = None,
+    dataset: Optional[str] = None,
     timeout: float = 30.0,
 ) -> Dict[str, Any]:
     """
@@ -254,6 +292,8 @@ async def remember_agent_finding(
         "content": content,
         "metadata": metadata or {},
     }
+    if dataset:
+        payload["dataset"] = dataset
     return await _post(base_url, "/agent-finding", payload, timeout)
 
 

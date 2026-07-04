@@ -79,15 +79,81 @@ def _round_floats(obj):
     return obj
 
 
-def _normalize_config(params: Dict[str, Any]) -> str:
-    """Deterministic JSON serialization of config parameters for hashing."""
-    normalized = _round_floats(params)
-    return json.dumps(normalized, sort_keys=True, ensure_ascii=True)
+# --- Canonical config hashing (Pre-flight Guard robustness) -----------------
+# Real-world configs carry noise that does NOT change "have I tried this?":
+# seeds, device ids, output paths, run names, worker counts, timestamps, W&B
+# bookkeeping. Hashing the raw dict makes two logically-identical experiments
+# hash differently (seed=1 vs seed=2) so the Guard falsely says "never tried".
+# We strip that noise and normalise key aliases before hashing so the Guard
+# matches the configs researchers actually run.
+
+CONFIG_NOISE_KEYS = {
+    "seed", "random_seed", "gpu_id", "gpu", "device", "devices", "local_rank",
+    "rank", "world_size", "num_workers", "workers", "output_dir", "out_dir",
+    "save_dir", "log_dir", "checkpoint_dir", "run_name", "name", "run_id",
+    "id", "timestamp", "created_at", "date", "wandb", "wandb_project",
+    "wandb_entity", "notes", "tags", "group", "resume", "verbose", "debug",
+    "pin_memory", "prefetch_factor", "persistent_workers",
+}
+
+CONFIG_KEY_ALIASES = {
+    "lr": "learning_rate",
+    "model_name": "model",
+    "architecture": "model",
+    "arch": "model",
+    "num_epochs": "epochs",
+    "n_epochs": "epochs",
+    "bs": "batch_size",
+    "opt": "optimizer",
+    "wd": "weight_decay",
+}
 
 
-def compute_config_hash(params: Dict[str, Any]) -> str:
-    """SHA-256 hash of normalized config parameters — same hash for the same hyperparameters."""
-    normalized_str = _normalize_config(params)
+def canonical_config(
+    params: Dict[str, Any],
+    significant_keys: Optional[List[str]] = None,
+    ignore_keys: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Reduce a config to only the parameters that define the experiment.
+
+    - If significant_keys is given, keep ONLY those (after alias-normalising).
+    - Otherwise drop CONFIG_NOISE_KEYS (+ any caller-supplied ignore_keys) and
+      normalise aliases (lr -> learning_rate, model_name -> model, ...).
+    Nested dicts are canonicalised recursively; floats are rounded.
+    """
+    ignore = set(CONFIG_NOISE_KEYS) | {(k or "").lower() for k in (ignore_keys or [])}
+    sig = {(k or "").lower() for k in significant_keys} if significant_keys else None
+
+    out: Dict[str, Any] = {}
+    for raw_key, value in params.items():
+        key = CONFIG_KEY_ALIASES.get(str(raw_key).lower(), str(raw_key).lower())
+        if sig is not None:
+            if key not in sig and str(raw_key).lower() not in sig:
+                continue
+        elif key in ignore:
+            continue
+        if isinstance(value, dict):
+            value = canonical_config(value, ignore_keys=ignore_keys)
+        out[key] = value
+    return _round_floats(out)
+
+
+def _normalize_config(params: Dict[str, Any],
+                      significant_keys: Optional[List[str]] = None) -> str:
+    """Deterministic JSON serialization of the CANONICAL config for hashing."""
+    normalized = canonical_config(params, significant_keys=significant_keys)
+    return json.dumps(normalized, sort_keys=True, ensure_ascii=True, default=str)
+
+
+def compute_config_hash(params: Dict[str, Any],
+                        significant_keys: Optional[List[str]] = None) -> str:
+    """
+    SHA-256 hash of the canonicalised config: identical *meaningful*
+    hyperparameters produce the same hash even if noise fields (seed, paths,
+    run names) or key aliases (lr vs learning_rate) differ.
+    """
+    normalized_str = _normalize_config(params, significant_keys=significant_keys)
     return hashlib.sha256(normalized_str.encode()).hexdigest()
 
 
@@ -420,7 +486,8 @@ async def remember_run(
     if not isinstance(config_params, dict):
         raise ValueError("config_params must be a dict")
 
-    config_hash = compute_config_hash(config_params)
+    significant_keys = run_data.get("significant_keys")
+    config_hash = compute_config_hash(config_params, significant_keys)
     config_summary = generate_config_summary(config_params)
     result_metrics = run_data.get("result_metrics", {})
     status = run_data.get("status", "completed")
@@ -549,6 +616,7 @@ async def _remember_with_ontology(
 async def check_config(
     config_params: Dict[str, Any],
     dataset_name: str = "main_dataset",
+    significant_keys: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     """
     Pre-flight Guard: have I tried this config before?
@@ -560,7 +628,7 @@ async def check_config(
     2. Semantic fallback — recall() with auto_route=True, letting cognee's own
        query classifier pick the best SearchType instead of us hardcoding one.
     """
-    config_hash = compute_config_hash(config_params)
+    config_hash = compute_config_hash(config_params, significant_keys)
     config_summary = generate_config_summary(config_params)
     tag = f"confighash:{config_hash}"
 

@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app import cognee_client
-from app.routers import runs, query, files, lineage, agents
+from app.routers import runs, query, files, lineage, agents, projects
 
 logging.basicConfig(
     level=settings.api_log_level.upper(),
@@ -42,6 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(projects.router, prefix="/api")
 app.include_router(runs.router,    prefix="/api")
 app.include_router(query.router,   prefix="/api")
 app.include_router(files.router,   prefix="/api")

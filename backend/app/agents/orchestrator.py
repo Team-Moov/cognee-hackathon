@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from app.config import settings
 from app import cognee_client
@@ -29,7 +29,7 @@ from app import cognee_client
 logger = logging.getLogger("groundhog.orchestrator")
 
 
-async def _read_graph_context(experiment: str) -> str:
+async def _read_graph_context(experiment: str, project: Optional[str] = None) -> str:
     """Fetched once per event and shared by every agent — avoids N duplicate
     cognee calls for the same experiment in a single orchestration pass."""
     if not settings.cognee_api_url:
@@ -41,23 +41,26 @@ async def _read_graph_context(experiment: str) -> str:
             f"experiment '{experiment}'?"
         ),
         experiment=experiment,
+        dataset=project,
         timeout=settings.cognee_call_timeout_seconds,
     )
 
 
-async def _load_runs(experiment: str) -> List[Dict[str, Any]]:
+async def _load_runs(experiment: str, project: Optional[str] = None) -> List[Dict[str, Any]]:
     if not settings.cognee_api_url:
         return []
     result = await cognee_client.list_runs(
         settings.cognee_api_url,
         experiment=experiment,
+        project=project,
         timeout=settings.cognee_call_timeout_seconds,
     )
     runs = result.get("runs", []) if isinstance(result, dict) else []
     return runs if isinstance(runs, list) else []
 
 
-async def _write_back(agent_type: str, experiment: str, content: str, metadata: Dict[str, Any]) -> None:
+async def _write_back(agent_type: str, experiment: str, content: str, metadata: Dict[str, Any],
+                      project: Optional[str] = None) -> None:
     """Best-effort write of an agent's finding into the graph. Never raises —
     a cognee outage should degrade the blackboard, not break the agent."""
     if not settings.cognee_api_url or not content:
@@ -69,6 +72,7 @@ async def _write_back(agent_type: str, experiment: str, content: str, metadata: 
             experiment=experiment,
             content=content,
             metadata=metadata,
+            dataset=project,
             timeout=settings.cognee_call_timeout_seconds,
         )
     except Exception as e:
@@ -81,47 +85,48 @@ async def on_run_remembered(run_data: Dict[str, Any]) -> None:
     """
     experiment = run_data.get("experiment", "")
     run_id = run_data.get("run_id", "")
-    logger.info("Orchestrator: run_remembered  experiment=%s  run_id=%s", experiment, run_id)
+    project = run_data.get("project")  # == Cognee dataset / project_id
+    logger.info("Orchestrator: run_remembered  experiment=%s  run_id=%s  project=%s", experiment, run_id, project)
 
     # Load all runs for the experiment once — agents share this context
-    all_runs: List[Dict[str, Any]] = await _load_runs(experiment)
+    all_runs: List[Dict[str, Any]] = await _load_runs(experiment, project)
     prior_runs = [r for r in all_runs if r.get("run_id") != run_id]
-    graph_context = await _read_graph_context(experiment)
+    graph_context = await _read_graph_context(experiment, project)
 
     # Run all agents concurrently
     await asyncio.gather(
-        _run_config_proposer(experiment, all_runs, graph_context),
-        _run_triage(run_data, prior_runs, graph_context),
-        _run_dataset_steward(experiment, all_runs, graph_context),
+        _run_config_proposer(experiment, all_runs, graph_context, project),
+        _run_triage(run_data, prior_runs, graph_context, project),
+        _run_dataset_steward(experiment, all_runs, graph_context, project),
         # Literature agent runs every 5 runs to avoid LLM spam
-        _run_literature_if_due(experiment, all_runs, graph_context),
+        _run_literature_if_due(experiment, all_runs, graph_context, project),
         return_exceptions=True,
     )
     logger.info("Orchestrator: all agents completed for run %s", run_id)
 
 
-async def on_report_requested(experiment: str) -> str:
+async def on_report_requested(experiment: str, project: Optional[str] = None) -> str:
     """Called by POST /api/agents/report. Returns the markdown report."""
     from app.agents.report import generate_report
-    runs = await _load_runs(experiment)
-    graph_context = await _read_graph_context(experiment)
+    runs = await _load_runs(experiment, project)
+    graph_context = await _read_graph_context(experiment, project)
     # generate_report() writes the report itself back into the graph.
-    return await generate_report(experiment, runs, graph_context)
+    return await generate_report(experiment, runs, graph_context, project=project)
 
 
 # ── Private helpers ────────────────────────────────────────────────────────
 
-async def _run_config_proposer(experiment, all_runs, graph_context):
+async def _run_config_proposer(experiment, all_runs, graph_context, project=None):
     try:
         from app.agents.config_proposer import propose_config
         result = await propose_config(experiment, all_runs, graph_context)
         if result:
-            await _write_back("config_proposer", experiment, result.get("rationale", ""), result)
+            await _write_back("config_proposer", experiment, result.get("rationale", ""), result, project)
     except Exception as e:
         logger.error("config_proposer failed: %s", e)
 
 
-async def _run_triage(run_data, prior_runs, graph_context):
+async def _run_triage(run_data, prior_runs, graph_context, project=None):
     try:
         from app.agents.triage import triage_run
         result = await triage_run(run_data, prior_runs, graph_context)
@@ -130,23 +135,23 @@ async def _run_triage(run_data, prior_runs, graph_context):
             # legitimately raise its own anomaly) rather than per-experiment.
             result["run_id"] = run_data.get("run_id", "")
             await _write_back(
-                "triage", run_data.get("experiment", ""), result.get("message", ""), result
+                "triage", run_data.get("experiment", ""), result.get("message", ""), result, project
             )
     except Exception as e:
         logger.error("triage failed: %s", e)
 
 
-async def _run_dataset_steward(experiment, all_runs, graph_context):
+async def _run_dataset_steward(experiment, all_runs, graph_context, project=None):
     try:
         from app.agents.dataset_steward import check_dataset_health
         result = await check_dataset_health(experiment, all_runs, graph_context)
         if result and result.get("issues_detected"):
-            await _write_back("dataset_steward", experiment, result.get("recommendation", ""), result)
+            await _write_back("dataset_steward", experiment, result.get("recommendation", ""), result, project)
     except Exception as e:
         logger.error("dataset_steward failed: %s", e)
 
 
-async def _run_literature_if_due(experiment, all_runs, graph_context):
+async def _run_literature_if_due(experiment, all_runs, graph_context, project=None):
     # Only run every 5 completed runs to cap LLM cost
     completed = [r for r in all_runs if r.get("status") == "completed"]
     if len(completed) % 5 != 0 or len(completed) == 0:
@@ -157,6 +162,6 @@ async def _run_literature_if_due(experiment, all_runs, graph_context):
         if papers:
             import json
             content = json.dumps(papers, indent=2)
-            await _write_back("literature", experiment, content, {"papers": papers})
+            await _write_back("literature", experiment, content, {"papers": papers}, project)
     except Exception as e:
         logger.error("literature failed: %s", e)

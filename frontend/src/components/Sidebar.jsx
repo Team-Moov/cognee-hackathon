@@ -1,5 +1,6 @@
 ﻿import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import ProjectBar from "./ProjectBar";
 
 const NAV = [
   { to: "/dashboard", label: "Experiments",    icon: "⚗️", desc: "All runs" },
@@ -21,6 +22,8 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+
+      <ProjectBar />
 
       <nav className="flex-1 py-3 px-2 space-y-1">
         {NAV.map(({ to, label, icon, desc }) => (
@@ -47,10 +50,10 @@ export default function Sidebar() {
       <div className="px-4 py-3 border-t border-zinc-800">
         <div className="text-xs text-zinc-600 space-y-1">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>
-            Live — Firebase + Groq
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+            Live — Cognee memory graph
           </div>
-          <div className="text-zinc-700">Run backend: uvicorn app.main:app</div>
+          <div className="text-zinc-700">Backend :8000 · Cognee :8010</div>
         </div>
       </div>
     </aside>
