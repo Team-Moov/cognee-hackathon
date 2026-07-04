@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { findFile, getOrphans } from "../services/api";
 
 export default function FilesPage() {
@@ -35,101 +35,101 @@ export default function FilesPage() {
   const FIND_EXAMPLES = ["best checkpoint", "bert model", "loss curve plot", "cifar eval report", "gpt2 perplexity"];
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl p-6 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-100">📁 File Finder</h1>
-        <p className="text-zinc-500 text-sm mt-1">Locate any artifact by description — no more spelunking through run_47_v2_final_FINAL/.</p>
+        <h1 className="font-display text-3xl font-semibold text-espresso">File Finder</h1>
+        <p className="mt-1 text-sm text-muted">Locate any artifact by description — no more spelunking through run_47_v2_final_FINAL/.</p>
       </div>
 
       {/* Find file */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mb-6">
-        <div className="text-sm font-semibold text-zinc-200 mb-3">Find Artifact</div>
+      <div className="mb-6 rounded-2xl border border-line bg-card p-5 shadow-soft">
+        <div className="mb-3 text-sm font-semibold text-espresso">Find Artifact</div>
         <form onSubmit={handleFind} className="flex gap-2">
           <input
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="e.g. best checkpoint, loss curve plot…"
-            className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+            className="flex-1 rounded-xl border border-line bg-paper px-3 py-2 text-sm text-cocoa placeholder-muted/70 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
           />
           <button
             type="submit"
             disabled={findLoading || !query.trim()}
-            className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="rounded-xl bg-coffee px-4 py-2 text-sm font-semibold text-card transition-colors hover:bg-coffee-deep disabled:opacity-40"
           >
             {findLoading ? "…" : "Find"}
           </button>
         </form>
-        <div className="mt-2 flex gap-2 flex-wrap">
+        <div className="mt-2 flex flex-wrap gap-2">
           {FIND_EXAMPLES.map(ex => (
             <button
               key={ex}
               onClick={() => { setQuery(ex); }}
-              className="text-xs text-zinc-500 hover:text-zinc-300 bg-zinc-800 border border-zinc-700 px-2 py-1 rounded transition-colors"
+              className="rounded border border-line bg-sand px-2 py-1 text-xs text-cocoa transition-colors hover:bg-hover"
             >{ex}</button>
           ))}
         </div>
 
         {findResult && (
-          <div className="mt-4 fade-in bg-emerald-950/40 border border-emerald-500/30 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-emerald-400 font-semibold text-sm">Found</span>
-              <span className="text-xs text-zinc-500">{findResult.artifact_type}</span>
+          <div className="fade-in mt-4 rounded-xl border border-olive/30 bg-olive/8 p-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="text-sm font-semibold text-olive">Found</span>
+              <span className="text-xs text-muted">{findResult.artifact_type}</span>
             </div>
-            <code className="text-xs text-zinc-200 font-mono block break-all">{findResult.path}</code>
-            <div className="mt-1.5 flex gap-4 text-xs text-zinc-500">
-              <span>Run: <code className="text-indigo-400">{findResult.run_id}</code></span>
-              <span className={findResult.exists_on_disk ? "text-emerald-400" : "text-amber-400"}>
-                {findResult.exists_on_disk ? "✓ exists on disk" : "⚠ not on this machine (remote path)"}
+            <code className="block break-all font-mono text-xs text-cocoa">{findResult.path}</code>
+            <div className="mt-1.5 flex gap-4 text-xs text-muted">
+              <span>Run: <code className="text-coffee-deep">{findResult.run_id}</code></span>
+              <span className={findResult.exists_on_disk ? "text-olive" : "text-ochre"}>
+                {findResult.exists_on_disk ? "exists on disk" : "not on this machine (remote path)"}
               </span>
             </div>
           </div>
         )}
 
         {findError && (
-          <div className="mt-4 text-amber-400 text-sm bg-amber-950/30 border border-amber-500/20 rounded-lg p-3">{findError}</div>
+          <div className="mt-4 rounded-xl border border-ochre/25 bg-ochre/10 p-3 text-sm text-ochre">{findError}</div>
         )}
       </div>
 
       {/* Orphans */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-2xl border border-line bg-card p-5 shadow-soft">
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold text-zinc-200">Orphan Detection</div>
-            <div className="text-xs text-zinc-500 mt-0.5">Files with no graph node, and graph nodes whose file is missing.</div>
+            <div className="text-sm font-semibold text-espresso">Orphan Detection</div>
+            <div className="mt-0.5 text-xs text-muted">Files with no graph node, and graph nodes whose file is missing.</div>
           </div>
           {orphans && (
             <div className="text-right">
-              <div className="text-lg font-bold text-amber-400">{orphans.untracked_size_gb} GB</div>
-              <div className="text-xs text-zinc-500">untracked</div>
+              <div className="font-display text-lg font-semibold text-ochre">{orphans.untracked_size_gb} GB</div>
+              <div className="text-xs text-muted">untracked</div>
             </div>
           )}
         </div>
 
-        {orphansLoading && <div className="text-zinc-500 text-sm text-center py-4">Scanning…</div>}
+        {orphansLoading && <div className="py-4 text-center text-sm text-muted">Scanning…</div>}
 
         {orphans && (
           <div className="space-y-4">
             <div>
-              <div className="text-xs font-semibold text-amber-400 uppercase tracking-wide mb-2">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-ochre">
                 Untracked Files ({orphans.untracked_files.length})
               </div>
               <div className="space-y-1">
                 {orphans.untracked_files.map(f => (
-                  <div key={f} className="text-xs font-mono text-zinc-400 bg-zinc-800 px-3 py-1.5 rounded border border-zinc-700 break-all">{f}</div>
+                  <div key={f} className="break-all rounded-lg border border-line bg-paper px-3 py-1.5 font-mono text-xs text-cocoa">{f}</div>
                 ))}
               </div>
             </div>
 
             <div>
-              <div className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-2">
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-terracotta">
                 Broken References ({orphans.broken_nodes.length})
               </div>
               <div className="space-y-1">
                 {orphans.broken_nodes.map(n => (
-                  <div key={n.missing_path} className="text-xs bg-red-950/30 border border-red-500/20 rounded px-3 py-1.5">
-                    <code className="text-red-400 font-mono block break-all">{n.missing_path}</code>
-                    <span className="text-zinc-500">run: {n.run_id}</span>
+                  <div key={n.missing_path} className="rounded-lg border border-terracotta/25 bg-terracotta/8 px-3 py-1.5 text-xs">
+                    <code className="block break-all font-mono text-terracotta">{n.missing_path}</code>
+                    <span className="text-muted">run: {n.run_id}</span>
                   </div>
                 ))}
               </div>

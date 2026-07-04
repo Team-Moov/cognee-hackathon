@@ -14,5 +14,6 @@ __pycache__/
 .cognee_system/
 watched_runs/
 staging/
+wandb/
 .DS_Store
 node_modules/

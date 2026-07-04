@@ -3,20 +3,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getLineage } from "../services/api";
 
 const NODE_STYLES = {
-  hypothesis: { bg: "bg-violet-950/60 border-violet-500/40", label: "HYPOTHESIS", icon: "💡", text: "text-violet-300" },
-  decision:   { bg: "bg-amber-950/60 border-amber-500/40",  label: "DECISION",   icon: "🧭", text: "text-amber-300"  },
-  config:     { bg: "bg-blue-950/60 border-blue-500/40",    label: "CONFIG",     icon: "⚙️", text: "text-blue-300"   },
-  result:     { bg: "bg-emerald-950/60 border-emerald-500/40", label: "RESULT",  icon: "📊", text: "text-emerald-300" },
-  artifact:   { bg: "bg-zinc-800/60 border-zinc-600/40",    label: "ARTIFACT",  icon: "💾", text: "text-zinc-300"    },
+  hypothesis: { bg: "bg-coffee/8 border-coffee/30", accent: "bg-coffee",     label: "HYPOTHESIS", text: "text-coffee-deep" },
+  decision:   { bg: "bg-ochre/8 border-ochre/30",   accent: "bg-ochre",      label: "DECISION",   text: "text-ochre"      },
+  config:     { bg: "bg-sand border-line",          accent: "bg-muted",      label: "CONFIG",     text: "text-cocoa"      },
+  result:     { bg: "bg-olive/8 border-olive/30",   accent: "bg-olive",      label: "RESULT",     text: "text-olive"      },
+  artifact:   { bg: "bg-card border-line",          accent: "bg-muted",      label: "ARTIFACT",   text: "text-muted"      },
 };
 
 const STATUS_COLORS = {
-  supported: "text-emerald-400",
-  refuted:   "text-red-400",
-  open:      "text-zinc-400",
-  completed: "text-emerald-400",
-  aborted:   "text-amber-400",
-  failed:    "text-red-400",
+  supported: "text-olive",
+  refuted:   "text-terracotta",
+  open:      "text-muted",
+  completed: "text-olive",
+  aborted:   "text-ochre",
+  failed:    "text-terracotta",
 };
 
 const EDGE_LABELS = {
@@ -36,21 +36,21 @@ function NodeCard({ node }) {
     (d.run_id ? `Run ${d.run_id}` : node.id);
 
   const statusKey = d.status;
-  const statusColor = STATUS_COLORS[statusKey] || "text-zinc-400";
+  const statusColor = STATUS_COLORS[statusKey] || "text-muted";
 
   return (
     <div
       onClick={() => setExpanded(x => !x)}
-      className={`border rounded-xl p-3 cursor-pointer transition-all ${style.bg} hover:opacity-90`}
+      className={`cursor-pointer rounded-xl border p-3 shadow-soft transition-all hover:shadow-lift ${style.bg}`}
     >
-      <div className="flex items-start gap-2">
-        <span>{style.icon}</span>
+      <div className="flex items-start gap-3">
+        <span className={`mt-0.5 h-8 w-1 flex-shrink-0 rounded-full ${style.accent}`} />
         <div className="min-w-0 flex-1">
-          <div className={`text-xs font-bold uppercase tracking-wider mb-1 ${style.text}`}>{style.label}</div>
-          <div className="text-sm text-zinc-100 leading-snug">{title}</div>
+          <div className={`mb-1 text-xs font-bold uppercase tracking-wider ${style.text}`}>{style.label}</div>
+          <div className="text-sm leading-snug text-espresso">{title}</div>
 
           {d.rationale && (
-            <div className="mt-1 text-xs text-zinc-400 italic">{expanded ? d.rationale : `${d.rationale.slice(0,80)}${d.rationale.length > 80 ? "…" : ""}`}</div>
+            <div className="mt-1 text-xs italic text-muted">{expanded ? d.rationale : `${d.rationale.slice(0,80)}${d.rationale.length > 80 ? "…" : ""}`}</div>
           )}
 
           {statusKey && (
@@ -61,17 +61,17 @@ function NodeCard({ node }) {
             <div className="mt-2 space-y-1">
               {Object.entries(d).filter(([k]) => !["statement","description","rationale","status","run_id","made_by","timestamp","file_path","artifact_type"].includes(k)).map(([k, v]) => (
                 <div key={k} className="text-xs font-mono">
-                  <span className="text-zinc-500">{k}: </span>
-                  <span className="text-zinc-300">{JSON.stringify(v)}</span>
+                  <span className="text-muted">{k}: </span>
+                  <span className="text-cocoa">{JSON.stringify(v)}</span>
                 </div>
               ))}
-              {d.timestamp && <div className="text-xs text-zinc-600">{d.timestamp?.slice?.(0,16)}</div>}
-              {d.made_by   && <div className="text-xs text-zinc-500">by {d.made_by}</div>}
-              {d.gpu_hours && <div className="text-xs text-zinc-500">⚡ {d.gpu_hours}h GPU</div>}
+              {d.timestamp && <div className="text-xs text-muted/70">{d.timestamp?.slice?.(0,16)}</div>}
+              {d.made_by   && <div className="text-xs text-muted">by {d.made_by}</div>}
+              {d.gpu_hours && <div className="text-xs text-muted">{d.gpu_hours}h GPU</div>}
             </div>
           )}
         </div>
-        <span className="text-zinc-600 text-xs">{expanded ? "▲" : "▼"}</span>
+        <span className="text-xs text-muted">{expanded ? "▲" : "▼"}</span>
       </div>
     </div>
   );
@@ -116,21 +116,21 @@ export default function LineageExplorer() {
   }
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl p-6 sm:p-8">
       <button
         onClick={() => nav("/dashboard")}
-        className="text-sm text-zinc-500 hover:text-zinc-300 mb-4 flex items-center gap-1 transition-colors"
+        className="mb-4 flex items-center gap-1 text-sm text-muted transition-colors hover:text-cocoa"
       >
         ← Back to Dashboard
       </button>
 
       <div className="mb-5">
-        <h1 className="text-2xl font-bold text-zinc-100">Lineage Explorer</h1>
-        <code className="text-sm text-indigo-400 mt-1 block">{runId}</code>
+        <h1 className="font-display text-3xl font-semibold text-espresso">Lineage Explorer</h1>
+        <code className="mt-1 block text-sm text-coffee-deep">{runId}</code>
       </div>
 
-      {loading && <div className="text-zinc-500 text-sm py-12 text-center">Loading lineage…</div>}
-      {error   && <div className="text-red-400 text-sm py-12 text-center">Error: {error}</div>}
+      {loading && <div className="py-12 text-center text-sm text-muted">Loading lineage…</div>}
+      {error   && <div className="py-12 text-center text-sm text-terracotta">Error: {error}</div>}
 
       {lineage && (
         <div className="space-y-1">
@@ -138,7 +138,7 @@ export default function LineageExplorer() {
             <React.Fragment key={node.id}>
               {edge && (
                 <div className="flex items-center justify-center py-1">
-                  <div className="text-xs text-zinc-600 bg-zinc-900 border border-zinc-800 px-3 py-1 rounded-full">
+                  <div className="rounded-full border border-line bg-card px-3 py-1 text-xs text-muted">
                     {EDGE_LABELS[edge.type] || edge.type}
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export default function LineageExplorer() {
       )}
 
       {lineage && (
-        <div className="mt-6 text-xs text-zinc-600 text-center">
+        <div className="mt-6 text-center text-xs text-muted">
           {lineage.nodes.length} nodes · {lineage.edges.length} edges · Click any card to expand
         </div>
       )}

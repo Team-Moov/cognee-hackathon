@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { checkConfig } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import { useNavigate } from "react-router-dom";
@@ -67,21 +67,21 @@ export default function PreflightGuard() {
   const matchType = result?.match_type;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl p-6 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-100">🛡️ Pre-flight Guard</h1>
-        <p className="text-zinc-500 text-sm mt-1">Check if a config has been tried before — save GPU-hours before you waste them.</p>
+        <h1 className="font-display text-3xl font-semibold text-espresso">Pre-flight Guard</h1>
+        <p className="mt-1 text-sm text-muted">Check if a config has been tried before — save GPU-hours before you waste them.</p>
       </div>
 
       {/* Presets */}
       <div className="mb-5">
-        <div className="text-xs text-zinc-500 mb-2 uppercase tracking-wide">Quick presets</div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="mb-2 text-xs uppercase tracking-wide text-muted">Quick presets</div>
+        <div className="flex flex-wrap gap-2">
           {PRESETS.map(p => (
             <button
               key={p.label}
               onClick={() => applyPreset(p.config)}
-              className="text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg transition-colors"
+              className="rounded-full border border-line bg-card px-3 py-1.5 text-xs text-cocoa transition-colors hover:bg-sand"
             >
               {p.label}
             </button>
@@ -90,17 +90,17 @@ export default function PreflightGuard() {
       </div>
 
       {/* Config form */}
-      <form onSubmit={handleCheck} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 space-y-4">
+      <form onSubmit={handleCheck} className="space-y-4 rounded-2xl border border-line bg-card p-5 shadow-soft">
         <div className="grid grid-cols-2 gap-4">
           {CONFIG_FIELDS.map(({ key, label, placeholder }) => (
             <div key={key}>
-              <label className="block text-xs text-zinc-400 mb-1">{label}</label>
+              <label className="mb-1 block text-xs text-cocoa">{label}</label>
               <input
                 type="text"
                 value={fields[key]}
                 onChange={e => setField(key, e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm font-mono text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500"
+                className="w-full rounded-xl border border-line bg-paper px-3 py-2 font-mono text-sm text-cocoa placeholder-muted/60 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
               />
             </div>
           ))}
@@ -109,7 +109,7 @@ export default function PreflightGuard() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm"
+          className="w-full rounded-xl bg-coffee py-2.5 text-sm font-semibold text-card shadow-soft transition-colors hover:bg-coffee-deep disabled:opacity-50"
         >
           {loading ? "Checking memory…" : "Check Config →"}
         </button>
@@ -117,18 +117,18 @@ export default function PreflightGuard() {
 
       {/* Error */}
       {error && (
-        <div className="mt-4 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">{error}</div>
+        <div className="mt-4 rounded-xl border border-terracotta/25 bg-terracotta/10 p-3 text-sm text-terracotta">{error}</div>
       )}
 
       {/* Result — ALREADY TRIED (exact) */}
       {result && matchType === "exact" && (
-        <div className="mt-5 fade-in">
-          <div className="bg-red-950/60 border-2 border-red-500/60 rounded-xl p-5 pulse-danger">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-3xl">⚠️</span>
+        <div className="fade-in mt-5">
+          <div className="pulse-danger rounded-2xl border-2 border-terracotta/50 bg-terracotta/8 p-5">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="h-9 w-1.5 flex-shrink-0 rounded-full bg-terracotta" />
               <div>
-                <div className="text-red-400 font-bold text-lg">ALREADY TRIED</div>
-                <div className="text-red-300 text-sm">Exact config match found — do not waste compute.</div>
+                <div className="font-display text-lg font-semibold text-terracotta">ALREADY TRIED</div>
+                <div className="text-sm text-cocoa">Exact config match found — do not waste compute.</div>
               </div>
             </div>
 
@@ -136,8 +136,8 @@ export default function PreflightGuard() {
               <PriorRunCard key={run.run_id} run={run} nav={nav} />
             ))}
 
-            <div className="mt-3 text-sm text-red-300 bg-red-900/30 rounded-lg p-3 border border-red-500/20">
-              💡 {result.recommendation}
+            <div className="mt-3 rounded-xl border border-terracotta/25 bg-terracotta/10 p-3 text-sm text-cocoa">
+              <span className="font-semibold text-terracotta">Recommendation · </span>{result.recommendation}
             </div>
           </div>
         </div>
@@ -145,13 +145,13 @@ export default function PreflightGuard() {
 
       {/* Result — SIMILAR */}
       {result && matchType === "similar" && (
-        <div className="mt-5 fade-in">
-          <div className="bg-amber-950/60 border-2 border-amber-500/50 rounded-xl p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-3xl">🔶</span>
+        <div className="fade-in mt-5">
+          <div className="rounded-2xl border-2 border-ochre/45 bg-ochre/8 p-5">
+            <div className="mb-3 flex items-center gap-3">
+              <span className="h-9 w-1.5 flex-shrink-0 rounded-full bg-ochre" />
               <div>
-                <div className="text-amber-400 font-bold text-lg">SIMILAR CONFIG FOUND</div>
-                <div className="text-amber-300 text-sm">{(result.similarity_score * 100).toFixed(0)}% match — review before running.</div>
+                <div className="font-display text-lg font-semibold text-ochre">SIMILAR CONFIG FOUND</div>
+                <div className="text-sm text-cocoa">{(result.similarity_score * 100).toFixed(0)}% match — review before running.</div>
               </div>
             </div>
 
@@ -159,8 +159,8 @@ export default function PreflightGuard() {
               <PriorRunCard key={run.run_id} run={run} nav={nav} />
             ))}
 
-            <div className="mt-3 text-sm text-amber-300 bg-amber-900/20 rounded-lg p-3 border border-amber-500/20">
-              💡 {result.recommendation}
+            <div className="mt-3 rounded-xl border border-ochre/25 bg-ochre/10 p-3 text-sm text-cocoa">
+              <span className="font-semibold text-ochre">Recommendation · </span>{result.recommendation}
             </div>
           </div>
         </div>
@@ -168,13 +168,13 @@ export default function PreflightGuard() {
 
       {/* Result — SAFE */}
       {result && matchType === "none" && (
-        <div className="mt-5 fade-in">
-          <div className="bg-emerald-950/60 border-2 border-emerald-500/40 rounded-xl p-5">
+        <div className="fade-in mt-5">
+          <div className="rounded-2xl border-2 border-olive/40 bg-olive/8 p-5">
             <div className="flex items-center gap-3">
-              <span className="text-3xl">✅</span>
+              <span className="h-9 w-1.5 flex-shrink-0 rounded-full bg-olive" />
               <div>
-                <div className="text-emerald-400 font-bold text-lg">SAFE TO RUN</div>
-                <div className="text-emerald-300 text-sm">No matching or similar config in memory. Proceed.</div>
+                <div className="font-display text-lg font-semibold text-olive">SAFE TO RUN</div>
+                <div className="text-sm text-cocoa">No matching or similar config in memory. Proceed.</div>
               </div>
             </div>
           </div>
@@ -190,21 +190,21 @@ function PriorRunCard({ run, nav }) {
   return (
     <div
       onClick={() => nav(`/lineage/${run.run_id}`)}
-      className="bg-zinc-900/80 rounded-lg p-3 border border-zinc-700/50 cursor-pointer hover:border-zinc-600 transition-colors"
+      className="cursor-pointer rounded-xl border border-line bg-card p-3 transition-colors hover:border-coffee/40"
     >
-      <div className="flex items-center justify-between mb-2">
-        <code className="text-xs text-indigo-400 font-mono">{run.run_id}</code>
+      <div className="mb-2 flex items-center justify-between">
+        <code className="font-mono text-xs text-coffee-deep">{run.run_id}</code>
         <StatusBadge status={run.status} />
       </div>
-      <div className="flex gap-4 text-xs text-zinc-400 flex-wrap">
-        {mainMetric != null && <span><span className="text-zinc-500">{metricLabel}: </span><span className="text-zinc-200 font-mono">{mainMetric.toFixed ? mainMetric.toFixed(3) : mainMetric}</span></span>}
-        {run.gpu_hours != null && <span><span className="text-zinc-500">GPU: </span><span className="text-zinc-200 font-mono">{run.gpu_hours}h</span></span>}
-        {run.date && <span><span className="text-zinc-500">Date: </span>{run.date.slice(0, 10)}</span>}
+      <div className="flex flex-wrap gap-4 text-xs text-cocoa">
+        {mainMetric != null && <span><span className="text-muted">{metricLabel}: </span><span className="font-mono text-espresso">{mainMetric.toFixed ? mainMetric.toFixed(3) : mainMetric}</span></span>}
+        {run.gpu_hours != null && <span><span className="text-muted">GPU: </span><span className="font-mono text-espresso">{run.gpu_hours}h</span></span>}
+        {run.date && <span><span className="text-muted">Date: </span>{run.date.slice(0, 10)}</span>}
       </div>
       {run.rationale && (
-        <div className="mt-1.5 text-xs text-zinc-500 italic truncate">"{run.rationale}"</div>
+        <div className="mt-1.5 truncate text-xs italic text-muted">"{run.rationale}"</div>
       )}
-      <div className="mt-1 text-xs text-indigo-400/60 hover:text-indigo-400">View full lineage →</div>
+      <div className="mt-1 text-xs text-coffee/70 hover:text-coffee">View full lineage →</div>
     </div>
   );
 }

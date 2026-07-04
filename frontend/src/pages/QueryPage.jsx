@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { queryMemory } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
@@ -21,25 +21,25 @@ function renderMarkdown(text) {
       const isSep = cells.every(c => /^[-:]+$/.test(c.trim()));
       if (isSep) return null;
       return (
-        <tr key={i} className="border-b border-zinc-800">
+        <tr key={i} className="border-b border-line">
           {cells.map((c, j) => (
-            <td key={j} className="px-3 py-1.5 text-xs text-zinc-300 font-mono" dangerouslySetInnerHTML={{ __html: mdInline(c.trim()) }} />
+            <td key={j} className="px-3 py-1.5 text-xs text-cocoa font-mono" dangerouslySetInnerHTML={{ __html: mdInline(c.trim()) }} />
           ))}
         </tr>
       );
     }
     if (line === "") return <br key={i} />;
-    return <p key={i} className="text-sm text-zinc-300 leading-relaxed" dangerouslySetInnerHTML={{ __html: mdInline(line) }} />;
+    return <p key={i} className="text-sm text-cocoa leading-relaxed" dangerouslySetInnerHTML={{ __html: mdInline(line) }} />;
   }).filter(Boolean);
 }
 
 function mdInline(text) {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-zinc-100">$1</strong>')
-    .replace(/`(.+?)`/g, '<code class="font-mono text-indigo-400 bg-indigo-500/10 px-1 rounded">$1</code>')
-    .replace(/✓/g, '<span class="text-emerald-400">✓</span>')
-    .replace(/✗/g, '<span class="text-red-400">✗</span>')
-    .replace(/→/g, '<span class="text-zinc-500">→</span>');
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="text-espresso">$1</strong>')
+    .replace(/`(.+?)`/g, '<code class="font-mono text-coffee-deep bg-sand px-1 rounded">$1</code>')
+    .replace(/✓/g, '<span class="text-olive">✓</span>')
+    .replace(/✗/g, '<span class="text-terracotta">✗</span>')
+    .replace(/→/g, '<span class="text-muted">→</span>');
 }
 
 export default function QueryPage() {
@@ -68,10 +68,10 @@ export default function QueryPage() {
   const hasTable = result?.answer?.includes("|");
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl p-6 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-100">🔍 Ask Memory</h1>
-        <p className="text-zinc-500 text-sm mt-1">Natural language queries across all experiment history — including failures.</p>
+        <h1 className="font-display text-3xl font-semibold text-espresso">Ask Memory</h1>
+        <p className="mt-1 text-sm text-muted">Natural language queries across all experiment history — including failures.</p>
       </div>
 
       {/* Input */}
@@ -82,12 +82,12 @@ export default function QueryPage() {
           onChange={e => setQuestion(e.target.value)}
           onKeyDown={e => e.key === "Enter" && handleQuery(question)}
           placeholder="Ask about your experiments…"
-          className="flex-1 bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+          className="flex-1 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-cocoa placeholder-muted/70 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
         />
         <button
           onClick={() => handleQuery(question)}
           disabled={loading || !question.trim()}
-          className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white px-5 py-3 rounded-xl font-semibold text-sm transition-colors"
+          className="rounded-2xl bg-coffee px-5 py-3 text-sm font-semibold text-card shadow-soft transition-colors hover:bg-coffee-deep disabled:opacity-40"
         >
           {loading ? "…" : "Ask"}
         </button>
@@ -99,7 +99,7 @@ export default function QueryPage() {
           <button
             key={ex}
             onClick={() => { setQuestion(ex); handleQuery(ex); }}
-            className="text-xs text-zinc-400 hover:text-zinc-100 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 px-3 py-1.5 rounded-full transition-colors"
+            className="rounded-full border border-line bg-card px-3 py-1.5 text-xs text-cocoa transition-colors hover:bg-sand"
           >
             {ex}
           </button>
@@ -107,16 +107,16 @@ export default function QueryPage() {
       </div>
 
       {error && (
-        <div className="mt-4 text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">{error}</div>
+        <div className="mt-4 rounded-xl border border-terracotta/25 bg-terracotta/10 p-3 text-sm text-terracotta">{error}</div>
       )}
 
       {/* Answer */}
       {result && (
-        <div className="mt-5 fade-in">
-          <div className="text-xs text-zinc-500 mb-2">Query: <span className="text-zinc-300 italic">"{result.question}"</span></div>
+        <div className="fade-in mt-5">
+          <div className="mb-2 text-xs text-muted">Query: <span className="italic text-cocoa">"{result.question}"</span></div>
 
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <div className="text-xs font-bold text-indigo-400 uppercase tracking-wide mb-3">Memory says:</div>
+          <div className="rounded-2xl border border-line bg-card p-5 shadow-soft">
+            <div className="mb-3 text-xs font-bold uppercase tracking-wide text-coffee">Memory says:</div>
             {hasTable ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left">{renderMarkdown(result.answer)}</table>
@@ -128,13 +128,13 @@ export default function QueryPage() {
 
           {result.citations?.length > 0 && (
             <div className="mt-3">
-              <div className="text-xs text-zinc-500 mb-2">Sources</div>
+              <div className="mb-2 text-xs text-muted">Sources</div>
               <div className="flex flex-wrap gap-2">
                 {result.citations.map(c => (
                   <button
                     key={c}
                     onClick={() => nav(`/lineage/${c}`)}
-                    className="text-xs font-mono text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 hover:border-indigo-400/50 px-2.5 py-1 rounded-lg transition-colors"
+                    className="rounded-lg border border-coffee/25 bg-coffee/8 px-2.5 py-1 font-mono text-xs text-coffee-deep transition-colors hover:border-coffee/50"
                   >
                     {c}
                   </button>

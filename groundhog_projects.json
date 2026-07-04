@@ -93,6 +93,20 @@
         "api_key": "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",
         "last_synced_run": null
       }
+    },
+    {
+      "project_id": "proj_proje_1_7f6e03f8",
+      "name": "proje 1",
+      "dataset": "proj_proje_1_7f6e03f8",
+      "token": "bmN9QREteuoJ7zyRN_5ic-b6s1wbklAa",
+      "created_at": "2026-07-04T14:37:19.537038",
+      "significant_keys": [],
+      "wandb": {
+        "entity": "bananyadas-manipal",
+        "project": "Groundhog",
+        "api_key": "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",
+        "last_synced_run": null
+      }
     }
   ]
 }

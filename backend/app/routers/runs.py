@@ -64,6 +64,11 @@ async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
     cognee_status = "skipped (no cognee_api_url configured)"
     stored_run_id = req.run_id or compute_config_hash(req.config, sig_keys)
 
+    # Mirror the run into the project's W&B project (if creds are configured).
+    # Done first + independently so a Cognee outage can't stop the W&B write —
+    # this is the direction a run logged in the app flows back out to W&B.
+    wandb_status = await _mirror_to_wandb(req)
+
     if settings.cognee_api_url:
         try:
             result = await cognee_client.remember_run(
@@ -102,7 +107,39 @@ async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
         "status": "ingested",
         "config_hash": compute_config_hash(req.config),
         "cognee_status": cognee_status,
+        "wandb": wandb_status,
     }
+
+
+async def _mirror_to_wandb(req: RememberRequest) -> Dict[str, Any]:
+    """Push this run to the project's W&B project if it has W&B creds attached."""
+    if not req.project_id:
+        return {"pushed": False, "reason": "no project_id"}
+    proj = projects.get_project(req.project_id, include_secrets=True)
+    wb = (proj or {}).get("wandb") or {}
+    if not wb.get("project"):
+        return {"pushed": False, "reason": "project has no W&B project configured"}
+
+    from app import wandb_push
+
+    name = (req.run_id or req.experiment or "groundhog-run").strip()
+    try:
+        return await wandb_push.push_run_async(
+            entity=wb.get("entity"),
+            project=wb.get("project"),
+            api_key=wb.get("api_key"),
+            name=name,
+            config=req.config,
+            metrics=req.metrics,
+            notes=req.rationale or "",
+            tags=[t for t in [req.status, req.experiment] if t],
+            status=req.status,
+            group=req.experiment,
+            job_type=req.thread,
+        )
+    except Exception as e:  # noqa: BLE001
+        logger.warning("W&B mirror failed: %s", e)
+        return {"pushed": False, "reason": str(e)}
 
 
 @router.post("/check-config")

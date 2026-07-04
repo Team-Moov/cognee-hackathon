@@ -18,10 +18,6 @@ function fmtDuration(sec) {
   return h ? `${h}h ${m}m` : `${m}m`;
 }
 
-const ARTIFACT_ICON = {
-  checkpoint: "💾", plot: "📈", log: "📄", eval_report: "📊", other: "📎",
-};
-
 export default function RunCard({ run }) {
   const nav = useNavigate();
   const metric = primaryMetric(run.metrics);
@@ -40,72 +36,73 @@ export default function RunCard({ run }) {
   return (
     <div
       onClick={() => nav(`/lineage/${run.run_id}`)}
-      className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 cursor-pointer hover:border-indigo-500/50 hover:bg-zinc-800/60 transition-all group"
+      className="group cursor-pointer rounded-2xl border border-line bg-card p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-coffee/40 hover:shadow-lift"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <code className="text-xs text-indigo-400 font-mono bg-indigo-500/10 px-1.5 py-0.5 rounded" title={run.run_id}>
+          <div className="flex flex-wrap items-center gap-2">
+            <code className="rounded bg-sand px-1.5 py-0.5 font-mono text-xs text-coffee-deep" title={run.run_id}>
               {shortId}…
             </code>
             <StatusBadge status={run.status} />
           </div>
-          <div className="mt-1.5 text-sm font-medium text-zinc-100 truncate">{run.experiment}</div>
-          {run.rationale && <div className="mt-0.5 text-xs text-zinc-500 line-clamp-2">{run.rationale}</div>}
+          <div className="mt-1.5 truncate text-sm font-semibold text-espresso">{run.experiment}</div>
+          {run.rationale && <div className="mt-0.5 line-clamp-2 text-xs text-muted">{run.rationale}</div>}
         </div>
 
         {metric != null && (
-          <div className="text-right flex-shrink-0">
-            <div className="text-lg font-bold text-zinc-100">
+          <div className="flex-shrink-0 text-right">
+            <div className="font-display text-lg font-semibold text-espresso">
               {typeof metric.value === "number" ? metric.value.toFixed(3) : metric.value}
             </div>
-            <div className="text-xs text-zinc-500">{metric.label}</div>
+            <div className="text-xs text-muted">{metric.label}</div>
           </div>
         )}
       </div>
 
       {/* hypothesis */}
       {run.hypothesis && (
-        <div className="mt-2 text-xs text-indigo-300/80 bg-indigo-500/5 border border-indigo-500/15 rounded px-2 py-1">
-          💡 {run.hypothesis}
+        <div className="mt-2 rounded-lg border-l-2 border-coffee/40 bg-coffee/5 px-3 py-1.5 text-xs text-coffee-deep">
+          <span className="font-semibold uppercase tracking-wide text-coffee/70">Hypothesis · </span>
+          {run.hypothesis}
         </div>
       )}
 
       {/* config */}
-      <div className="mt-3 flex items-center gap-3 text-xs text-zinc-500 flex-wrap">
-        <span>⚙️ {Object.entries(run.config || {}).slice(0, 3).map(([k, v]) => `${k}=${v}`).join(", ")}</span>
+      <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
+        <span>{Object.entries(run.config || {}).slice(0, 3).map(([k, v]) => `${k}=${v}`).join("  ·  ")}</span>
       </div>
 
       {/* dataset + artifacts row */}
       {(dataset || artifacts.length > 0) && (
-        <div className="mt-2 flex items-center gap-2 flex-wrap">
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           {dataset && (
             <span
-              className="text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded px-2 py-0.5"
+              className="rounded border border-coffee/20 bg-coffee/10 px-2 py-0.5 text-xs text-coffee-deep"
               title={[dataset.preprocessing, dataset.split_rationale, dataset.quality_issues].filter(Boolean).join(" · ")}
             >
-              📊 {dataset.name}{dataset.version ? ` ${dataset.version}` : ""}
-              {dataset.quality_issues ? " ⚠" : ""}
+              {dataset.name}{dataset.version ? ` ${dataset.version}` : ""}
+              {dataset.quality_issues ? " (issues)" : ""}
             </span>
           )}
           {Object.entries(artByType).map(([t, n]) => (
-            <span key={t} className="text-xs bg-zinc-800 text-zinc-400 border border-zinc-700 rounded px-2 py-0.5">
-              {ARTIFACT_ICON[t] || "📎"} {n} {t}{n > 1 ? "s" : ""}
+            <span key={t} className="rounded border border-line bg-sand px-2 py-0.5 text-xs text-cocoa">
+              {n} {t}{n > 1 ? "s" : ""}
             </span>
           ))}
         </div>
       )}
 
       {/* footer: cost + time */}
-      <div className="mt-2 flex items-center gap-4 text-xs text-zinc-600 flex-wrap">
-        {run.gpu_hours != null && <span>⚡ {run.gpu_hours}h GPU</span>}
-        {wall && <span>⏱ {wall} wall</span>}
-        {run.timestamp && <span>🕐 {run.timestamp.slice(0, 10)}</span>}
-        <span className="text-zinc-700 group-hover:text-indigo-400 transition-colors ml-auto">View lineage →</span>
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-2 text-xs text-muted">
+        {run.gpu_hours != null && <span>{run.gpu_hours}h GPU</span>}
+        {wall && <span>{wall} wall</span>}
+        {run.timestamp && <span>{run.timestamp.slice(0, 10)}</span>}
+        <span className="ml-auto font-medium text-coffee/70 transition-colors group-hover:text-coffee">View lineage →</span>
       </div>
 
       {run.status === "failed" && run.error_message && (
-        <div className="mt-2 text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded px-2 py-1 font-mono truncate">
+        <div className="mt-2 truncate rounded-lg border border-terracotta/20 bg-terracotta/10 px-2 py-1 font-mono text-xs text-terracotta">
           {run.error_message}
         </div>
       )}

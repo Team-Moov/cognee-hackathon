@@ -2,17 +2,17 @@
 import { dismissSuggestion } from "../services/api";
 
 const AGENT_META = {
-  config_proposer:  { icon: "🧪", label: "Config Proposer",   color: "text-violet-400  border-violet-500/30 bg-violet-500/10" },
-  triage:           { icon: "🚨", label: "Triage",            color: "text-red-400     border-red-500/30    bg-red-500/10"    },
-  literature:       { icon: "📚", label: "Literature Review", color: "text-blue-400    border-blue-500/30   bg-blue-500/10"   },
-  dataset_steward:  { icon: "🗄️", label: "Dataset Steward",   color: "text-amber-400   border-amber-500/30  bg-amber-500/10"  },
-  report:           { icon: "📝", label: "Report",            color: "text-zinc-400    border-zinc-500/30   bg-zinc-500/10"   },
+  config_proposer:  { label: "Config Proposer",   color: "text-coffee     border-coffee/30     bg-coffee/8"     },
+  triage:           { label: "Triage",            color: "text-terracotta border-terracotta/30 bg-terracotta/10" },
+  literature:       { label: "Literature Review", color: "text-coffee-deep border-coffee/25    bg-sand"          },
+  dataset_steward:  { label: "Dataset Steward",   color: "text-ochre      border-ochre/30      bg-ochre/10"     },
+  report:           { label: "Report",            color: "text-cocoa      border-line          bg-sand"          },
 };
 
 export default function AgentSuggestionCard({ suggestion, onDismissed }) {
   const [dismissing, setDismissing] = useState(false);
   const meta = AGENT_META[suggestion.agent_type] || {
-    icon: "🤖", label: suggestion.agent_type, color: "text-zinc-400 border-zinc-500/30 bg-zinc-500/10",
+    label: suggestion.agent_type, color: "text-cocoa border-line bg-sand",
   };
 
   async function handleDismiss() {
@@ -28,28 +28,28 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
   const payload = suggestion.payload || {};
 
   return (
-    <div className={`rounded-xl border p-4 ${meta.color.split(" ").slice(1).join(" ")}`}>
+    <div className={`rounded-2xl border p-4 shadow-soft ${meta.color.split(" ").slice(1).join(" ")}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-lg">{meta.icon}</span>
+          <span className={`h-4 w-1 rounded-full ${meta.color.split(" ")[0].replace("text-", "bg-")}`} />
           <span className={`text-xs font-semibold uppercase tracking-wider ${meta.color.split(" ")[0]}`}>
             {meta.label}
           </span>
           {suggestion.experiment && (
-            <span className="text-xs text-zinc-500 font-mono">{suggestion.experiment}</span>
+            <span className="text-xs text-muted font-mono">{suggestion.experiment}</span>
           )}
           {suggestion.severity && (
             <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
-              suggestion.severity === "high" ? "bg-red-500/20 text-red-300" :
-              suggestion.severity === "medium" ? "bg-amber-500/20 text-amber-300" :
-              "bg-zinc-700 text-zinc-400"
+              suggestion.severity === "high" ? "bg-terracotta/15 text-terracotta" :
+              suggestion.severity === "medium" ? "bg-ochre/15 text-ochre" :
+              "bg-sand text-muted"
             }`}>{suggestion.severity}</span>
           )}
         </div>
         <button
           onClick={handleDismiss}
           disabled={dismissing}
-          className="text-xs text-zinc-600 hover:text-zinc-300 transition-colors shrink-0"
+          className="text-xs text-muted hover:text-cocoa transition-colors shrink-0"
         >
           {dismissing ? "…" : "Dismiss"}
         </button>
@@ -57,20 +57,20 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
 
       {/* Main content */}
       {payload.rationale && (
-        <p className="mt-2 text-sm text-zinc-300">{payload.rationale}</p>
+        <p className="mt-2 text-sm text-cocoa">{payload.rationale}</p>
       )}
       {payload.message && (
-        <p className="mt-2 text-sm text-zinc-300">{payload.message}</p>
+        <p className="mt-2 text-sm text-cocoa">{payload.message}</p>
       )}
       {payload.recommendation && (
-        <p className="mt-2 text-xs text-zinc-400">{payload.recommendation}</p>
+        <p className="mt-2 text-xs text-muted">{payload.recommendation}</p>
       )}
 
       {/* Config Proposer extras */}
       {payload.suggested_config && (
         <details className="mt-2">
-          <summary className="text-xs text-zinc-500 cursor-pointer hover:text-zinc-300">Suggested config</summary>
-          <pre className="mt-1 text-xs text-zinc-400 bg-zinc-900 rounded p-2 overflow-x-auto">
+          <summary className="text-xs text-muted cursor-pointer hover:text-cocoa">Suggested config</summary>
+          <pre className="mt-1 text-xs text-cocoa bg-paper border border-line rounded-lg p-2 overflow-x-auto">
             {JSON.stringify(payload.suggested_config, null, 2)}
           </pre>
         </details>
@@ -80,9 +80,9 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
       {Array.isArray(payload.papers) && payload.papers.length > 0 && (
         <ul className="mt-2 space-y-1">
           {payload.papers.map((p, i) => (
-            <li key={i} className="text-xs text-zinc-400">
-              <span className="text-zinc-300 font-medium">{p.title}</span>
-              {p.venue && <span className="text-zinc-600 ml-1">({p.venue})</span>}
+            <li key={i} className="text-xs text-muted">
+              <span className="text-cocoa font-medium">{p.title}</span>
+              {p.venue && <span className="text-muted ml-1">({p.venue})</span>}
               {p.actionable_suggestion && <span className="ml-1">— {p.actionable_suggestion}</span>}
             </li>
           ))}
@@ -93,12 +93,12 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
       {Array.isArray(payload.issues) && payload.issues.length > 0 && (
         <ul className="mt-2 space-y-1">
           {payload.issues.map((issue, i) => (
-            <li key={i} className="text-xs text-zinc-400">• {issue.description || issue}</li>
+            <li key={i} className="text-xs text-muted">• {issue.description || issue}</li>
           ))}
         </ul>
       )}
 
-      <div className="mt-2 text-xs text-zinc-700">
+      <div className="mt-2 text-xs text-muted/70">
         {suggestion.run_id && <span className="font-mono mr-2">{suggestion.run_id}</span>}
         {suggestion.timestamp && new Date(suggestion.timestamp).toLocaleDateString()}
       </div>

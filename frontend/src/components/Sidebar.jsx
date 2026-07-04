@@ -1,59 +1,92 @@
-﻿import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import ProjectBar from "./ProjectBar";
+import Brand from "./Brand";
+import Icon from "./Icon";
+import { useAuth } from "../auth/AuthContext";
 
 const NAV = [
-  { to: "/dashboard", label: "Experiments",    icon: "⚗️", desc: "All runs" },
-  { to: "/preflight", label: "Pre-flight Guard", icon: "🛡️", desc: "Check before running" },
-  { to: "/query",     label: "Ask Memory",     icon: "🔍", desc: "NL query" },
-  { to: "/files",     label: "File Finder",    icon: "📁", desc: "Artifacts & orphans" },
-  { to: "/agents",    label: "Agents",         icon: "🤖", desc: "AI suggestions" },
+  { to: "/dashboard", label: "Experiments",     icon: "beaker",   desc: "All runs" },
+  { to: "/preflight", label: "Pre-flight Guard", icon: "shield",   desc: "Check before running" },
+  { to: "/query",     label: "Ask Memory",       icon: "search",   desc: "Natural-language query" },
+  { to: "/files",     label: "File Finder",       icon: "folder",   desc: "Artifacts & orphans" },
+  { to: "/agents",    label: "Agents",            icon: "sparkles", desc: "AI suggestions" },
 ];
 
+function initials(name = "") {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase() || "?";
+}
+
 export default function Sidebar() {
+  const { user, logout } = useAuth();
+  const nav = useNavigate();
+
+  function handleLogout() {
+    logout();
+    nav("/", { replace: true });
+  }
+
   return (
-    <aside className="w-56 flex-shrink-0 bg-zinc-900 border-r border-zinc-800 flex flex-col">
-      <div className="px-4 py-5 border-b border-zinc-800">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🦫</span>
-          <div>
-            <div className="font-bold text-zinc-100 text-sm leading-tight">Groundhog</div>
-            <div className="text-zinc-500 text-xs">ML Memory</div>
-          </div>
-        </div>
+    <aside className="flex w-64 flex-shrink-0 flex-col border-r border-line bg-card">
+      <div className="border-b border-line px-5 py-5">
+        <NavLink to="/">
+          <Brand />
+        </NavLink>
       </div>
 
       <ProjectBar />
 
-      <nav className="flex-1 py-3 px-2 space-y-1">
+      <nav className="flex-1 space-y-1 px-3 py-4">
         {NAV.map(({ to, label, icon, desc }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
                 isActive
-                  ? "bg-indigo-600/20 text-indigo-300 border border-indigo-500/30"
-                  : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
+                  ? "bg-coffee text-card shadow-soft"
+                  : "text-cocoa hover:bg-sand"
               }`
             }
           >
-            <span className="text-base w-5 text-center">{icon}</span>
-            <div className="min-w-0">
-              <div className="font-medium truncate">{label}</div>
-              <div className="text-xs text-zinc-500 truncate">{desc}</div>
-            </div>
+            {({ isActive }) => (
+              <>
+                <Icon name={icon} size={18} className="flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="truncate font-semibold">{label}</div>
+                  <div className={`truncate text-xs ${isActive ? "text-card/70" : "text-muted"}`}>
+                    {desc}
+                  </div>
+                </div>
+              </>
+            )}
           </NavLink>
         ))}
       </nav>
 
-      <div className="px-4 py-3 border-t border-zinc-800">
-        <div className="text-xs text-zinc-600 space-y-1">
-          <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
-            Live — Cognee memory graph
+      {/* User + logout */}
+      <div className="border-t border-line px-4 py-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-sand text-xs font-semibold text-coffee-deep">
+            {initials(user?.name)}
           </div>
-          <div className="text-zinc-700">Backend :8000 · Cognee :8010</div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-semibold text-espresso">{user?.name || "Researcher"}</div>
+            <div className="truncate text-xs text-muted">{user?.email}</div>
+          </div>
+          <button
+            onClick={handleLogout}
+            title="Sign out"
+            className="flex-shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-sand hover:text-terracotta"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </aside>

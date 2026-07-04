@@ -27,14 +27,14 @@ export default function ProjectBar() {
   }
 
   return (
-    <div className="px-4 py-3 border-b border-zinc-800">
-      <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1.5">
+    <div className="border-b border-line px-4 py-3">
+      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted">
         Project
       </div>
       <select
         value={current}
         onChange={onSelect}
-        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-2.5 py-1.5 text-sm text-zinc-100 focus:outline-none focus:border-indigo-500"
+        className="w-full rounded-xl border border-line bg-paper px-2.5 py-2 text-sm text-cocoa focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
       >
         <option value="">All memory (unscoped)</option>
         {projects.map((p) => (
@@ -45,7 +45,7 @@ export default function ProjectBar() {
       </select>
       <button
         onClick={() => setShowModal(true)}
-        className="mt-2 w-full text-xs text-indigo-400 hover:text-indigo-300 border border-indigo-500/30 rounded-lg py-1.5 hover:bg-indigo-600/10 transition-colors"
+        className="mt-2 w-full rounded-xl border border-line py-2 text-xs font-semibold text-coffee transition-colors hover:bg-sand"
       >
         + New project
       </button>

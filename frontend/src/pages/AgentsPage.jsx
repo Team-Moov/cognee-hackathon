@@ -46,65 +46,65 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="mx-auto max-w-4xl p-6 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-100">Agent Suggestions</h1>
-        <p className="text-zinc-500 text-sm mt-1">
+        <h1 className="font-display text-3xl font-semibold text-espresso">Agent Suggestions</h1>
+        <p className="mt-1 text-sm text-muted">
           Insights from Triage, Config Proposer, Literature Review, and Dataset Steward agents.
         </p>
       </div>
 
       {/* Controls */}
-      <div className="flex gap-3 mb-6 flex-wrap">
+      <div className="mb-6 flex flex-wrap gap-3">
         <input
           type="text"
           placeholder="Filter by experiment name…"
           value={experiment}
           onChange={e => setExperiment(e.target.value)}
-          className="flex-1 min-w-48 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-indigo-500"
+          className="min-w-48 flex-1 rounded-xl border border-line bg-card px-3 py-2 text-sm text-cocoa placeholder-muted/70 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
         />
         <button
           onClick={fetchSuggestions}
-          className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition-colors"
+          className="rounded-xl bg-coffee px-4 py-2 text-sm font-semibold text-card transition-colors hover:bg-coffee-deep"
         >
           Refresh
         </button>
         <button
           onClick={handleReport}
           disabled={!experiment || generating}
-          className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 disabled:opacity-40 text-white text-sm font-medium transition-colors"
+          className="rounded-xl border border-olive/40 bg-olive/10 px-4 py-2 text-sm font-semibold text-olive transition-colors hover:bg-olive/20 disabled:opacity-40"
         >
           {generating ? "Generating…" : "Generate Report"}
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+        <div className="mb-4 rounded-xl border border-terracotta/30 bg-terracotta/10 p-3 text-sm text-terracotta">
           {error}
         </div>
       )}
 
       {/* Report */}
       {report && (
-        <div className="mb-6 p-4 rounded-xl border border-zinc-700 bg-zinc-900">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-sm font-semibold text-zinc-300">Generated Report</h2>
+        <div className="mb-6 rounded-2xl border border-line bg-card p-4 shadow-soft">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-espresso">Generated Report</h2>
             <button
               onClick={() => setReport(null)}
-              className="text-xs text-zinc-600 hover:text-zinc-300"
+              className="text-xs text-muted hover:text-cocoa"
             >
               Close
             </button>
           </div>
-          <pre className="text-xs text-zinc-400 whitespace-pre-wrap font-mono leading-relaxed">{report}</pre>
+          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-cocoa">{report}</pre>
         </div>
       )}
 
       {/* Suggestions list */}
       {loading ? (
-        <div className="text-zinc-500 text-sm py-12 text-center">Loading suggestions…</div>
+        <div className="py-12 text-center text-sm text-muted">Loading suggestions…</div>
       ) : suggestions.length === 0 ? (
-        <div className="text-zinc-500 text-sm py-12 text-center">
+        <div className="rounded-2xl border border-dashed border-line bg-card/50 py-16 text-center text-sm text-muted">
           No active suggestions.
           {!experiment && " Run some experiments to get agent insights."}
         </div>
