@@ -111,6 +111,7 @@ def fetch_new_runs(entity: str, project: str, api_key: Optional[str],
         if since_created and created and created <= since_created:
             continue
         clean_config = {k: v for k, v in run.config.items() if not k.startswith("_")}
+        clean_config["_wandb_url"] = run.url
         clean_metrics = {k: v for k, v in run.summary.items() if not k.startswith("_")}
         wall = run.summary.get("_runtime", 0.0) or 0.0
         collected.append({

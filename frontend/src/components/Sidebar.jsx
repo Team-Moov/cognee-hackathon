@@ -7,6 +7,8 @@ import { useAuth } from "../auth/AuthContext";
 
 const NAV = [
   { to: "/dashboard", label: "Experiments",     icon: "beaker",   desc: "All runs" },
+  { to: "/insights",  label: "Insights",         icon: "chart",    desc: "What memory learned" },
+  { to: "/graph",     label: "Memory Graph",     icon: "graph",    desc: "The knowledge graph" },
   { to: "/preflight", label: "Pre-flight Guard", icon: "shield",   desc: "Check before running" },
   { to: "/query",     label: "Ask Memory",       icon: "search",   desc: "Natural-language query" },
   { to: "/files",     label: "File Finder",       icon: "folder",   desc: "Artifacts & orphans" },

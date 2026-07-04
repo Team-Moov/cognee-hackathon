@@ -71,7 +71,18 @@ from mcp_server.tools import (
     tool_find,
     tool_query,
     tool_remember,
+    tool_insights,
+    tool_history,
 )
+
+# Shared project_id property injected into every tool schema so agents scope to
+# one Groundhog project (its isolated memory).
+_PROJECT_PROP = {
+    "project_id": {
+        "type": "string",
+        "description": "Groundhog project_id to scope this call to that project's isolated memory.",
+    }
+}
 
 logging.basicConfig(
     level=logging.INFO,
@@ -231,7 +242,39 @@ TOOLS: List[Tool] = [
             "required": ["description"],
         },
     ),
+    Tool(
+        name="groundhog_insights",
+        description=(
+            "Get the project's DERIVED insights: which hyperparameters actually move the "
+            "metric (a sensitivity ranking) and the best config found on each dataset. "
+            "Call this before proposing new experiments — it tells you what to tune "
+            "(high-impact params) and what to leave alone, based on the full run history."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {**_PROJECT_PROP},
+        },
+    ),
+    Tool(
+        name="groundhog_history",
+        description=(
+            "List the most recent runs (config, key metric, status) for the project so you "
+            "can see what has already been tried before planning new work. "
+            "Use alongside groundhog_check_config (exact duplicate) and groundhog_insights (what matters)."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "limit": {"type": "integer", "description": "Max runs to return (default 10)."},
+                **_PROJECT_PROP,
+            },
+        },
+    ),
 ]
+
+# Inject project_id into every tool's schema so agents can always scope calls.
+for _t in TOOLS:
+    _t.inputSchema.setdefault("properties", {}).update(_PROJECT_PROP)
 
 
 @mcp.list_tools()
@@ -243,11 +286,13 @@ async def list_tools() -> ListToolsResult:
 async def call_tool(name: str, arguments: Dict[str, Any]) -> CallToolResult:
     logger.info("Tool called: %s | args=%s", name, arguments)
 
+    pid = arguments.get("project_id")
     try:
         if name == "groundhog_check_config":
             result = await tool_check_config(
                 config=arguments["config"],
                 experiment=arguments.get("experiment"),
+                project_id=pid,
             )
 
         elif name == "groundhog_remember":
@@ -261,13 +306,20 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> CallToolResult:
                 git_commit=arguments.get("git_commit", "unknown"),
                 error_message=arguments.get("error_message"),
                 artifacts=arguments.get("artifacts"),
+                project_id=pid,
             )
 
         elif name == "groundhog_query":
-            result = await tool_query(question=arguments["question"])
+            result = await tool_query(question=arguments["question"], project_id=pid)
 
         elif name == "groundhog_find":
             result = await tool_find(description=arguments["description"])
+
+        elif name == "groundhog_insights":
+            result = await tool_insights(project_id=pid)
+
+        elif name == "groundhog_history":
+            result = await tool_history(project_id=pid, limit=arguments.get("limit", 10))
 
         else:
             result = f"Unknown tool: {name}"

@@ -136,7 +136,13 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map(run => <RunCard key={run.run_id} run={run} />)}
+          {filtered.map(run => (
+            <RunCard
+              key={run.run_id}
+              run={run}
+              onDeleted={(id) => setRuns(prev => prev.filter(r => r.run_id !== id))}
+            />
+          ))}
         </div>
       )}
     </div>

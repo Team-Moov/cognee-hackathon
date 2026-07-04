@@ -302,6 +302,40 @@ async def dismiss_finding(base_url: str, *, finding_id: str, timeout: float = 15
     return await _post(base_url, f"/agent-findings/{quote(finding_id, safe='')}/dismiss", {}, timeout)
 
 
+async def _delete(base_url: str, path: str, timeout: float) -> Dict[str, Any]:
+    try:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.delete(f"{base_url}{path}")
+            resp.raise_for_status()
+            return resp.json()
+    except httpx.HTTPStatusError as e:
+        raise CogneeClientError(f"cognee server returned {e.response.status_code}: {e.response.text[:300]}") from e
+    except httpx.RequestError as e:
+        raise CogneeClientError(f"cognee server unreachable at {base_url}{path}: {e}") from e
+
+
+async def delete_run(base_url: str, *, run_id: str, timeout: float = 30.0) -> Dict[str, Any]:
+    return await _delete(base_url, f"/runs/{quote(run_id, safe='')}", timeout)
+
+
+async def delete_project_data(base_url: str, *, project: str, timeout: float = 30.0) -> Dict[str, Any]:
+    return await _delete(base_url, f"/project/{quote(project, safe='')}", timeout)
+
+
+async def get_graph(base_url: str, *, project: Optional[str] = None, timeout: float = 30.0) -> Dict[str, Any]:
+    path = "/graph" + (f"?project={quote(project, safe='')}" if project else "")
+    return await _get(base_url, path, timeout)
+
+
+async def get_insights(base_url: str, *, project: Optional[str] = None, timeout: float = 30.0) -> Dict[str, Any]:
+    path = "/insights" + (f"?project={quote(project, safe='')}" if project else "")
+    return await _get(base_url, path, timeout)
+
+
+async def generate_insights(base_url: str, *, project: str, timeout: float = 60.0) -> Dict[str, Any]:
+    return await _post(base_url, "/insights/generate", {"project": project}, timeout)
+
+
 async def find_file(base_url: str, *, description: str, timeout: float = 45.0) -> Dict[str, Any]:
     encoded = quote(description, safe="")
     return await _get(base_url, f"/find-file?description={encoded}", timeout)

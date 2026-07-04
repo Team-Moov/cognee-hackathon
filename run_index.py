@@ -37,7 +37,7 @@ _INDEX_PATH = os.getenv(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "groundhog_index.json"),
 )
 
-_EMPTY: Dict[str, Any] = {"runs": [], "artifacts": [], "findings": []}
+_EMPTY: Dict[str, Any] = {"runs": [], "artifacts": [], "findings": [], "insights": {}}
 
 
 def _load() -> Dict[str, Any]:
@@ -46,8 +46,8 @@ def _load() -> Dict[str, Any]:
     try:
         with open(_INDEX_PATH, "r", encoding="utf-8") as fh:
             data = json.load(fh)
-        for k in _EMPTY:
-            data.setdefault(k, [])
+        for k, default in _EMPTY.items():
+            data.setdefault(k, type(default)())
         return data
     except (OSError, json.JSONDecodeError):
         return json.loads(json.dumps(_EMPTY))
@@ -65,13 +65,24 @@ def _save(data: Dict[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 def record_run(run: Dict[str, Any]) -> None:
-    """Upsert a run by run_id (config_hash). Newest write wins."""
+    """Upsert a run by (run_id, project). Newest write wins WITHIN a project.
+
+    Dedup is per-project so the same config_hash recorded in two different
+    projects coexists instead of clobbering each other — memory is isolated
+    per project, and the Pre-flight Guard must be able to tell "tried here" from
+    "tried in some other project".
+    """
     run = dict(run)
     run.setdefault("timestamp", datetime.utcnow().isoformat())
     rid = run.get("run_id") or run.get("config_hash")
+    proj = run.get("project") or "main_dataset"
     with _LOCK:
         data = _load()
-        data["runs"] = [r for r in data["runs"] if (r.get("run_id") or r.get("config_hash")) != rid]
+        data["runs"] = [
+            r for r in data["runs"]
+            if (r.get("run_id") or r.get("config_hash")) != rid
+            or (r.get("project") or "main_dataset") != proj
+        ]
         data["runs"].append(run)
         _save(data)
 
@@ -91,13 +102,47 @@ def list_runs(experiment: Optional[str] = None, status: Optional[str] = None,
     return {"runs": runs, "total": len(runs)}
 
 
-def get_run(run_id: str) -> Optional[Dict[str, Any]]:
+def get_run(run_id: str, project: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Look up a run by id. If `project` is given, only match runs in that
+    project (so the Pre-flight Guard never reports a config from another
+    project's memory as already-tried here)."""
     with _LOCK:
         data = _load()
     for r in data["runs"]:
         if (r.get("run_id") or r.get("config_hash")) == run_id:
-            return r
+            if project is None or (r.get("project") or "main_dataset") == project:
+                return r
     return None
+
+
+def delete_run(run_id: str) -> bool:
+    """Remove a run and its artifacts from the index. Returns True if removed."""
+    with _LOCK:
+        data = _load()
+        before = len(data["runs"])
+        removed = [r for r in data["runs"] if (r.get("run_id") or r.get("config_hash")) == run_id]
+        data["runs"] = [r for r in data["runs"] if (r.get("run_id") or r.get("config_hash")) != run_id]
+        # drop artifacts tied to this run
+        data["artifacts"] = [a for a in data["artifacts"] if a.get("result_id") != run_id]
+        _save(data)
+        return len(data["runs"]) < before or bool(removed)
+
+
+def delete_project(project: str) -> Dict[str, int]:
+    """Remove all runs, findings, artifacts, and insights for a project."""
+    with _LOCK:
+        data = _load()
+        run_ids = {(r.get("run_id") or r.get("config_hash")) for r in data["runs"]
+                   if (r.get("project") or "main_dataset") == project}
+        n_runs = len(run_ids)
+        data["runs"] = [r for r in data["runs"] if (r.get("project") or "main_dataset") != project]
+        data["findings"] = [f for f in data["findings"] if (f.get("project") or "main_dataset") != project]
+        data["artifacts"] = [a for a in data["artifacts"] if a.get("result_id") not in run_ids]
+        insights = data.get("insights") or {}
+        insights.pop(project, None)
+        data["insights"] = insights
+        _save(data)
+        return {"runs": n_runs}
 
 
 # ---------------------------------------------------------------------------
@@ -165,6 +210,23 @@ def dismiss_finding(finding_id: str) -> bool:
         if hit:
             _save(data)
         return hit
+
+
+def record_insight(project: str, insight: Dict[str, Any]) -> Dict[str, Any]:
+    """Store the latest derived-insight bundle for a project (replaces prior)."""
+    insight = dict(insight)
+    insight["generated_at"] = datetime.utcnow().isoformat()
+    with _LOCK:
+        data = _load()
+        data.setdefault("insights", {})[project or "main_dataset"] = insight
+        _save(data)
+    return insight
+
+
+def get_insight(project: Optional[str]) -> Optional[Dict[str, Any]]:
+    with _LOCK:
+        data = _load()
+    return (data.get("insights") or {}).get(project or "main_dataset")
 
 
 def list_findings(experiment: Optional[str] = None, limit: int = 200,

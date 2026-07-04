@@ -10,34 +10,20 @@ const PRESETS = [
   { label: "New config (safe to run)", config: { model: "EfficientNetB0", optimizer: "AdamW", lr: 0.0003, batch_size: 64, epochs: 30 } },
 ];
 
-const CONFIG_FIELDS = [
-  { key: "model",      label: "Model",      placeholder: "ResNet50" },
-  { key: "optimizer",  label: "Optimizer",  placeholder: "Adam" },
-  { key: "lr",         label: "Learn. Rate",placeholder: "0.001" },
-  { key: "batch_size", label: "Batch Size", placeholder: "64" },
-  { key: "epochs",     label: "Epochs",     placeholder: "50" },
-];
-
 export default function PreflightGuard() {
-  const [fields, setFields] = useState({ model: "", optimizer: "", lr: "", batch_size: "", epochs: "" });
+  const [rawJson, setRawJson] = useState("{\n  \n}");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const nav = useNavigate();
 
-  function setField(key, val) {
-    setFields(f => ({ ...f, [key]: val }));
+  function handleJsonChange(val) {
+    setRawJson(val);
     setResult(null);
   }
 
   function applyPreset(cfg) {
-    setFields({
-      model: String(cfg.model || ""),
-      optimizer: String(cfg.optimizer || ""),
-      lr: String(cfg.lr || ""),
-      batch_size: String(cfg.batch_size || ""),
-      epochs: String(cfg.epochs || ""),
-    });
+    setRawJson(JSON.stringify(cfg, null, 2));
     setResult(null);
     setError(null);
   }
@@ -47,13 +33,15 @@ export default function PreflightGuard() {
     setLoading(true);
     setResult(null);
     setError(null);
-    const config = {};
-    for (const { key } of CONFIG_FIELDS) {
-      const v = fields[key];
-      if (!v) continue;
-      const n = Number(v);
-      config[key] = isNaN(n) ? v : n;
+    let config = {};
+    try {
+      config = JSON.parse(rawJson);
+    } catch (err) {
+      setError("Invalid JSON format. Please paste a valid JSON object.");
+      setLoading(false);
+      return;
     }
+    
     try {
       const res = await checkConfig(config);
       setResult(res);
@@ -91,19 +79,18 @@ export default function PreflightGuard() {
 
       {/* Config form */}
       <form onSubmit={handleCheck} className="space-y-4 rounded-2xl border border-line bg-card p-5 shadow-soft">
-        <div className="grid grid-cols-2 gap-4">
-          {CONFIG_FIELDS.map(({ key, label, placeholder }) => (
-            <div key={key}>
-              <label className="mb-1 block text-xs text-cocoa">{label}</label>
-              <input
-                type="text"
-                value={fields[key]}
-                onChange={e => setField(key, e.target.value)}
-                placeholder={placeholder}
-                className="w-full rounded-xl border border-line bg-paper px-3 py-2 font-mono text-sm text-cocoa placeholder-muted/60 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
-              />
-            </div>
-          ))}
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <label className="block text-xs font-semibold text-cocoa">Paste Configuration (JSON)</label>
+            <span className="text-[10px] text-muted">Supports any custom parameters</span>
+          </div>
+          <textarea
+            value={rawJson}
+            onChange={e => handleJsonChange(e.target.value)}
+            rows={8}
+            placeholder='{\n  "learning_rate": 0.001,\n  "batch_size": 64\n}'
+            className="w-full rounded-xl border border-line bg-paper p-3 font-mono text-sm text-cocoa placeholder-muted/60 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
+          />
         </div>
 
         <button

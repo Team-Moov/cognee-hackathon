@@ -1,111 +1,46 @@
 {
   "projects": [
     {
-      "project_id": "proj_resnet_cifar_sweep_57a8c37c",
-      "name": "ResNet CIFAR Sweep",
-      "dataset": "proj_resnet_cifar_sweep_57a8c37c",
-      "token": "TxjIepl-HynnTLCgBsnjxdcdbLiHbErj",
-      "created_at": "2026-07-04T08:25:12.406110",
+      "project_id": "proj_iris_sweep_demo_0d096d74",
+      "name": "Iris Sweep Demo",
+      "dataset": "proj_iris_sweep_demo_0d096d74",
+      "token": "Cbbr_oG3JiWetfauqtA-j5X3t05KIC10",
+      "created_at": "2026-07-04T20:57:28.342701",
       "significant_keys": [
         "model",
-        "learning_rate",
+        "optimizer",
+        "lr",
         "batch_size",
-        "optimizer"
+        "weight_decay"
       ],
       "wandb": {
         "entity": null,
         "project": null,
         "api_key": null,
-        "last_synced_run": null
+        "last_synced_run": null,
+        "sync_enabled": false
       }
     },
     {
-      "project_id": "proj_demo_vision_project_b3f871c9",
-      "name": "Demo Vision Project",
-      "dataset": "proj_demo_vision_project_b3f871c9",
-      "token": "yRJr8b-rRZ4-B1hUx17Wexs0xfCDXUhY",
-      "created_at": "2026-07-04T09:23:01.557216",
+      "project_id": "proj_blobs3_sgd_demo_0d78c7c9",
+      "name": "Blobs3 SGD Demo",
+      "dataset": "proj_blobs3_sgd_demo_0d78c7c9",
+      "token": "3nNjgIxgTzrzp8BSx5pljPbdz3gVhuck",
+      "created_at": "2026-07-04T21:15:00.486004",
       "significant_keys": [
         "model",
-        "learning_rate",
+        "optimizer",
+        "lr",
         "batch_size",
-        "optimizer"
+        "weight_decay",
+        "epochs"
       ],
       "wandb": {
         "entity": null,
         "project": null,
         "api_key": null,
-        "last_synced_run": null
-      }
-    },
-    {
-      "project_id": "proj_sid_38484558",
-      "name": "sid",
-      "dataset": "proj_sid_38484558",
-      "token": "nNdWH5BG_Dz1RrJy3yxNGMqfj26rOcht",
-      "created_at": "2026-07-04T09:45:36.378719",
-      "significant_keys": [],
-      "wandb": {
-        "entity": null,
-        "project": null,
-        "api_key": null,
-        "last_synced_run": null
-      }
-    },
-    {
-      "project_id": "proj_sid_eeae2f6c",
-      "name": "sid",
-      "dataset": "proj_sid_eeae2f6c",
-      "token": "Xi_upRWC9cpLlOKo0fzZtys3Y71k3VkW",
-      "created_at": "2026-07-04T09:57:06.391017",
-      "significant_keys": [],
-      "wandb": {
-        "entity": null,
-        "project": null,
-        "api_key": null,
-        "last_synced_run": null
-      }
-    },
-    {
-      "project_id": "proj_groundhog_6be8f76b",
-      "name": "Groundhog",
-      "dataset": "proj_groundhog_6be8f76b",
-      "token": "aKK4fXVNWNWAAjWN0-p0hrM8KqD6fAIe",
-      "created_at": "2026-07-04T10:01:57.119208",
-      "significant_keys": [],
-      "wandb": {
-        "entity": null,
-        "project": "bert-sweep",
-        "api_key": "wandb-key-abc123G",
-        "last_synced_run": null
-      }
-    },
-    {
-      "project_id": "proj_groundhog_6ee9a66d",
-      "name": "Groundhog",
-      "dataset": "proj_groundhog_6ee9a66d",
-      "token": "TOCWUhIxIV1hKRBxz9Y5F8LMibVjUPmu",
-      "created_at": "2026-07-04T10:05:15.481330",
-      "significant_keys": [],
-      "wandb": {
-        "entity": "bananyadas-manipal",
-        "project": "Groundhog",
-        "api_key": "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",
-        "last_synced_run": null
-      }
-    },
-    {
-      "project_id": "proj_proje_1_7f6e03f8",
-      "name": "proje 1",
-      "dataset": "proj_proje_1_7f6e03f8",
-      "token": "bmN9QREteuoJ7zyRN_5ic-b6s1wbklAa",
-      "created_at": "2026-07-04T14:37:19.537038",
-      "significant_keys": [],
-      "wandb": {
-        "entity": "bananyadas-manipal",
-        "project": "Groundhog",
-        "api_key": "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",
-        "last_synced_run": null
+        "last_synced_run": null,
+        "sync_enabled": false
       }
     }
   ]

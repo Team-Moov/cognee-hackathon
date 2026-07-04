@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
+import { deleteRun } from "../services/api";
 
 // alias-tolerant primary metric (labs disagree on val_acc vs val_accuracy)
 function primaryMetric(metrics = {}) {
@@ -18,9 +19,20 @@ function fmtDuration(sec) {
   return h ? `${h}h ${m}m` : `${m}m`;
 }
 
-export default function RunCard({ run }) {
+export default function RunCard({ run, onDeleted }) {
   const nav = useNavigate();
   const metric = primaryMetric(run.metrics);
+
+  async function handleDelete(e) {
+    e.stopPropagation();
+    if (!window.confirm("Delete this run from memory? This cannot be undone.")) return;
+    try {
+      await deleteRun(run.run_id);
+      onDeleted?.(run.run_id);
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+    }
+  }
   const dataset = run.dataset && run.dataset.name && run.dataset.name !== "unknown" ? run.dataset : null;
   const artifacts = Array.isArray(run.artifacts) ? run.artifacts : [];
   const wall = fmtDuration(run.wall_clock_seconds);
@@ -50,14 +62,25 @@ export default function RunCard({ run }) {
           {run.rationale && <div className="mt-0.5 line-clamp-2 text-xs text-muted">{run.rationale}</div>}
         </div>
 
-        {metric != null && (
-          <div className="flex-shrink-0 text-right">
-            <div className="font-display text-lg font-semibold text-espresso">
-              {typeof metric.value === "number" ? metric.value.toFixed(3) : metric.value}
+        <div className="flex flex-shrink-0 items-start gap-2">
+          {metric != null && (
+            <div className="text-right">
+              <div className="font-display text-lg font-semibold text-espresso">
+                {typeof metric.value === "number" ? metric.value.toFixed(3) : metric.value}
+              </div>
+              <div className="text-xs text-muted">{metric.label}</div>
             </div>
-            <div className="text-xs text-muted">{metric.label}</div>
-          </div>
-        )}
+          )}
+          {onDeleted && (
+            <button
+              onClick={handleDelete}
+              title="Delete run"
+              className="rounded-md px-1.5 py-0.5 text-xs text-muted opacity-0 transition-opacity hover:bg-terracotta/10 hover:text-terracotta group-hover:opacity-100"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       {/* hypothesis */}
@@ -104,6 +127,24 @@ export default function RunCard({ run }) {
       {run.status === "failed" && run.error_message && (
         <div className="mt-2 truncate rounded-lg border border-terracotta/20 bg-terracotta/10 px-2 py-1 font-mono text-xs text-terracotta">
           {run.error_message}
+        </div>
+      )}
+
+      {/* W&B Iframe Embedding */}
+      {run.config && run.config._wandb_url && (
+        <div className="mt-4 pt-4 border-t border-line" onClick={(e) => e.stopPropagation()}>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xs font-semibold text-espresso">Weights & Biases Telemetry</span>
+            <a href={run.config._wandb_url} target="_blank" rel="noreferrer" className="text-[10px] text-coffee hover:underline">Open in new tab ↗</a>
+          </div>
+          <div className="h-48 w-full overflow-hidden rounded-xl border border-line bg-white">
+            <iframe 
+              src={run.config._wandb_url} 
+              className="h-full w-full border-none"
+              title="W&B Run Dashboard"
+              loading="lazy"
+            />
+          </div>
         </div>
       )}
     </div>

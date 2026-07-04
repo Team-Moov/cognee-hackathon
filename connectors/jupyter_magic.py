@@ -36,6 +36,24 @@ class GroundhogMagics(Magics):
             print("[-] Error: Please provide a hypothesis statement.")
             return
         
+        # Try to sync instantly via the SDK if initialized
+        try:
+            import groundhog
+            if groundhog.config().get("project_id"):
+                groundhog.remember(
+                    config={"_type": "notebook_hypothesis"},
+                    metrics={},
+                    rationale=f"Hypothesis: {line.strip()}",
+                    hypothesis=line.strip(),
+                    experiment="notebook_scratch",
+                    thread="default_thread"
+                )
+                print(f"[+] Groundhog instantly logged hypothesis to project '{groundhog.config().get('project_id')}': '{line.strip()}'")
+                return
+        except (ImportError, RuntimeError):
+            pass
+
+        # Fallback to offline staging
         payload = {
             "id": str(uuid.uuid4()),
             "statement": line.strip(),
@@ -44,7 +62,7 @@ class GroundhogMagics(Magics):
             "research_thread_id": "default_thread"
         }
         self._append_to_notes("hypotheses", payload)
-        print(f"[+] Groundhog captured hypothesis: '{line.strip()}'")
+        print(f"[+] Groundhog cached hypothesis (SDK not initialized): '{line.strip()}'")
 
     @line_magic
     def groundhog_decision(self, line):
@@ -53,6 +71,23 @@ class GroundhogMagics(Magics):
             print("[-] Error: Please provide a decision rationale.")
             return
 
+        # Try to sync instantly via the SDK if initialized
+        try:
+            import groundhog
+            if groundhog.config().get("project_id"):
+                groundhog.remember(
+                    config={"_type": "notebook_decision"},
+                    metrics={},
+                    rationale=line.strip(),
+                    experiment="notebook_scratch",
+                    thread="default_thread"
+                )
+                print(f"[+] Groundhog instantly logged decision to project '{groundhog.config().get('project_id')}': '{line.strip()}'")
+                return
+        except (ImportError, RuntimeError):
+            pass
+
+        # Fallback to offline staging
         payload = {
             "id": str(uuid.uuid4()),
             "description": "Notebook analytical intervention",
@@ -61,7 +96,7 @@ class GroundhogMagics(Magics):
             "research_thread_id": "default_thread"
         }
         self._append_to_notes("decisions", payload)
-        print(f"[+] Groundhog captured decision intervention: '{line.strip()}'")
+        print(f"[+] Groundhog cached decision intervention (SDK not initialized): '{line.strip()}'")
 
     @cell_magic
     def groundhog_watch(self, line, cell):
@@ -79,6 +114,24 @@ class GroundhogMagics(Magics):
         end_time = datetime.utcnow()
         duration = (end_time - start_time).total_seconds()
 
+        # Try to sync instantly via the SDK if initialized
+        try:
+            import groundhog
+            if groundhog.config().get("project_id"):
+                groundhog.remember(
+                    config={"_type": "notebook_cell_execution"},
+                    metrics={"duration_seconds": duration},
+                    status="completed" if result.success else "failed",
+                    rationale=f"Notebook cell executed:\n{cell[:500]}",
+                    experiment="notebook_scratch",
+                    thread="cell_observations"
+                )
+                print(f"[+] Cell execution logged ({round(duration, 3)}s). Synced directly to project '{groundhog.config().get('project_id')}'.")
+                return
+        except (ImportError, RuntimeError):
+            pass
+
+        # Fallback to offline staging
         payload = {
             "id": str(uuid.uuid4()),
             "code_executed": cell,
@@ -87,7 +140,7 @@ class GroundhogMagics(Magics):
             "timestamp": start_time.isoformat()
         }
         self._append_to_notes("cell_observations", payload)
-        print(f"[+] Cell execution logged ({round(duration, 3)}s). Recorded to tracking layer.")
+        print(f"[+] Cell execution logged ({round(duration, 3)}s). Cached to offline staging.")
 
 
 def load_ipython_extension(ipython):
@@ -99,7 +152,6 @@ def load_ipython_extension(ipython):
     print("      - %groundhog_hypothesis <statement>")
     print("      - %groundhog_decision <rationale>")
     print("      - %%groundhog_watch  (Place at top of code cells)")
-    print("    These write to a local staging cache, not memory yet.")
-    print("    Run `python connectors/flush_staging_to_cognee.py` (cognee")
-    print("    server up on port 8010) to ingest them into the graph.")
+    print("    Note: Initialize the SDK (`groundhog.init(project_id=...)`) first")
+    print("    so these magics instantly sync to your live Cognee memory graph.")
     print("=======================================================\n")

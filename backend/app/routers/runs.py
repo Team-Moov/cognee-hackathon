@@ -206,6 +206,19 @@ async def list_runs(experiment: Optional[str] = None, status: Optional[str] = No
         raise HTTPException(status_code=502, detail=str(e))
 
 
+@router.delete("/{run_id}")
+async def delete_run(run_id: str):
+    if not settings.cognee_api_url:
+        raise HTTPException(status_code=503, detail="Cognee server is not configured")
+    try:
+        return await cognee_client.delete_run(
+            settings.cognee_api_url, run_id=run_id,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+    except CogneeClientError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+
+
 def _cognee_result_to_summary(cognee_result: Dict[str, Any]) -> Dict[str, Any]:
     prior = cognee_result.get("prior_result") or {}
     rationale = prior.get("rationale", prior.get("raw", ""))

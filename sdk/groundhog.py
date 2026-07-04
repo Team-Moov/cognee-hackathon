@@ -36,7 +36,10 @@ import urllib.error
 import urllib.request
 from typing import Any, Dict, List, Optional
 
-__all__ = ["init", "remember", "check", "query", "config"]
+import inspect
+import functools
+
+__all__ = ["init", "remember", "check", "query", "config", "track", "run"]
 
 _STATE: Dict[str, Any] = {
     "base_url": os.getenv("GROUNDHOG_API_URL", "http://localhost:8000"),
@@ -184,6 +187,151 @@ def query(question: str) -> str:
     return result.get("answer", "")
 
 
+def track(experiment: Optional[str] = None, abort_on_duplicate: bool = True):
+    """
+    Decorator to automatically track a training function.
+    Captures function arguments as `config` and the return value (must be a dict) as `metrics`.
+    
+    If `abort_on_duplicate` is True, it queries the Pre-flight Guard before running.
+    If the exact configuration was already tried, it aborts immediately to save compute.
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # Bind arguments to get the config dictionary
+            sig = inspect.signature(func)
+            bound_args = sig.bind(*args, **kwargs)
+            bound_args.apply_defaults()
+            config_params = dict(bound_args.arguments)
+            
+            # Pre-flight Guard Check
+            if abort_on_duplicate:
+                print(f"[Groundhog] 🛡️ Checking Pre-flight Guard for config...")
+                guard_result = check(config_params, experiment=experiment)
+                if guard_result.get("already_tried"):
+                    # The backend returns the prior run under `matching_runs`, not
+                    # `prior_result` — read the first match for its metrics.
+                    prior = (guard_result.get("matching_runs") or [{}])[0]
+                    print(f"\n[Groundhog] 🛑 ABORTING RUN: Configuration already tried!")
+                    print(f"Match type: {guard_result.get('match_type')}")
+                    if prior.get("metrics"):
+                        print(f"Prior Result: {prior.get('metrics')}")
+                    print("Skipping execution to save compute.\n")
+                    # Return the prior metrics instead of running again
+                    return prior.get("metrics", {})
+            
+            # Run the function
+            start_time = os.times().elapsed if hasattr(os.times(), "elapsed") else None
+            import time
+            t0 = time.time()
+            try:
+                metrics = func(*args, **kwargs)
+                if not isinstance(metrics, dict):
+                    metrics = {"result": metrics}
+                status = "completed"
+            except Exception as e:
+                metrics = {"error": str(e)}
+                status = "failed"
+                raise
+            finally:
+                wall_clock = time.time() - t0
+                remember(
+                    config=config_params,
+                    metrics=metrics,
+                    status=status,
+                    experiment=experiment,
+                    wall_clock_seconds=wall_clock
+                )
+            return metrics
+        return wrapper
+    return decorator
+
+
 def config() -> Dict[str, Any]:
     """Return the current SDK state (project_id, base_url, experiment)."""
     return dict(_STATE)
+
+
+class run:
+    """
+    Context manager to automatically track an ML run with zero friction.
+
+    On enter it runs the Pre-flight Guard and exposes `.already_tried` (+
+    `.prior_metrics`) so you can decide whether to skip — WITHOUT crashing:
+
+        with groundhog.run(config={"lr": 0.01}, experiment="resnet_sweep") as r:
+            if r.already_tried:
+                print("already ran this — skipping"); r.skip()
+            else:
+                train_model()
+                r.log(val_accuracy=0.95)
+        # on exit: auto-logs metrics + wall-clock, and records exceptions as failed runs.
+
+    Note: a context manager cannot cleanly skip its own body from __enter__
+    (Python does not call __exit__ if __enter__ raises), so we warn + flag
+    instead of aborting. For a hard auto-skip, use the @groundhog.track
+    decorator, where returning early actually prevents execution.
+    """
+    def __init__(self, config: Optional[Dict[str, Any]] = None, experiment: Optional[str] = None, warn_on_duplicate: bool = True):
+        self.config_params = config or {}
+        self.experiment = experiment
+        self.warn_on_duplicate = warn_on_duplicate
+        self.metrics = {}
+        self.start_time = None
+        self.already_tried = False
+        self.prior_metrics = None
+        self._skip = False
+
+    def __enter__(self):
+        import time
+        if self.warn_on_duplicate:
+            try:
+                print("[Groundhog] 🛡️ Checking Pre-flight Guard for config...")
+                guard_result = check(self.config_params, experiment=self.experiment)
+                if guard_result.get("already_tried"):
+                    prior = (guard_result.get("matching_runs") or [{}])[0]
+                    self.already_tried = True
+                    self.prior_metrics = prior.get("metrics")
+                    print(f"[Groundhog] ⚠️ This config was already tried "
+                          f"(match={guard_result.get('match_type')}). Prior result: {self.prior_metrics}")
+                    print("[Groundhog] Check `run.already_tried` to skip, or call `run.skip()`.")
+            except Exception as e:
+                # Pre-flight is best-effort — never let it break the training run.
+                print(f"[Groundhog] pre-flight check skipped: {e}")
+        self.start_time = time.time()
+        return self
+
+    def log(self, **kwargs):
+        """Log metrics explicitly within the block."""
+        self.metrics.update(kwargs)
+
+    def skip(self):
+        """Mark this run as intentionally skipped — nothing is recorded on exit."""
+        self._skip = True
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        import time
+        if self._skip:
+            return False  # user chose to skip; record nothing, don't swallow anything
+
+        status = "completed"
+        # Record exceptions as first-class negative results.
+        if exc_type:
+            status = "failed"
+            self.metrics["error"] = str(exc_val)
+            print("[Groundhog] ⚠️ Caught exception during run — logging as a failed run.")
+
+        wall_clock = time.time() - self.start_time if self.start_time else 0.0
+        try:
+            remember(
+                config=self.config_params,
+                metrics=self.metrics,
+                status=status,
+                experiment=self.experiment,
+                wall_clock_seconds=wall_clock,
+            )
+        except Exception as e:
+            print(f"[Groundhog] failed to record run: {e}")
+
+        # Never suppress the user's own exception — let it propagate after logging.
+        return False

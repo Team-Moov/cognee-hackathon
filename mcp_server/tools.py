@@ -33,6 +33,7 @@ def _backend_url(path: str) -> str:
 async def tool_check_config(
     config: Dict[str, Any],
     experiment: Optional[str] = None,
+    project_id: Optional[str] = None,
 ) -> str:
     """
     Check whether a given experiment configuration has already been tried.
@@ -40,6 +41,7 @@ async def tool_check_config(
     Args:
         config:     The hyperparameter dict to check (e.g. {"lr": 0.001, "model": "ResNet50"}).
         experiment: Optional experiment name to narrow the search scope.
+        project_id: Optional Groundhog project to scope the check to.
 
     Returns:
         A human-readable summary of whether this config was already run,
@@ -48,6 +50,8 @@ async def tool_check_config(
     payload: Dict[str, Any] = {"config": config}
     if experiment:
         payload["experiment"] = experiment
+    if project_id:
+        payload["project_id"] = project_id
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
@@ -115,6 +119,7 @@ async def tool_remember(
     git_commit: str = "unknown",
     error_message: Optional[str] = None,
     artifacts: Optional[List[Dict[str, str]]] = None,
+    project_id: Optional[str] = None,
 ) -> str:
     """
     Record a completed (or failed) experiment run into Groundhog's memory.
@@ -146,6 +151,8 @@ async def tool_remember(
         payload["gpu_hours"] = gpu_hours
     if error_message:
         payload["error_message"] = error_message
+    if project_id:
+        payload["project_id"] = project_id
 
     try:
         async with httpx.AsyncClient(timeout=20.0) as client:
@@ -170,21 +177,24 @@ async def tool_remember(
     )
 
 
-async def tool_query(question: str) -> str:
+async def tool_query(question: str, project_id: Optional[str] = None) -> str:
     """
     Ask a free-form natural language question about the experiment history.
 
-    Uses full-text search + LLM synthesis to answer questions like:
+    Uses graph-aware recall + LLM synthesis to answer questions like:
     "What happened when we used AdamW?", "Which run had the best val_acc?",
     "Why did we abandon learning rate 0.5?", "Catch me up on the ResNet sweep."
 
     Args:
-        question: The natural language question to ask.
+        question:   The natural language question to ask.
+        project_id: Optional Groundhog project to scope the question to.
 
     Returns:
         A synthesized, cited answer drawn from Groundhog's experiment memory.
     """
-    payload = {"question": question, "mode": "COMPLETION"}
+    payload: Dict[str, Any] = {"question": question, "mode": "COMPLETION"}
+    if project_id:
+        payload["project_id"] = project_id
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -263,3 +273,63 @@ async def tool_find(description: str) -> str:
         f"- **Produced by run:** `{run_id}`\n"
         f"- **Exists on disk:** `{exists}`"
     )
+
+
+async def tool_insights(project_id: Optional[str] = None) -> str:
+    """
+    Get the project's DERIVED insights — which hyperparameters actually move the
+    metric (sensitivity ranking) and the best config found per dataset. Use this
+    to decide what to tune next instead of guessing.
+    """
+    params = {"project_id": project_id} if project_id else None
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(_backend_url("/api/insights"), params=params)
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception as e:
+        return f"[groundhog_insights] Connection error: {e}"
+
+    sens = data.get("parameter_sensitivity", [])
+    best = data.get("best_per_dataset", [])
+    if not sens and not best:
+        return "No derived insights yet — need at least 2 completed runs in this project."
+
+    lines = [f"🧠 **Project insights** — {data.get('summary', '')}"]
+    if sens:
+        lines.append("\n**Parameter sensitivity (most → least impactful):**")
+        for s in sens[:8]:
+            lines.append(f"- `{s['parameter']}` — moves {s.get('metric','metric')} by ~{s['sensitivity']} (best: `{s['best_value']}`)")
+    if best:
+        lines.append("\n**Best config per dataset:**")
+        for d in best[:5]:
+            lines.append(f"- **{d['dataset']}**: {d.get('metric')}={d.get('metric_value')} → `{json.dumps(d.get('best_config', {}), separators=(',',':'))}`")
+    return "\n".join(lines)
+
+
+async def tool_history(project_id: Optional[str] = None, limit: int = 10) -> str:
+    """
+    List the most recent runs (config + key metric + status) for the project, so
+    the agent can see what has already been tried before proposing new work.
+    """
+    params: Dict[str, Any] = {"limit": limit}
+    if project_id:
+        params["project_id"] = project_id
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            resp = await client.get(_backend_url("/api/runs/"), params=params)
+            resp.raise_for_status()
+            data = resp.json()
+    except Exception as e:
+        return f"[groundhog_history] Connection error: {e}"
+
+    runs = data.get("runs", [])
+    if not runs:
+        return "No runs recorded in this project yet."
+    lines = [f"📜 **{len(runs)} recent run(s):**"]
+    for r in runs[:limit]:
+        m = r.get("metrics", {}) or {}
+        acc = m.get("val_accuracy", m.get("val_acc", m.get("accuracy")))
+        cfg = ", ".join(f"{k}={v}" for k, v in list((r.get("config") or {}).items())[:4] if not str(k).startswith("_"))
+        lines.append(f"- `{(r.get('run_id') or '')[:10]}` [{r.get('status')}] {cfg}" + (f" → val_acc={acc}" if acc is not None else ""))
+    return "\n".join(lines)

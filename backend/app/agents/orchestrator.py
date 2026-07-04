@@ -116,10 +116,24 @@ async def on_report_requested(experiment: str, project: Optional[str] = None) ->
 
 # ── Private helpers ────────────────────────────────────────────────────────
 
+async def _load_insights(project):
+    if not settings.cognee_api_url or not project:
+        return None
+    try:
+        return await cognee_client.get_insights(
+            settings.cognee_api_url, project=project,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+    except Exception as e:
+        logger.warning("could not load insights for project=%s: %s", project, e)
+        return None
+
+
 async def _run_config_proposer(experiment, all_runs, graph_context, project=None):
     try:
         from app.agents.config_proposer import propose_config
-        result = await propose_config(experiment, all_runs, graph_context)
+        insights = await _load_insights(project)
+        result = await propose_config(experiment, all_runs, graph_context, insights)
         if result:
             await _write_back("config_proposer", experiment, result.get("rationale", ""), result, project)
     except Exception as e:

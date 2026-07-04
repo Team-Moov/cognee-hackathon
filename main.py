@@ -116,6 +116,21 @@ async def lifespan(app: FastAPI):
         logger.info("File watcher started on: %s", os.path.abspath(watch_dir))
     except Exception as e:
         logger.warning("File watcher failed to start: %s", e)
+        
+    # Load the ML Ontology to strictly type the Cognee graph
+    try:
+        ontology_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "ontology", "ml_ontology.owl"))
+        if os.path.exists(ontology_path):
+            # Tell Cognee to use our strict ML schema
+            # This ensures that concepts like 'Run', 'Hyperparameter', 'Metric' are properly understood
+            with open(ontology_path, "r") as f:
+                owl_content = f.read()
+            # If cognee exposes an add_ontology method (common in recent versions):
+            if hasattr(cognee, "add_ontology"):
+                await cognee.add_ontology(owl_content)
+            logger.info(f"ML Ontology loaded from {ontology_path}")
+    except Exception as e:
+        logger.warning("Failed to load ML ontology: %s", e)
 
     yield  # Server is running
 
@@ -432,6 +447,143 @@ async def _auto_improve(dataset_name: str):
         logger.info("Auto-improve completed for dataset=%s", dataset_name)
     except Exception as e:
         logger.error("Auto-improve failed: %s", e)
+    # Also refresh derived insights (parameter sensitivity, best-per-dataset) and
+    # write them back into the graph as queryable memory — "memory that learns".
+    try:
+        await generate_project_insights(dataset_name)
+    except Exception as e:
+        logger.error("Auto insight generation failed: %s", e)
+
+
+async def generate_project_insights(project: str) -> Dict[str, Any]:
+    """
+    Compute derived ML insights from a project's runs, store them in the index,
+    and write a natural-language digest back into the Cognee graph as an insight
+    node so it becomes recall()-able memory the researcher and agents can query.
+    """
+    import run_index
+    from insights import build_insights
+    from memory import remember_agent_finding
+
+    runs = run_index.list_runs(project=project, limit=1000).get("runs", [])
+    bundle = build_insights(runs)
+    stored = run_index.record_insight(project, bundle)
+
+    # Write the digest into the graph (best-effort) as an "insight_engine" finding.
+    if bundle.get("n_completed", 0) >= 2:
+        try:
+            await remember_agent_finding(
+                agent_type="insight_engine",
+                experiment_name=project,
+                content=(
+                    "Derived project insights.\n\n"
+                    + bundle["summary"]
+                    + "\n\nParameter sensitivity (most→least impactful): "
+                    + ", ".join(f"{s['parameter']}={s['sensitivity']}" for s in bundle["parameter_sensitivity"][:6])
+                ),
+                dataset_name=project,
+                metadata={"kind": "derived_insight",
+                          "parameter_sensitivity": bundle["parameter_sensitivity"][:6],
+                          "best_per_dataset": bundle["best_per_dataset"]},
+            )
+        except Exception as e:
+            logger.warning("insight graph write-back failed: %s", e)
+    return stored
+
+
+@app.post("/insights/generate", tags=["Insights"])
+async def insights_generate(payload: Dict[str, Any]):
+    """Compute + store + graph-write derived insights for a project (dataset)."""
+    project = payload.get("project") or payload.get("dataset_name") or "main_dataset"
+    return await generate_project_insights(project)
+
+
+@app.get("/insights", tags=["Insights"])
+async def insights_get(project: Optional[str] = Query(default=None)):
+    """Compute derived insights live from the project's current runs.
+
+    build_insights() is deterministic and LLM-free, so recomputing on every read
+    is cheap and keeps the dashboard in sync the moment a 2nd completed run lands.
+    The every-N-runs auto-improve only gates the (expensive) graph write-back of
+    the digest, not this read view — so insights never look stale here.
+    """
+    import run_index
+    from insights import build_insights
+    runs = run_index.list_runs(project=project, limit=1000).get("runs", [])
+    bundle = build_insights(runs)
+    # refresh the cached copy so any other reader stays consistent
+    run_index.record_insight(project or "main_dataset", bundle)
+    return bundle
+
+
+# ---------------------------------------------------------------------------
+# Delete + graph
+# ---------------------------------------------------------------------------
+
+@app.delete("/runs/{run_id}", tags=["Core"])
+async def delete_run(run_id: str):
+    """Delete a run from the index and best-effort from the Cognee graph."""
+    import run_index
+    removed = run_index.delete_run(run_id)
+    # Best-effort: forget the run's data item in Cognee (memory only).
+    try:
+        await cognee.forget(dataset="main_dataset", data_id=run_id, memory_only=True)
+    except Exception:
+        pass
+    return {"status": "deleted" if removed else "not_found", "run_id": run_id}
+
+
+@app.delete("/project/{project}", tags=["Core"])
+async def delete_project_data(project: str):
+    """Delete all of a project's runs/findings/insights + forget its Cognee dataset."""
+    import run_index
+    stats = run_index.delete_project(project)
+    try:
+        await cognee.forget(dataset=project, memory_only=True)
+    except Exception as e:
+        logger.warning("forget dataset %s failed: %s", project, e)
+    return {"status": "deleted", "project": project, **stats}
+
+
+@app.get("/graph", tags=["Provenance"])
+async def project_graph(project: Optional[str] = Query(default=None)):
+    """
+    Node-link graph of a project's memory, built from the structured index:
+    Experiment / Dataset / Run nodes with belongs_to / used_dataset / derived_from
+    edges — for the interactive Memory Graph view.
+    """
+    import run_index
+    runs = run_index.list_runs(project=project, limit=1000).get("runs", [])
+    nodes: List[Dict[str, Any]] = []
+    edges: List[Dict[str, Any]] = []
+    seen = set()
+
+    def add_node(nid, label, ntype, extra=None):
+        if nid in seen:
+            return
+        seen.add(nid)
+        nodes.append({"id": nid, "label": label, "type": ntype, **(extra or {})})
+
+    hash_to_run = {r.get("config_hash"): r.get("run_id") for r in runs}
+    for r in runs:
+        rid = r.get("run_id") or r.get("config_hash")
+        exp = r.get("experiment") or "unnamed"
+        ds = (r.get("dataset") or {}).get("name")
+        metrics = r.get("metrics") or {}
+        acc = metrics.get("val_accuracy", metrics.get("val_acc", metrics.get("accuracy")))
+        add_node(f"exp:{exp}", exp, "experiment")
+        add_node(rid, r.get("config_summary") or rid[:10], "run",
+                 {"status": r.get("status"), "metric": acc, "gpu_hours": r.get("gpu_hours"),
+                  "config": r.get("config")})
+        edges.append({"source": rid, "target": f"exp:{exp}", "type": "belongs_to"})
+        if ds:
+            add_node(f"ds:{ds}", ds, "dataset")
+            edges.append({"source": rid, "target": f"ds:{ds}", "type": "used_dataset"})
+        parent_hash = r.get("derived_from_config_hash")
+        if parent_hash and parent_hash in hash_to_run and hash_to_run[parent_hash] != rid:
+            edges.append({"source": rid, "target": hash_to_run[parent_hash], "type": "derived_from"})
+
+    return {"nodes": nodes, "edges": edges}
 
 
 def _infer_artifact_type(path: str) -> str:

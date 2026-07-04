@@ -52,9 +52,6 @@ export default function ProjectModal({ onClose }) {
   const snippet = created
     ? `import groundhog\ngroundhog.init(project_id="${created.project_id}")`
     : "";
-  const daemonCmd = created
-    ? `python connectors/wandb_sync.py --project-id ${created.project_id} --watch --interval 60`
-    : "";
 
   const input =
     "w-full bg-paper border border-line rounded-xl px-3 py-2 text-sm text-cocoa placeholder-muted/70 focus:outline-none focus:border-coffee focus:ring-2 focus:ring-coffee/20";
@@ -139,12 +136,8 @@ export default function ProjectModal({ onClose }) {
             </div>
 
             {created.wandb?.configured && (
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-cocoa">Or auto-sync from W&B</span>
-                  <button onClick={() => copy(daemonCmd, "daemon")} className="text-xs text-coffee hover:text-coffee-deep">{copied === "daemon" ? "Copied!" : "Copy"}</button>
-                </div>
-                <pre className="bg-paper border border-line rounded-xl p-3 text-xs text-cocoa font-mono whitespace-pre-wrap break-all">{daemonCmd}</pre>
+              <div className="bg-olive/10 border border-olive/20 rounded-xl p-3 text-xs text-olive font-medium">
+                W&B auto-sync is enabled. Background polling will start automatically.
               </div>
             )}
 

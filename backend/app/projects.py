@@ -77,6 +77,7 @@ def _public(project: Dict[str, Any], include_secrets: bool = False) -> Dict[str,
             "project": (project.get("wandb") or {}).get("project"),
             "configured": bool((project.get("wandb") or {}).get("api_key")),
             "last_synced_run": (project.get("wandb") or {}).get("last_synced_run"),
+            "sync_enabled": (project.get("wandb") or {}).get("sync_enabled", False),
         },
         "token": project.get("token"),
     }
@@ -106,6 +107,7 @@ def create_project(
             "project": wandb_project,
             "api_key": wandb_api_key,
             "last_synced_run": None,
+            "sync_enabled": bool(wandb_api_key),
         },
     }
     with _LOCK:
@@ -130,6 +132,18 @@ def get_project(project_id: str, include_secrets: bool = False) -> Optional[Dict
     return None
 
 
+def delete_project(project_id: str) -> bool:
+    """Remove a project from the registry. Returns True if one was removed."""
+    with _LOCK:
+        data = _load()
+        before = len(data["projects"])
+        data["projects"] = [p for p in data["projects"] if p["project_id"] != project_id]
+        if len(data["projects"]) < before:
+            _save(data)
+            return True
+    return False
+
+
 def _get_raw(project_id: str) -> Optional[Dict[str, Any]]:
     data = _load()
     for p in data["projects"]:
@@ -152,6 +166,19 @@ def set_wandb(project_id: str, *, entity: Optional[str] = None, project: Optiona
                     wb["project"] = project
                 if api_key is not None:
                     wb["api_key"] = api_key
+                    wb["sync_enabled"] = True
+                _save(data)
+                return _public(p)
+    return None
+
+
+def set_wandb_sync(project_id: str, enabled: bool) -> Optional[Dict[str, Any]]:
+    """Toggle background syncing for this project."""
+    with _LOCK:
+        data = _load()
+        for p in data["projects"]:
+            if p["project_id"] == project_id:
+                p.setdefault("wandb", {})["sync_enabled"] = bool(enabled)
                 _save(data)
                 return _public(p)
     return None

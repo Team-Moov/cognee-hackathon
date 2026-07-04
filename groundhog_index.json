@@ -1,247 +1,609 @@
 {
   "runs": [
     {
-      "run_id": "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab",
-      "config_hash": "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab",
-      "experiment": "resnet_sweep",
-      "thread": "default",
-      "config": {
-        "model": "ResNet50",
-        "optimizer": "Adam",
-        "learning_rate": 0.002,
-        "batch_size": 64
-      },
-      "metrics": {
-        "train_accuracy": 0.7,
-        "val_accuracy": 0.999,
-        "val_loss": 0.004
-      },
-      "status": "completed",
-      "rationale": "Sudden near-perfect val accuracy after a data pipeline change.",
-      "gpu_hours": 2.6,
-      "wall_clock_seconds": null,
-      "git_commit": "unknown",
-      "config_summary": "Config: model=ResNet50, optimizer=Adam, lr=0.002, batch_size=64",
-      "result_summary": "Result: val_accuracy=0.9990 | val_loss=0.0040 | Researcher note: Sudden near-perfect val accuracy after a data pipeline change.",
-      "derived_from_config_hash": null,
-      "artifact_paths": [],
-      "timestamp": "2026-07-04T06:13:56.899585"
-    },
-    {
-      "run_id": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
-      "config_hash": "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6",
-      "project": "proj_resnet_cifar_sweep_57a8c37c",
-      "experiment": "resnet_sweep",
-      "thread": "default",
-      "config": {
-        "model": "ResNet50",
-        "optimizer": "Adam",
-        "lr": 0.001,
-        "batch_size": 64,
-        "seed": 42,
-        "output_dir": "/runs/x"
-      },
-      "metrics": {
-        "val_accuracy": 0.912,
-        "val_loss": 0.31
-      },
-      "status": "completed",
-      "rationale": "Update groundhog_index.json",
-      "gpu_hours": 2.5,
-      "wall_clock_seconds": null,
-      "git_commit": "a7af7a46fcb07d9fa60af9389c0865346b5c0915",
-      "config_summary": "Config: model=ResNet50, optimizer=Adam, lr=0.001, batch_size=64, seed=42, output_dir=/runs/x",
-      "result_summary": "Result: val_accuracy=0.9120 | val_loss=0.3100 | Researcher note: Update groundhog_index.json",
-      "derived_from_config_hash": null,
-      "artifact_paths": [],
-      "timestamp": "2026-07-04T08:48:08.804665"
-    },
-    {
-      "run_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
-      "config_hash": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
-      "project": "proj_demo_vision_project_b3f871c9",
-      "experiment": "resnet_sweep",
+      "run_id": "fe18cdcef8e20bd988d74c10df4de16581c9de8e88be2ab7b9c4b4e6ecf64a9f",
+      "config_hash": "fe18cdcef8e20bd988d74c10df4de16581c9de8e88be2ab7b9c4b4e6ecf64a9f",
+      "project": "main_dataset",
+      "experiment": "integration_test_dbb27cfb",
       "thread": "default",
       "config": {
         "model": "ResNet50",
         "optimizer": "AdamW",
-        "lr": 0.0005,
-        "batch_size": 128,
-        "seed": 7,
-        "output_dir": "/tmp/x"
+        "lr": 0.0001004523,
+        "batch_size": 64
       },
       "metrics": {
-        "val_accuracy": 0.934,
-        "val_loss": 0.24,
-        "train_accuracy": 0.95
+        "val_accuracy": 0.91
       },
       "status": "completed",
-      "rationale": "Update groundhog_index.json",
+      "rationale": "Integration test run \u2014 safe to delete.",
       "gpu_hours": null,
-      "wall_clock_seconds": 9720.0,
-      "git_commit": "a7af7a46fcb07d9fa60af9389c0865346b5c0915",
-      "config_summary": "Config: model=ResNet50, optimizer=AdamW, lr=0.0005, batch_size=128, seed=7, output_dir=/tmp/x",
-      "result_summary": "Result: val_accuracy=0.9340 | val_loss=0.2400 | Researcher note: Update groundhog_index.json",
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=ResNet50, optimizer=AdamW, lr=0.0001004523, batch_size=64",
+      "result_summary": "Result: val_accuracy=0.9100 | Researcher note: Integration test run \u2014 safe to delete.",
       "derived_from_config_hash": null,
-      "hypothesis": "AdamW with lower lr and bigger batch improves val accuracy",
+      "hypothesis": "",
       "dataset": {
-        "name": "CIFAR-10",
-        "version": "v2",
-        "preprocessing": "random crop + horizontal flip; normalized",
-        "split_rationale": "80/10/10 stratified by class",
-        "quality_issues": "~2% mislabeled in truck class"
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T20:55:14.336341"
+    },
+    {
+      "run_id": "d85ec46ad7b52289589ade816be745ce0bb8fb0575d61208762871bc2848f933",
+      "config_hash": "d85ec46ad7b52289589ade816be745ce0bb8fb0575d61208762871bc2848f933",
+      "project": "main_dataset",
+      "experiment": "integration_test_b8a4921d",
+      "thread": "default",
+      "config": {
+        "model": "ResNet50",
+        "optimizer": "AdamW",
+        "lr": 0.0001005725,
+        "batch_size": 64
+      },
+      "metrics": {
+        "val_accuracy": 0.91
+      },
+      "status": "completed",
+      "rationale": "Integration test run \u2014 safe to delete.",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=ResNet50, optimizer=AdamW, lr=0.0001005725, batch_size=64",
+      "result_summary": "Result: val_accuracy=0.9100 | Researcher note: Integration test run \u2014 safe to delete.",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T20:56:37.129460"
+    },
+    {
+      "run_id": "9e5476fdbe7524b4addc1e06bcc4261aa31524cf94050f2f08718dbc374923eb",
+      "config_hash": "9e5476fdbe7524b4addc1e06bcc4261aa31524cf94050f2f08718dbc374923eb",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "lr": 0.1,
+        "batch_size": 16,
+        "weight_decay": 0.0
+      },
+      "metrics": {
+        "val_accuracy": 0.82,
+        "val_loss": 0.44
+      },
+      "status": "completed",
+      "rationale": "baseline lr=0.1",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.1, batch_size=16, weight_decay=0.0",
+      "result_summary": "Result: val_accuracy=0.8200 | val_loss=0.4400 | Researcher note: baseline lr=0.1",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "iris_synth",
+        "version": "v1",
+        "preprocessing": "standardized",
+        "split_rationale": "70/30 stratified",
+        "quality_issues": "none"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T21:01:09.619033"
+    },
+    {
+      "run_id": "d14e1047757d4966d3ed48e8111436addee38d987f1fafe364e788ef9db22231",
+      "config_hash": "d14e1047757d4966d3ed48e8111436addee38d987f1fafe364e788ef9db22231",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "lr": 0.01,
+        "batch_size": 16,
+        "weight_decay": 0.0
+      },
+      "metrics": {
+        "val_accuracy": 0.88,
+        "val_loss": 0.31
+      },
+      "status": "completed",
+      "rationale": "lr=0.01 sweet spot",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.01, batch_size=16, weight_decay=0.0",
+      "result_summary": "Result: val_accuracy=0.8800 | val_loss=0.3100 | Researcher note: lr=0.01 sweet spot",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "iris_synth",
+        "version": "v1",
+        "preprocessing": "standardized",
+        "split_rationale": "70/30 stratified",
+        "quality_issues": "none"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T21:04:18.009302"
+    },
+    {
+      "run_id": "e0e724871f75be8fa8687018c2d5b11cff0e64734c80a90c858a0bd50e77ac0c",
+      "config_hash": "e0e724871f75be8fa8687018c2d5b11cff0e64734c80a90c858a0bd50e77ac0c",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "lr": 0.5,
+        "batch_size": 16,
+        "weight_decay": 0.0
+      },
+      "metrics": {
+        "val_accuracy": 0.61,
+        "val_loss": 0.79
+      },
+      "status": "completed",
+      "rationale": "lr=0.5 too high, diverging",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.5, batch_size=16, weight_decay=0.0",
+      "result_summary": "Result: val_accuracy=0.6100 | val_loss=0.7900 | Researcher note: lr=0.5 too high, diverging",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "iris_synth",
+        "version": "v1",
+        "preprocessing": "standardized",
+        "split_rationale": "70/30 stratified",
+        "quality_issues": "none"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-04T21:05:02.606790"
+    },
+    {
+      "run_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
+      "config_hash": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "blobs3_lr_sweep",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "batch_size": 32,
+        "weight_decay": 0.0,
+        "epochs": 20,
+        "lr": 0.5
+      },
+      "metrics": {
+        "val_accuracy": 0.6566,
+        "val_loss": 0.8048,
+        "train_loss": 0.82355,
+        "epochs": 20
+      },
+      "status": "completed",
+      "rationale": "lr sweep point lr=0.5",
+      "gpu_hours": 0.0,
+      "wall_clock_seconds": null,
+      "git_commit": "8c2036dab3fc678593d7a8dd501aed65b9a3e5e3",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.5, batch_size=32, epochs=20, weight_decay=0.0",
+      "result_summary": "Result: val_accuracy=0.6566 | val_loss=0.8048 | Researcher note: lr sweep point lr=0.5",
+      "derived_from_config_hash": null,
+      "hypothesis": "lr=0.5 balances convergence speed vs. overshoot on blobs3",
+      "dataset": {
+        "name": "blobs3",
+        "version": "v1",
+        "preprocessing": "z-score standardized (per-feature mean/std from train split)",
+        "split_rationale": "70/30 stratified train/val, fixed seed 7",
+        "quality_issues": "class 2 slightly overlaps class 1 (intentional, ~4% Bayes error)"
       },
       "artifacts": [
         {
-          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
-          "artifact_type": "plot",
-          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\metrics.json",
+          "artifact_type": "eval_report",
+          "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
           "exists_on_disk": true,
-          "size_bytes": 5,
-          "description": "Auto-indexed plot from loss_curve.png"
+          "size_bytes": 96,
+          "description": "Auto-indexed eval_report from metrics.json"
         },
         {
-          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
-          "artifact_type": "checkpoint",
-          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\model_weights.npz",
+          "artifact_type": "other",
+          "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
           "exists_on_disk": true,
-          "size_bytes": 11,
-          "description": "Auto-indexed checkpoint from model_best.pt"
+          "size_bytes": 658,
+          "description": "Auto-indexed other from model_weights.npz"
         },
         {
-          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log",
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\training_log.txt",
           "artifact_type": "log",
-          "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+          "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
           "exists_on_disk": true,
-          "size_bytes": 4,
-          "description": "Auto-indexed log from train.log"
+          "size_bytes": 247,
+          "description": "Auto-indexed log from training_log.txt"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\val_predictions.csv",
+          "artifact_type": "eval_report",
+          "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
+          "exists_on_disk": true,
+          "size_bytes": 1693,
+          "description": "Auto-indexed eval_report from val_predictions.csv"
         }
       ],
       "artifact_paths": [
-        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
-        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
-        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log"
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\metrics.json",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\model_weights.npz",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\training_log.txt",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\val_predictions.csv"
       ],
-      "timestamp": "2026-07-04T09:23:40.716885"
+      "timestamp": "2026-07-04T21:15:26.798821"
+    },
+    {
+      "run_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "config_hash": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "blobs3_lr_sweep",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "batch_size": 32,
+        "weight_decay": 0.0,
+        "epochs": 20,
+        "lr": 0.1
+      },
+      "metrics": {
+        "val_accuracy": 0.6364,
+        "val_loss": 0.8088,
+        "train_loss": 0.81697,
+        "epochs": 20
+      },
+      "status": "completed",
+      "rationale": "lr sweep point lr=0.1",
+      "gpu_hours": 0.0,
+      "wall_clock_seconds": null,
+      "git_commit": "8c2036dab3fc678593d7a8dd501aed65b9a3e5e3",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.1, batch_size=32, epochs=20, weight_decay=0.0",
+      "result_summary": "Result: val_accuracy=0.6364 | val_loss=0.8088 | Researcher note: lr sweep point lr=0.1",
+      "derived_from_config_hash": null,
+      "hypothesis": "lr=0.1 balances convergence speed vs. overshoot on blobs3",
+      "dataset": {
+        "name": "blobs3",
+        "version": "v1",
+        "preprocessing": "z-score standardized (per-feature mean/std from train split)",
+        "split_rationale": "70/30 stratified train/val, fixed seed 7",
+        "quality_issues": "class 2 slightly overlaps class 1 (intentional, ~4% Bayes error)"
+      },
+      "artifacts": [
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\metrics.json",
+          "artifact_type": "eval_report",
+          "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+          "exists_on_disk": true,
+          "size_bytes": 96,
+          "description": "Auto-indexed eval_report from metrics.json"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\model_weights.npz",
+          "artifact_type": "other",
+          "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+          "exists_on_disk": true,
+          "size_bytes": 658,
+          "description": "Auto-indexed other from model_weights.npz"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\training_log.txt",
+          "artifact_type": "log",
+          "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+          "exists_on_disk": true,
+          "size_bytes": 246,
+          "description": "Auto-indexed log from training_log.txt"
+        },
+        {
+          "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\val_predictions.csv",
+          "artifact_type": "eval_report",
+          "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+          "exists_on_disk": true,
+          "size_bytes": 1693,
+          "description": "Auto-indexed eval_report from val_predictions.csv"
+        }
+      ],
+      "artifact_paths": [
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\metrics.json",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\model_weights.npz",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\training_log.txt",
+        "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\val_predictions.csv"
+      ],
+      "timestamp": "2026-07-04T21:18:57.569985"
     }
   ],
   "artifacts": [
     {
-      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\loss_curve.png",
-      "artifact_type": "plot",
-      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\metrics.json",
+      "artifact_type": "eval_report",
+      "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
       "exists_on_disk": true,
-      "size_bytes": 5,
-      "description": "Auto-indexed plot from loss_curve.png"
+      "size_bytes": 96,
+      "description": "Auto-indexed eval_report from metrics.json"
     },
     {
-      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\model_best.pt",
-      "artifact_type": "checkpoint",
-      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\model_weights.npz",
+      "artifact_type": "other",
+      "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
       "exists_on_disk": true,
-      "size_bytes": 11,
-      "description": "Auto-indexed checkpoint from model_best.pt"
+      "size_bytes": 658,
+      "description": "Auto-indexed other from model_weights.npz"
     },
     {
-      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\_demo_out\\train.log",
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\training_log.txt",
       "artifact_type": "log",
-      "result_id": "42ee337b1fd94611ec3400273c558d65a6d13d4053ef4f4e053343ed60c3577f",
+      "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
       "exists_on_disk": true,
-      "size_bytes": 4,
-      "description": "Auto-indexed log from train.log"
+      "size_bytes": 247,
+      "description": "Auto-indexed log from training_log.txt"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.5\\val_predictions.csv",
+      "artifact_type": "eval_report",
+      "result_id": "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389",
+      "exists_on_disk": true,
+      "size_bytes": 1693,
+      "description": "Auto-indexed eval_report from val_predictions.csv"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\metrics.json",
+      "artifact_type": "eval_report",
+      "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "exists_on_disk": true,
+      "size_bytes": 96,
+      "description": "Auto-indexed eval_report from metrics.json"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\model_weights.npz",
+      "artifact_type": "other",
+      "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "exists_on_disk": true,
+      "size_bytes": 658,
+      "description": "Auto-indexed other from model_weights.npz"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\training_log.txt",
+      "artifact_type": "log",
+      "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "exists_on_disk": true,
+      "size_bytes": 246,
+      "description": "Auto-indexed log from training_log.txt"
+    },
+    {
+      "file_path": "C:\\Users\\skmis\\Desktop\\Anvil PS\\cognee-hackathon\\demo\\outputs\\blobs3_lr_sweep\\lr_0.1\\val_predictions.csv",
+      "artifact_type": "eval_report",
+      "result_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+      "exists_on_disk": true,
+      "size_bytes": 1693,
+      "description": "Auto-indexed eval_report from val_predictions.csv"
     }
   ],
   "findings": [
     {
+      "agent_type": "config_proposer",
+      "project": "main_dataset",
+      "experiment": "integration_test_b8a4921d",
+      "content": "Integration test: try lr=5e-5 next, val_accuracy trend is improving.",
+      "metadata": {},
+      "severity": null,
+      "id": "1834bbda8ab44ccba2555471900af7f9",
+      "timestamp": "2026-07-04T20:56:57.752263",
+      "dismissed": false,
+      "dedup_key": "config_proposer:integration_test_b8a4921d"
+    },
+    {
       "agent_type": "triage",
-      "experiment": "resnet_sweep",
-      "content": "The new run's validation accuracy of 0.999 is suspiciously high compared to prior runs, where the best validation accuracy was 0.912. Additionally, the validation loss of 0.004 suggests the model may be overfitting or that there are issues such as data leakage or evaluation set contamination. The drastic improvement in metrics following a data pipeline change raises concerns regarding the validity of the results.",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "content": "The new run has a significantly lower validation accuracy of 0.61 and higher validation loss of 0.79 compared to prior runs with learning rates of 0.01 and 0.1, which achieved accuracies of 0.88 and 0.82 respectively. This indicates that the model is diverging due to the high learning rate of 0.5, which is much higher than the established baseline of 0.1 and previously effective rates.",
       "metadata": {
         "anomaly_detected": true,
-        "anomaly_type": "suspicious_metrics",
+        "anomaly_type": "divergence",
         "severity": "high",
-        "message": "The new run's validation accuracy of 0.999 is suspiciously high compared to prior runs, where the best validation accuracy was 0.912. Additionally, the validation loss of 0.004 suggests the model may be overfitting or that there are issues such as data leakage or evaluation set contamination. The drastic improvement in metrics following a data pipeline change raises concerns regarding the validity of the results.",
-        "recommendation": "Investigate the data pipeline change to ensure no data leakage has occurred. Check if the training and validation datasets are properly separated and if the evaluation set is contaminated. Consider running the model again with the original data pipeline settings.",
-        "run_id": "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab"
+        "message": "The new run has a significantly lower validation accuracy of 0.61 and higher validation loss of 0.79 compared to prior runs with learning rates of 0.01 and 0.1, which achieved accuracies of 0.88 and 0.82 respectively. This indicates that the model is diverging due to the high learning rate of 0.5, which is much higher than the established baseline of 0.1 and previously effective rates.",
+        "recommendation": "The researcher should consider reducing the learning rate significantly in subsequent runs, preferably to a value close to the previous successful rates of 0.01 or 0.1, and re-evaluating the training setup.",
+        "run_id": "e0e724871f75be8fa8687018c2d5b11cff0e64734c80a90c858a0bd50e77ac0c"
       },
       "severity": "high",
-      "id": "289c68b4378447c2ae2f01f97ab14f2d",
-      "timestamp": "2026-07-04T06:14:37.751690",
+      "id": "102d0cc1fc4a4f3b94a246cea36f4777",
+      "timestamp": "2026-07-04T21:05:54.479313",
       "dismissed": false,
-      "dedup_key": "triage:resnet_sweep:a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab"
+      "dedup_key": "triage:iris_lr_sweep:e0e724871f75be8fa8687018c2d5b11cff0e64734c80a90c858a0bd50e77ac0c"
     },
     {
       "agent_type": "dataset_steward",
-      "experiment": "resnet_sweep",
-      "content": "Investigate the validation set for potential contamination and review data splits to ensure consistency and stability.",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "content": "Investigate the dataset splits used for validation and consider adjusting the learning rate or performing additional tuning to ensure stability across similar configurations.",
       "metadata": {
         "issues_detected": true,
         "issues": [
           {
-            "type": "eval_contamination",
-            "description": "Validation accuracy is much higher than training accuracy in the first run (0.999 vs 0.7), suggesting potential contamination in the evaluation set.",
-            "severity": "high",
+            "type": "unstable_split",
+            "description": "There is high metric variance between runs with similar configs. For example, runs with learning rates of 0.1 and 0.1 have differing validation accuracies (0.82 and 0.88 respectively) and losses (0.44 and 0.31), indicating inconsistent performance across runs.",
+            "severity": "medium",
             "affected_runs": [
-              "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab"
+              "d14e1047757d4966d3ed48e8111436addee38d987f1fafe364e788ef9db22231",
+              "9e5476fdbe7524b4addc1e06bcc4261aa31524cf94050f2f08718dbc374923eb"
             ]
           },
           {
-            "type": "unstable_split",
-            "description": "There is high variance in validation accuracy (0.912 vs 0.999) between runs with similar configurations, indicating potential issues with data splits or randomization.",
-            "severity": "medium",
+            "type": "other",
+            "description": "The validation accuracy for the run with lr=0.5 is significantly lower (0.61) compared to others, which may suggest an issue with a high learning rate.",
+            "severity": "low",
             "affected_runs": [
-              "a5405d72d5616a2db63e12fea4397cd9be86aab9b509c2e475d6cf1e88dc58ab",
-              "521e2fe8ac5a664a8b511f7d86fb35419b788d3c88f9530a41cb51404fad62f6"
+              "e0e724871f75be8fa8687018c2d5b11cff0e64734c80a90c858a0bd50e77ac0c"
             ]
           }
         ],
         "overall_health": "warning",
-        "recommendation": "Investigate the validation set for potential contamination and review data splits to ensure consistency and stability."
+        "recommendation": "Investigate the dataset splits used for validation and consider adjusting the learning rate or performing additional tuning to ensure stability across similar configurations."
       },
       "severity": null,
-      "id": "32079ce4f66942c58fc16bf237a5b554",
-      "timestamp": "2026-07-04T06:14:59.956386",
+      "id": "ceab0fe683cd423e889c29c2045a81d1",
+      "timestamp": "2026-07-04T21:05:54.872587",
       "dismissed": false,
-      "dedup_key": "dataset_steward:resnet_sweep"
-    },
-    {
-      "agent_type": "report",
-      "experiment": "resnet_sweep",
-      "content": "# Retrospective Report: Experiment \"resnet_sweep\"\n\n## Executive Summary\nThe \"resnet_sweep\" experiment aimed to explore the performance of the ResNet50 architecture under different configurations, primarily focusing on batch size and learning rate adjustments while utilizing the Adam optimizer. Two distinct runs were executed, leading to significant insights regarding model performance. The best result achieved a validation accuracy of 99.9% with a learning rate of 0.002 and a training accuracy of 70%. A total of 5.1 GPU hours were consumed throughout the course of these runs.\n\n## What Worked\n1. **Higher Learning Rate Configuration:**\n   - **Config:** ResNet50, Adam, learning_rate: 0.002, batch_size: 64\n   - **Metrics:** \n     - Train Accuracy: 0.70\n     - Val Accuracy: 0.999\n     - Val Loss: 0.004 \n   - **Finding:** The increase in the learning rate to 0.002 resulted in sudden improvement in validation metrics, showing nearly perfect performance on unseen data.\n\n2. **Baseline Model Performance:**\n   - **Config:** ResNet50, Adam, learning_rate: 0.001, batch_size: 64\n   - **Metrics:**\n     - Train Accuracy: 0.93\n     - Val Accuracy: 0.912\n     - Val Loss: 0.31\n   - **Finding:** The baseline performance established a good foundation and indicated that the model can achieve over 90% validation accuracy with a standard configuration.\n\n3. **Data Pipeline Impact:**\n   - **Rationale:** After a reported modification in the data pipeline, the run with the learning rate of 0.002 exhibited drastically improved validation accuracy.\n   - **Finding:** The significant enhancements in val accuracy suggest the importance of data preprocessing and quality improvements, which can lead to substantial performance boosts.\n\n## What Failed and Why\n- **Lower Learning Rate Performance:**\n  - **Config:** ResNet50, Adam, learning_rate: 0.001, batch_size: 64\n  - **Metrics:**\n    - Train Accuracy: 0.93\n    - Val Accuracy: 0.912\n    - Val Loss: 0.31\n  - **Insight:** Although this configuration provided solid baseline results, it did not translate to improvements in validation performance found in the higher learning rate session. This indicates the possibility of getting stuck in local minima or insufficient learning rate for optimizing the model effectively.\n\n## Key Decisions\n1. **Initial Run Configuration:** The first run (learning rate 0.001) served as a baseline, confirming the effectiveness of the ResNet architecture.\n2. **Adjustment of Learning Rate:** The decision to increase the learning rate from 0.001 to 0.002, driven by the need to explore improved optimization opportunities, led to the discovery of severe improvements in model performance.\n3. **Monitoring of Data Pipeline Changes:** Emphasizing the importance of maintaining and closely understanding data pipelines as changes can significantly impact the outputs of the training process.\n\n## Recommendations\n1. **Exploration of Learning Rates:** Investigate additional learning rates between 0.002 and 0.001 to find an optimal balance. Suggested values: 0.0015, 0.0018.\n2. **Batch Size Variations:** Experiment with different batch sizes such as 32 and 128 to understand their effects on convergence rates and generalization performance.\n3. **Enhanced Data Augmentation Strategies:** Introduce and evaluate diverse augmentation techniques within the data pipeline to further improve model robustness, especially given the noted correlation with the validation accuracy increase in the second run.\n\n## Model Card\n### Best Model Summary\n- **Architecture:** ResNet50\n- **Training Procedure:**\n  - **Optimizer:** Adam\n  - **Learning Rate:** 0.002\n  - **Batch Size:** 64\n- **Evaluation Results:**\n  - **Train Accuracy:** 0.70\n  - **Val Accuracy:** 0.999\n  - **Val Loss:** 0.004\n- **Known Limitations:** While achieving high validation accuracy, the training accuracy indicates potential overfitting. Monitoring the model's performance on a wider variety of test datasets is necessary to assess real-world applicability and generalization capabilities. Further studies on model complexity and training duration may also be warranted. \n\nThis report encapsulates the findings and reflections from the \"resnet_sweep\" experiment, guiding future investigations and improvements in model training methodologies.",
-      "metadata": {},
-      "severity": null,
-      "id": "07d1b1244fbe42f6a75216e76bf3c94f",
-      "timestamp": "2026-07-04T06:15:59.614730",
-      "dismissed": false,
-      "dedup_key": "report:resnet_sweep"
+      "dedup_key": "dataset_steward:iris_lr_sweep"
     },
     {
       "agent_type": "config_proposer",
-      "project": "proj_demo_vision_project_b3f871c9",
-      "experiment": "resnet_sweep",
-      "content": "This configuration swaps back to the original learning rate of 0.001 with the same batch size of 64 that was used in the first run, allowing us to analyze the impact of the learning rate change alone, since prior findings suggest that both the optimizer and learning rate had a significant effect on performance. The seed has been changed to introduce some randomness in weight initialization.",
+      "project": "proj_iris_sweep_demo_0d096d74",
+      "experiment": "iris_lr_sweep",
+      "content": "This configuration adjusts the learning rate to 0.05, which is between the previously successful runs of 0.01 and the baseline of 0.1. Given that lower learning rates can yield better convergence while still being closer to the baseline, this change could improve performance without risking divergence. The batch size and weight decay are kept constant as they are effective based on prior runs.",
       "metadata": {
         "suggested_config": {
-          "model": "ResNet50",
-          "optimizer": "AdamW",
-          "lr": 0.001,
-          "batch_size": 64,
-          "seed": 15,
-          "output_dir": "/tmp/y"
+          "model": "softmax",
+          "optimizer": "sgd",
+          "lr": 0.05,
+          "batch_size": 16,
+          "weight_decay": 0.0
         },
-        "rationale": "This configuration swaps back to the original learning rate of 0.001 with the same batch size of 64 that was used in the first run, allowing us to analyze the impact of the learning rate change alone, since prior findings suggest that both the optimizer and learning rate had a significant effect on performance. The seed has been changed to introduce some randomness in weight initialization.",
-        "expected_direction": "I expect the validation accuracy to improve to approximately 0.92, as we are investigating the influence of a higher learning rate under the unchanged batch size which previously demonstrated competitive performance.",
+        "rationale": "This configuration adjusts the learning rate to 0.05, which is between the previously successful runs of 0.01 and the baseline of 0.1. Given that lower learning rates can yield better convergence while still being closer to the baseline, this change could improve performance without risking divergence. The batch size and weight decay are kept constant as they are effective based on prior runs.",
+        "expected_direction": "I expect the validation accuracy to improve, potentially reaching around 0.85, given the successful trend observed with lower learning rates.",
         "unexplored_regions": [
-          "Higher learning rates (e.g., 0.002) with smaller batch sizes (e.g., 32)",
-          "Experimenting with other optimizers such as SGD with momentum",
-          "Increasing the batch size to 256 while maintaining the current learning rate of 0.0005"
+          "Decrease learning rate further to 0.005 for even finer control over convergence.",
+          "Increase batch size to 32 to test the impact of larger mini-batches on training stability.",
+          "Experiment with different weight decay values (e.g., 0.01) to investigate regularization effects."
         ]
       },
       "severity": null,
-      "id": "57ec0453e02c4a558ba388d8c9d9d6de",
-      "timestamp": "2026-07-04T09:24:35.922010",
+      "id": "ca7c69fdcc9c401a8a94aabe4e4157f5",
+      "timestamp": "2026-07-04T21:05:55.164099",
       "dismissed": false,
-      "dedup_key": "config_proposer:resnet_sweep"
+      "dedup_key": "config_proposer:iris_lr_sweep"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "blobs3_lr_sweep",
+      "content": "The new run with a learning rate of 0.1 results in a validation accuracy of 0.6364, which is lower than the prior run with a learning rate of 0.5 that achieved 0.6566. This contradicts the established trend that suggests a higher learning rate would yield better performance, raising concerns about the effectiveness of the lower learning rate in this scenario.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run with a learning rate of 0.1 results in a validation accuracy of 0.6364, which is lower than the prior run with a learning rate of 0.5 that achieved 0.6566. This contradicts the established trend that suggests a higher learning rate would yield better performance, raising concerns about the effectiveness of the lower learning rate in this scenario.",
+        "recommendation": "The researcher should examine the dataset for potential issues such as data leakage or other anomalies and consider adjusting the learning rate or exploring other configurations to improve validation performance.",
+        "run_id": "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901"
+      },
+      "severity": "medium",
+      "id": "7d26355a612b4722867d3e521c6fbf39",
+      "timestamp": "2026-07-04T21:19:41.805259",
+      "dismissed": false,
+      "dedup_key": "triage:blobs3_lr_sweep:02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "blobs3_lr_sweep",
+      "content": "This configuration adjusts the batch size to 64 for better gradient estimates, introduces weight decay to combat potential overfitting, and sets the learning rate to 0.3, which is a midpoint between the previously tested values of 0.1 and 0.5 \u2014 aiming to achieve a balance between convergence speed and stability while also exploring an area that may perform better.",
+      "metadata": {
+        "suggested_config": {
+          "model": "softmax",
+          "optimizer": "sgd",
+          "batch_size": 64,
+          "weight_decay": 0.01,
+          "epochs": 20,
+          "lr": 0.3
+        },
+        "rationale": "This configuration adjusts the batch size to 64 for better gradient estimates, introduces weight decay to combat potential overfitting, and sets the learning rate to 0.3, which is a midpoint between the previously tested values of 0.1 and 0.5 \u2014 aiming to achieve a balance between convergence speed and stability while also exploring an area that may perform better.",
+        "expected_direction": "I expect the validation accuracy to improve, potentially reaching around 0.68 or higher as the changes help refine the model\u2019s learning process.",
+        "unexplored_regions": [
+          "Learn rates between 0.2 and 0.4 for finer adjustments.",
+          "Higher batch sizes of 128 to check for further gradient stability.",
+          "Introduce early stopping or additional epochs beyond 20 if no improvement is observed."
+        ]
+      },
+      "severity": null,
+      "id": "3b4b501d2de64ee9ae5fa0beeaa5f382",
+      "timestamp": "2026-07-04T21:20:10.461351",
+      "dismissed": false,
+      "dedup_key": "config_proposer:blobs3_lr_sweep"
+    },
+    {
+      "agent_type": "dataset_steward",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "blobs3_lr_sweep",
+      "content": "Investigate potential label noise and validate the integrity of the training and validation datasets to ensure they are not contaminated.",
+      "metadata": {
+        "issues_detected": true,
+        "issues": [
+          {
+            "type": "label_noise",
+            "description": "There is a notable variance in validation accuracy and losses between the two runs with different learning rates (0.1 vs. 0.5), suggesting possible label noise or unstable training setups.",
+            "severity": "medium",
+            "affected_runs": [
+              "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+              "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389"
+            ]
+          },
+          {
+            "type": "eval_contamination",
+            "description": "Validation accuracy is relatively high in relation to training loss, indicating a potential contamination of the validation dataset.",
+            "severity": "medium",
+            "affected_runs": [
+              "02292e62073bc868f2e272c1ee7f92bfbc8874d3f9350ecdaceb2e3a6d1de901",
+              "da61acd3b00e4ff15dcb87f3fffae8b809597e6ec7b8d9e6dc70b6500ef7b389"
+            ]
+          }
+        ],
+        "overall_health": "warning",
+        "recommendation": "Investigate potential label noise and validate the integrity of the training and validation datasets to ensure they are not contaminated."
+      },
+      "severity": null,
+      "id": "476f310287d94715921065ce8542ef25",
+      "timestamp": "2026-07-04T21:20:10.742091",
+      "dismissed": false,
+      "dedup_key": "dataset_steward:blobs3_lr_sweep"
     }
-  ]
+  ],
+  "insights": {
+    "proj_iris_sweep_demo_0d096d74": {
+      "n_runs": 1,
+      "n_completed": 1,
+      "parameter_sensitivity": [],
+      "best_per_dataset": [
+        {
+          "dataset": "iris_synth",
+          "best_config": {
+            "model": "softmax",
+            "optimizer": "sgd",
+            "lr": 0.1,
+            "batch_size": 16,
+            "weight_decay": 0.0
+          },
+          "best_run_id": "9e5476fdbe7524b4addc1e06bcc4261aa31524cf94050f2f08718dbc374923eb",
+          "metric": "val_accuracy",
+          "metric_value": 0.82
+        }
+      ],
+      "summary": "Not enough completed runs yet to derive insights (need at least 2).",
+      "generated_at": "2026-07-04T21:02:17.802424"
+    }
+  }
 }

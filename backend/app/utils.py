@@ -45,6 +45,10 @@ def canonical_config(config: Dict[str, Any], significant_keys: Optional[List[str
     sig = {k.lower() for k in significant_keys} if significant_keys else None
     out: Dict[str, Any] = {}
     for raw_key, value in config.items():
+        # Drop underscore-prefixed bookkeeping keys (e.g. _wandb_url, _runtime) —
+        # never hyperparameters, so they must not affect the config hash.
+        if str(raw_key).startswith("_"):
+            continue
         key = CONFIG_KEY_ALIASES.get(str(raw_key).lower(), str(raw_key).lower())
         if sig is not None:
             if key not in sig and str(raw_key).lower() not in sig:

@@ -17,6 +17,10 @@ PROMPT = """You are an ML experiment design assistant.
 
 Experiment: {experiment}
 
+Derived insights from this project's run history (parameter sensitivity ranking
+and the best config found per dataset), computed deterministically from all runs:
+{insights_json}
+
 Prior graph memory — decisions, hypotheses, and other agents' findings for
 this experiment, recalled from the shared knowledge graph:
 {graph_context}
@@ -25,8 +29,9 @@ Completed runs so far (JSON):
 {runs_json}
 
 Your task:
-1. Identify unexplored regions of the hyperparameter space.
-2. Look at which changes improved performance and which hurt it.
+1. Use the parameter-sensitivity ranking: propose changes to the HIGH-impact
+   parameters, and keep low-impact ones near their best-known value.
+2. Identify unexplored regions of the hyperparameter space.
 3. Suggest ONE specific next configuration to try.
 
 Return a JSON object with exactly these keys:
@@ -42,7 +47,8 @@ Only return the JSON object, no markdown fences."""
 
 
 async def propose_config(
-    experiment: str, runs: List[Dict[str, Any]], graph_context: str = ""
+    experiment: str, runs: List[Dict[str, Any]], graph_context: str = "",
+    insights: Optional[Dict[str, Any]] = None,
 ) -> Optional[Dict[str, Any]]:
     if not runs:
         return None
@@ -59,8 +65,15 @@ async def propose_config(
         for r in runs
     ]
 
+    insights_for_prompt = {
+        "parameter_sensitivity": (insights or {}).get("parameter_sensitivity", []),
+        "best_per_dataset": (insights or {}).get("best_per_dataset", []),
+        "summary": (insights or {}).get("summary", ""),
+    }
+
     prompt = PROMPT.format(
         experiment=experiment,
+        insights_json=json.dumps(insights_for_prompt, indent=2),
         graph_context=graph_context or "(no prior graph memory yet)",
         runs_json=json.dumps(runs_for_prompt, indent=2),
     )

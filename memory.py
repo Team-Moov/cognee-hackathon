@@ -127,6 +127,13 @@ def canonical_config(
 
     out: Dict[str, Any] = {}
     for raw_key, value in params.items():
+        # Drop underscore-prefixed bookkeeping keys (W&B/logging metadata like
+        # _wandb_url, _runtime). These are never hyperparameters, so they must
+        # not change the config hash — otherwise two identical runs with
+        # different URLs would look like different configs and the Pre-flight
+        # Guard could never match W&B-ingested runs.
+        if str(raw_key).startswith("_"):
+            continue
         key = CONFIG_KEY_ALIASES.get(str(raw_key).lower(), str(raw_key).lower())
         if sig is not None:
             if key not in sig and str(raw_key).lower() not in sig:
@@ -401,16 +408,18 @@ def _rough_similarity(a: str, b: str) -> float:
     return len(intersection) / len(union)
 
 
-def _prior_from_index(config_hash: str) -> Optional[Dict[str, Any]]:
+def _prior_from_index(config_hash: str, dataset_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """
     Return a clean prior-run dict from the structured index for an exact
-    config-hash match, or None if the run isn't indexed. Gives the Pre-flight
-    Guard real fields (run_id, metrics, gpu_hours, rationale) rather than a
-    raw recall snippet.
+    config-hash match *within this dataset/project*, or None if the run isn't
+    indexed for this project. Scoping by dataset keeps the Pre-flight Guard from
+    reporting a config that was only ever run in a different project as
+    already-tried here. Gives the Guard real fields (run_id, metrics, gpu_hours,
+    rationale) rather than a raw recall snippet.
     """
     try:
         import run_index
-        run = run_index.get_run(config_hash)
+        run = run_index.get_run(config_hash, project=dataset_name)
     except Exception:
         return None
     if not run:
@@ -635,7 +644,7 @@ async def check_config(
     # Fast, structured exact-match: the config_hash IS the run_id in the index.
     # This gives clean prior-run fields (run_id, metrics, gpu_hours, rationale)
     # for the Pre-flight Guard instead of a raw recall snippet showing "unknown".
-    indexed_prior = _prior_from_index(config_hash)
+    indexed_prior = _prior_from_index(config_hash, dataset_name)
     if indexed_prior is not None:
         logger.info("Exact config match via index for %s", config_hash[:12])
         return {

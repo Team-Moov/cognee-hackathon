@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { listProjects, setCurrentProject, getCurrentProject } from "../services/api";
+import { listProjects, setCurrentProject, getCurrentProject, toggleWandbSync, deleteProject } from "../services/api";
 import ProjectModal from "./ProjectModal";
+import ProjectConnectInfo from "./ProjectConnectInfo";
 
 /**
  * Project switcher + creator. Sits at the top of the sidebar.
@@ -12,6 +13,8 @@ export default function ProjectBar() {
   const [projects, setProjects] = useState([]);
   const [current, setCurrent] = useState(getCurrentProject());
   const [showModal, setShowModal] = useState(false);
+  const [showConnect, setShowConnect] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     listProjects()
@@ -24,6 +27,22 @@ export default function ProjectBar() {
     setCurrentProject(id);
     setCurrent(id);
     window.location.reload();
+  }
+
+  const activeProject = projects.find((p) => p.project_id === current);
+
+  async function onDelete() {
+    if (!activeProject) return;
+    if (!window.confirm(`Delete project "${activeProject.name}" and ALL its runs, findings, and insights? This cannot be undone.`)) return;
+    setBusy(true);
+    try {
+      await deleteProject(activeProject.project_id);
+      setCurrentProject("");
+      window.location.reload();
+    } catch (err) {
+      alert("Delete failed: " + err.message);
+      setBusy(false);
+    }
   }
 
   return (
@@ -49,6 +68,55 @@ export default function ProjectBar() {
       >
         + New project
       </button>
+
+      {activeProject && (
+        <div className="mt-2 flex gap-2">
+          <button
+            onClick={() => setShowConnect(true)}
+            className="flex-1 rounded-lg border border-line py-1.5 text-xs text-cocoa transition-colors hover:bg-sand"
+          >
+            Connect
+          </button>
+          <button
+            onClick={onDelete}
+            disabled={busy}
+            className="flex-1 rounded-lg border border-terracotta/30 py-1.5 text-xs text-terracotta transition-colors hover:bg-terracotta/10 disabled:opacity-50"
+          >
+            {busy ? "Deleting…" : "Delete"}
+          </button>
+        </div>
+      )}
+
+      {showConnect && activeProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setShowConnect(false)}>
+          <div className="w-full max-w-lg rounded-2xl border border-line bg-card p-6 shadow-lift" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-espresso">Connect to “{activeProject.name}”</h2>
+              <button onClick={() => setShowConnect(false)} className="text-muted hover:text-cocoa">✕</button>
+            </div>
+            <ProjectConnectInfo project={activeProject} />
+          </div>
+        </div>
+      )}
+
+      {activeProject && activeProject.wandb?.configured && (
+        <div className="mt-3 flex items-center justify-between rounded-xl bg-sand/50 p-2 border border-line">
+          <div className="flex flex-col">
+            <span className="text-xs font-semibold text-espresso">W&B Auto-Sync</span>
+            <span className="text-[10px] text-muted leading-tight mt-0.5">Polls in background</span>
+          </div>
+          <button
+            onClick={async () => {
+              const newState = !activeProject.wandb.sync_enabled;
+              await toggleWandbSync(activeProject.project_id, newState);
+              setProjects(projects.map(p => p.project_id === activeProject.project_id ? { ...p, wandb: { ...p.wandb, sync_enabled: newState } } : p));
+            }}
+            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${activeProject.wandb.sync_enabled ? 'bg-olive' : 'bg-line'}`}
+          >
+            <span className={`inline-block h-3 w-3 transform rounded-full bg-card transition-transform ${activeProject.wandb.sync_enabled ? 'translate-x-5' : 'translate-x-1'}`} />
+          </button>
+        </div>
+      )}
 
       {showModal && <ProjectModal onClose={() => setShowModal(false)} />}
     </div>

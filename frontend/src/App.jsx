@@ -14,6 +14,8 @@ import LineageExplorer from "./pages/LineageExplorer";
 import QueryPage from "./pages/QueryPage";
 import FilesPage from "./pages/FilesPage";
 import AgentsPage from "./pages/AgentsPage";
+import InsightsPage from "./pages/InsightsPage";
+import MemoryGraph from "./pages/MemoryGraph";
 
 /** App shell: sidebar + scrollable content area. */
 function AppLayout() {
@@ -36,6 +38,8 @@ export default function App() {
 
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/insights" element={<InsightsPage />} />
+            <Route path="/graph" element={<MemoryGraph />} />
             <Route path="/preflight" element={<PreflightGuard />} />
             <Route path="/lineage/:runId" element={<LineageExplorer />} />
             <Route path="/query" element={<QueryPage />} />
