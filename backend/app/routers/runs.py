@@ -140,14 +140,18 @@ async def list_runs(experiment: Optional[str] = None, status: Optional[str] = No
 
 def _cognee_result_to_summary(cognee_result: Dict[str, Any]) -> Dict[str, Any]:
     prior = cognee_result.get("prior_result") or {}
+    rationale = prior.get("rationale", prior.get("raw", ""))
+    if isinstance(rationale, (dict, list)):
+        rationale = json.dumps(rationale, default=str)
+    metrics = prior.get("metrics", {})
     return {
         "run_id": prior.get("id") or prior.get("node_id") or "unknown",
         "date": prior.get("timestamp", ""),
-        "metrics": prior.get("metrics", {}),
+        "metrics": metrics if isinstance(metrics, dict) else {},
         "config": prior.get("config", {}),
         "gpu_hours": prior.get("gpu_hours"),
         "status": prior.get("status", "completed"),
-        "rationale": prior.get("rationale", prior.get("raw", "")),
+        "rationale": str(rationale),
     }
 
 

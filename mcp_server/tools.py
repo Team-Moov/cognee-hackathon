@@ -90,10 +90,15 @@ async def tool_check_config(
             f"| GPU-h: `{run.get('gpu_hours', '?')}`"
         )
         metrics = run.get("metrics", {})
-        if metrics:
+        if isinstance(metrics, dict) and metrics:
             m_str = ", ".join(f"{k}={v}" for k, v in list(metrics.items())[:4])
             lines.append(f"  Metrics: {m_str}")
+        # rationale can arrive as a dict/list (raw recall snippet) — coerce so
+        # slicing never blows up on non-string prior-result payloads.
         rationale = run.get("rationale", "")
+        if isinstance(rationale, (dict, list)):
+            rationale = json.dumps(rationale, default=str)
+        rationale = str(rationale)
         if rationale:
             lines.append(f"  Rationale: _{rationale[:200]}_")
 

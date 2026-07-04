@@ -335,6 +335,33 @@ def _rough_similarity(a: str, b: str) -> float:
     return len(intersection) / len(union)
 
 
+def _prior_from_index(config_hash: str) -> Optional[Dict[str, Any]]:
+    """
+    Return a clean prior-run dict from the structured index for an exact
+    config-hash match, or None if the run isn't indexed. Gives the Pre-flight
+    Guard real fields (run_id, metrics, gpu_hours, rationale) rather than a
+    raw recall snippet.
+    """
+    try:
+        import run_index
+        run = run_index.get_run(config_hash)
+    except Exception:
+        return None
+    if not run:
+        return None
+    return {
+        "id": run.get("run_id"),
+        "run_id": run.get("run_id"),
+        "experiment": run.get("experiment"),
+        "config": run.get("config", {}),
+        "metrics": run.get("metrics", {}),
+        "status": run.get("status", "completed"),
+        "gpu_hours": run.get("gpu_hours"),
+        "rationale": run.get("rationale", ""),
+        "timestamp": run.get("timestamp", ""),
+    }
+
+
 def _extract_recall_score(result_obj: Any) -> Optional[float]:
     """
     Pull cognee's real vector-similarity score off a recall() hit.
@@ -536,6 +563,20 @@ async def check_config(
     config_hash = compute_config_hash(config_params)
     config_summary = generate_config_summary(config_params)
     tag = f"confighash:{config_hash}"
+
+    # Fast, structured exact-match: the config_hash IS the run_id in the index.
+    # This gives clean prior-run fields (run_id, metrics, gpu_hours, rationale)
+    # for the Pre-flight Guard instead of a raw recall snippet showing "unknown".
+    indexed_prior = _prior_from_index(config_hash)
+    if indexed_prior is not None:
+        logger.info("Exact config match via index for %s", config_hash[:12])
+        return {
+            "already_tried": True,
+            "match_type": "exact",
+            "config_hash": config_hash,
+            "prior_result": indexed_prior,
+            "similarity_score": 1.0,
+        }
 
     try:
         exact_results = await cognee.recall(

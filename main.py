@@ -93,10 +93,19 @@ async def lifespan(app: FastAPI):
     """Configure Cognee and start file watcher on startup; clean up on shutdown."""
     _configure_cognee()
     # Initialize Cognee (creates SQLite + Kuzu DBs if not present)
-    try:
-        await cognee.prune.prune_system(metadata=False)  # non-destructive init ping
-    except Exception:
-        pass  # First run — no data to prune, that's fine
+    # IMPORTANT: cognee.prune.prune_system() defaults to graph=True, vector=True,
+    # i.e. it WIPES the graph + vector store. The old code called it on every
+    # startup labelled "non-destructive init ping" — it was the opposite, and
+    # made the memory forget everything on each restart. Cognee initialises its
+    # stores lazily on the first add()/cognify(), so no init ping is needed.
+    # A clean wipe is now strictly opt-in via GROUNDHOG_RESET_ON_START=true.
+    if os.getenv("GROUNDHOG_RESET_ON_START", "false").strip().lower() in {"1", "true", "yes"}:
+        logger.warning("GROUNDHOG_RESET_ON_START set — wiping graph + vector store")
+        try:
+            await cognee.prune.prune_data()
+            await cognee.prune.prune_system(graph=True, vector=True, metadata=True)
+        except Exception as e:
+            logger.warning("Reset-on-start prune failed: %s", e)
 
     # Start file watcher in background thread
     watch_dir = os.getenv("WATCHED_DIR", "./watched_runs")
