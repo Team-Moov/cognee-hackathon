@@ -62,11 +62,11 @@ export default function ProjectModal({ onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-card border border-line rounded-3xl shadow-lift max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-card border border-line rounded-3xl shadow-lift ring-1 ring-espresso/5 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {!created ? (
