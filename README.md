@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🐿️ Groundhog</h1>
+  <h1>Groundhog</h1>
   **The Enterprise Memory-Graph Layer for Machine Learning Experiments**
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -17,22 +17,22 @@
 
 ---
 
-## 📖 What is Groundhog?
+## What is Groundhog?
 
-Groundhog is an **experiment reproducibility and semantic memory platform**. Traditional loggers (like TensorBoard or standard W&B setups) tell you *what* metrics a run achieved. Groundhog tells you *why*, *how it relates to past runs*, and *whether you should run it at all*. 
+Groundhog is an **experiment reproducibility and semantic memory platform**. Traditional loggers (like TensorBoard or standard WandDb setups) tell you *what* metrics a run achieved. Groundhog tells you *why*, *how it relates to past runs*, and *whether you should run it at all*. 
 
 It leverages an embedded multi-modal database stack (Graph + Vector + Relational) to build an interconnected web of your ML experiments, datasets, hypotheses, and output artifacts.
 
 ### Key Capabilities
 
-* 🛡️ **Pre-flight Guard (Compute Saver):** Instantly answers "Have we tried this config?" before you spin up expensive GPUs. Uses canonical config hashing (ignoring noise like `seed` or `output_dir`) to detect duplicate experiments.
-* 🧠 **Self-Improving Research Memory:** Not just a dumb log. It tracks the *rationale* behind choices and connects them semantically.
-* 🔍 **Semantic Artifact Discovery:** Ask "Where's the loss curve for the failed ResNet run?" and get the exact file path instantly.
-* 🤖 **MCP Agent Integration:** Exposes your ML memory directly to autonomous coding agents (Claude, Cursor) so they can query past results and learn from your team's mistakes.
+* **Pre-flight Guard (Compute Saver):** Instantly answers "Have we tried this config?" before you spin up expensive GPUs. Uses canonical config hashing (ignoring noise like `seed` or `output_dir`) to detect duplicate experiments.
+* **Self-Improving Research Memory:** Not just a dumb log. It tracks the *rationale* behind choices and connects them semantically.
+* **Semantic Artifact Discovery:** Ask "Where's the loss curve for the failed ResNet run?" and get the exact file path instantly.
+* **MCP Agent Integration:** Exposes your ML memory directly to autonomous coding agents (Claude, Cursor) so they can query past results and learn from your team's mistakes.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 Groundhog is built for local, secure, and lightning-fast execution. **No external Postgres required.** It uses an in-process, embedded database approach via Cognee.
 
@@ -46,17 +46,17 @@ graph TD
 
     %% Client Layer
     subgraph Clients["Client Integrations"]
-        A[🐍 Python SDK<br>Notebooks / Scripts]:::client
-        B[⚛️ React Dashboard<br>Vite :5173]:::client
-        C[🤖 MCP Client<br>Claude / Cursor]:::client
-        D[🔄 W&B Daemon<br>Background Sync]:::client
+        A[Python SDK<br>Notebooks / Scripts]:::client
+        B[React Dashboard<br>Vite :5173]:::client
+        C[MCP Client<br>Claude / Cursor]:::client
+        D[WandDb Daemon<br>Background Sync]:::client
     end
 
     %% API Gateway Layer
-    E[🌐 Backend Gateway :8000<br>Thin REST Proxy]:::gateway
+    E[Backend Gateway :8000<br>Thin REST Proxy]:::gateway
     
     %% Core Engine
-    F[🧠 Cognee Memory Gatekeeper :8010<br>Single Source of Truth]:::core
+    F[Cognee Memory Gatekeeper :8010<br>Single Source of Truth]:::core
 
     %% Storage Layer
     subgraph Storage["Embedded Database Stack"]
@@ -84,7 +84,7 @@ graph TD
 
 ---
 
-## 🔌 Model Context Protocol (MCP) Support
+## Model Context Protocol (MCP) Support
 
 Groundhog natively implements the **Model Context Protocol (MCP)**, allowing cutting-edge AI assistants (like Anthropic's Claude Desktop or Cursor) to directly interface with your experiment memory. 
 
@@ -96,7 +96,7 @@ Through the `mcp_server` (running on port `8002`), your agent gets access to fou
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Installation
 
@@ -148,7 +148,7 @@ Navigate to **`http://localhost:5173`** to access the dashboard.
 
 ---
 
-## 💻 Developer Guide: The Python SDK
+## Developer Guide: The Python SDK
 
 Integrate Groundhog directly into your PyTorch, TensorFlow, or JAX training scripts with zero friction.
 
@@ -167,7 +167,7 @@ config = {
 
 # 2. Pre-flight Check: Don't waste GPU time on duplicate runs!
 if groundhog.check(config).get("already_tried"):
-    print("⚠️ Duplicate configuration detected. Halting execution to save compute.")
+    print("Duplicate configuration detected. Halting execution to save compute.")
     exit(0)
 
 # ... [Your actual ML training loop runs here] ...
@@ -189,24 +189,11 @@ print(insights)
 
 ---
 
-## 🔄 Weights & Biases (W&B) Sync Daemon
+## WandDb Sync Daemon
 
-Already using Weights & Biases? Groundhog can seamlessly ingest your W&B history to build its memory graph automatically.
+Already using WandDb? Groundhog can seamlessly ingest your WandDb history to build its memory graph automatically.
 
 ```bash
 python connectors/wandb_sync.py --project-id proj_alpha_001 --watch --interval 60
 ```
 *Note: This parses `run.notes` for the rationale and requires `wandb` to be authenticated in your environment.*
-
----
-
-## 📜 License & Contribution
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
-
-We welcome contributions! Please open an issue or submit a Pull Request if you'd like to help improve Groundhog.
-
----
-<p align="center">
-  <i>Built with ❤️ for ML Researchers.</i>
-</p>
