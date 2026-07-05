@@ -278,7 +278,7 @@ function PriorRunCard({ run, nav }) {
           "{run.rationale}"
         </div>
       )}
-      <div className="mt-1 text-xs text-coffee/70 hover:text-coffee">
+      <div className="mt-1 text-xs text-coffee hover:text-coffee-deep">
         View full lineage →
       </div>
     </div>

@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "Segoe UI", "ui-sans-serif", "system-ui"],
-        display: ["Inter", "Segoe UI", "ui-sans-serif", "system-ui"],
+        sans: ["Google Sans Flex", "system-ui", "sans-serif"],
+        display: ["Google Sans Flex", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {

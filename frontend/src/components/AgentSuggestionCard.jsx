@@ -28,11 +28,10 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
   const payload = suggestion.payload || {};
 
   return (
-    <div className={`rounded-2xl border border-slate-800/70 bg-slate-900/80 p-4 ${meta.color.split(" ").slice(1).join(" ")}`}>
+    <div className="rounded-2xl border border-line bg-card p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={`h-4 w-1 rounded-full ${meta.color.split(" ")[0].replace("text-", "bg-")}`} />
-          <span className={`text-xs font-semibold uppercase tracking-[0.08em] ${meta.color.split(" ")[0]}`}>
+          <span className={`text-xs font-semibold tracking-normal ${meta.color.split(" ")[0]}`}>
             {meta.label}
           </span>
           {suggestion.experiment && (
@@ -49,7 +48,7 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
         <button
           onClick={handleDismiss}
           disabled={dismissing}
-          className="rounded-full border border-white/15 bg-white/7 px-2 py-1 text-[10px] text-muted/80 transition hover:bg-white/15 hover:text-espresso shrink-0"
+          className="rounded-full border border-line bg-sand px-2.5 py-1 text-[11px] font-medium text-cocoa transition hover:bg-hover hover:text-espresso shrink-0"
         >
           {dismissing ? "…" : "Dismiss"}
         </button>

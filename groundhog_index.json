@@ -2585,7 +2585,7 @@
         }
       ],
       "summary": "Across 3 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.27); best value seen: 0.01. Best on iris_synth: val_accuracy=0.88.",
-      "generated_at": "2026-07-05T04:24:00.355751"
+      "generated_at": "2026-07-05T13:45:41.170838"
     },
     "proj_blobs3_sgd_demo_0d78c7c9": {
       "n_runs": 10,
@@ -2607,18 +2607,6 @@
           "direction": "higher_is_better"
         },
         {
-          "parameter": "epochs",
-          "sensitivity": 0.2745,
-          "best_value": "50",
-          "best_metric_mean": 0.91,
-          "values_tried": [
-            "20",
-            "50"
-          ],
-          "metric": "val_accuracy",
-          "direction": "higher_is_better"
-        },
-        {
           "parameter": "batch_size",
           "sensitivity": 0.2745,
           "best_value": "16",
@@ -2626,6 +2614,18 @@
           "values_tried": [
             "16",
             "32"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "epochs",
+          "sensitivity": 0.2745,
+          "best_value": "50",
+          "best_metric_mean": 0.91,
+          "values_tried": [
+            "20",
+            "50"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
@@ -2661,7 +2661,7 @@
         }
       ],
       "summary": "Across 7 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.2888); best value seen: 0.01. 'weight_decay' had the least effect (0.0013). Best on blobs3: val_accuracy=0.6566.",
-      "generated_at": "2026-07-05T09:14:30.690878"
+      "generated_at": "2026-07-05T13:45:47.089541"
     },
     "proj_fashionmnist_cnn_sweep_3cddf661": {
       "n_runs": 15,
@@ -2753,7 +2753,7 @@
         }
       ],
       "summary": "Across 14 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'weight_decay' had the least effect (0.0102). Best on FashionMNIST: val_accuracy=0.87.",
-      "generated_at": "2026-07-05T12:35:07.908058"
+      "generated_at": "2026-07-05T13:45:48.791264"
     },
     "main_dataset": {
       "n_runs": 33,
@@ -2811,6 +2811,19 @@
           "direction": "higher_is_better"
         },
         {
+          "parameter": "model",
+          "sensitivity": 0.2597,
+          "best_value": "resnet50",
+          "best_metric_mean": 0.963,
+          "values_tried": [
+            "ResNet50",
+            "resnet50",
+            "softmax"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
           "parameter": "optimizer",
           "sensitivity": 0.2597,
           "best_value": "adamw",
@@ -2820,19 +2833,6 @@
             "adam",
             "adamw",
             "sgd"
-          ],
-          "metric": "val_accuracy",
-          "direction": "higher_is_better"
-        },
-        {
-          "parameter": "model",
-          "sensitivity": 0.2597,
-          "best_value": "resnet50",
-          "best_metric_mean": 0.963,
-          "values_tried": [
-            "ResNet50",
-            "resnet50",
-            "softmax"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
@@ -2937,7 +2937,7 @@
         }
       ],
       "summary": "Across 28 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.3418); best value seen: 0.0005. 'conv_channels' had the least effect (0.0344). Best on FashionMNIST: val_accuracy=0.87. Best on blobs3: val_accuracy=0.6566. Best on iris_synth: val_accuracy=0.88.",
-      "generated_at": "2026-07-05T11:37:04.168892"
+      "generated_at": "2026-07-05T13:37:41.704401"
     }
   }
 }

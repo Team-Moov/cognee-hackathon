@@ -166,10 +166,16 @@ export default function ProjectBar({ collapsed = false }) {
                 ),
               );
             }}
-            className={`relative inline-flex h-5 w-9 items-center transition-colors ${activeProject.wandb.sync_enabled ? "bg-espresso/60" : "bg-paper/20"}`}
+            role="switch"
+            aria-checked={activeProject.wandb.sync_enabled}
+            className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full border transition-colors duration-200 ${
+              activeProject.wandb.sync_enabled
+                ? "border-transparent bg-[#6366F1]"
+                : "border-[#3F3F46] bg-[#27272A]"
+            }`}
           >
             <span
-              className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${activeProject.wandb.sync_enabled ? "translate-x-5" : "translate-x-1"}`}
+              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${activeProject.wandb.sync_enabled ? "translate-x-4" : "translate-x-0.5"}`}
             />
           </button>
         </div>

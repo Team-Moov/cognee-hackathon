@@ -5,15 +5,15 @@ import { getGraph } from "../services/api";
 import PageHeader from "../components/PageHeader";
 
 const TYPE_COLOR = {
-  experiment: "var(--color-coffee)",
-  run: "var(--color-olive)",
-  dataset: "var(--color-ochre)",
-  artifact: "var(--color-muted)",
+  experiment: "#818CF8",
+  run: "#34D399",
+  dataset: "#FBBF24",
+  artifact: "#71717A",
 };
 const STATUS_COLOR = {
-  completed: "var(--color-olive)",
-  failed: "var(--color-terracotta)",
-  aborted: "var(--color-ochre)",
+  completed: "#34D399",
+  failed: "#F87171",
+  aborted: "#FBBF24",
 };
 
 export default function MemoryGraph() {
@@ -59,18 +59,15 @@ export default function MemoryGraph() {
     const color =
       node.type === "run"
         ? STATUS_COLOR[node.status] || TYPE_COLOR.run
-        : TYPE_COLOR[node.type] || "var(--color-muted)";
+        : TYPE_COLOR[node.type] || "#71717A";
     const r = node.type === "experiment" ? 9 : node.type === "run" ? 6 : 5;
     ctx.beginPath();
     ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
     ctx.fillStyle = color;
     ctx.fill();
     if (scale > 1.1 || node.type !== "run") {
-      ctx.font = `${fontSize}px Manrope, sans-serif`;
-      ctx.fillStyle =
-        getComputedStyle(document.documentElement)
-          .getPropertyValue("--color-cocoa")
-          .trim() || "#4E3A2A";
+      ctx.font = `${fontSize}px "Google Sans Flex", system-ui, sans-serif`;
+      ctx.fillStyle = "#A1A1AA";
       ctx.textAlign = "center";
       ctx.fillText(String(label).slice(0, 22), node.x, node.y + r + fontSize);
     }
@@ -96,7 +93,7 @@ export default function MemoryGraph() {
         <span className="flex items-center gap-1.5">
           <span
             className="inline-block h-2.5 w-2.5 rounded-full"
-            style={{ background: "#B14A34" }}
+            style={{ background: "#F87171" }}
           />{" "}
           failed run
         </span>
@@ -120,7 +117,7 @@ export default function MemoryGraph() {
             width={dims.w}
             height={dims.h}
             graphData={data}
-            backgroundColor="rgb(var(--color-card))"
+            backgroundColor="#111113"
             nodeCanvasObject={draw}
             nodePointerAreaPaint={(node, color, ctx) => {
               ctx.fillStyle = color;
@@ -128,7 +125,7 @@ export default function MemoryGraph() {
               ctx.arc(node.x, node.y, 8, 0, 2 * Math.PI);
               ctx.fill();
             }}
-            linkColor={() => "rgb(var(--color-line))"}
+            linkColor={() => "#27272A"}
             linkDirectionalArrowLength={3}
             linkDirectionalArrowRelPos={1}
             linkWidth={1}

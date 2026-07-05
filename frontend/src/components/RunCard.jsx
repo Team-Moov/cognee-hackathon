@@ -194,7 +194,7 @@ export default function RunCard({ run, onDeleted }) {
         {run.gpu_hours != null && <span>{run.gpu_hours}h GPU</span>}
         {wall && <span>{wall} wall</span>}
         {run.timestamp && <span>{run.timestamp.slice(0, 10)}</span>}
-        <span className="ml-auto font-medium text-coffee/70 transition-colors group-hover:text-coffee">View lineage →</span>
+        <span className="ml-auto font-medium text-coffee transition-colors group-hover:text-coffee-deep">View lineage →</span>
       </div>
 
       {/* Feature 1: Plain error message for failed runs (existing) */}
@@ -209,7 +209,7 @@ export default function RunCard({ run, onDeleted }) {
         <div className={`mt-2 rounded-xl border p-3 ${SEVERITY_STYLES.high}`}>
           <div className="mb-1 flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider opacity-70">
-              🔴 Why it failed
+              Why it failed
             </span>
           </div>
           {failureHeadline && (
@@ -219,8 +219,8 @@ export default function RunCard({ run, onDeleted }) {
             <div className="mt-0.5 text-xs opacity-80">Context: {run.rationale}</div>
           )}
           {failureFix && (
-            <div className="mt-1.5 rounded-md bg-white/40 px-2 py-1 text-xs font-medium">
-              💡 Fix: {failureFix}
+            <div className="mt-1.5 rounded-md bg-terracotta/10 px-2 py-1 text-xs font-medium">
+              Fix: {failureFix}
             </div>
           )}
         </div>
@@ -233,7 +233,7 @@ export default function RunCard({ run, onDeleted }) {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="mb-2 text-xs font-bold uppercase tracking-wider text-coffee/70">
-            🔍 Run Explanation
+            Run Explanation
           </div>
           {explainError ? (
             <div className="text-xs text-terracotta">{explainError}</div>

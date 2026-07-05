@@ -51,7 +51,7 @@ function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0D14] text-slate-100">
+    <div className="flex h-screen overflow-hidden bg-paper text-slate-100">
       <Sidebar
         collapsed={isCollapsed}
         mobileOpen={isMobileOpen}

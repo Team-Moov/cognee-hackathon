@@ -5,13 +5,13 @@ import Brand from "./Brand";
 import Icon from "./Icon";
 
 const NAV = [
-  { to: "/dashboard", label: "Experiments" },
-  { to: "/insights", label: "Insights" },
-  { to: "/graph", label: "Memory Graph" },
-  { to: "/preflight", label: "Pre-Flight Guard" },
-  { to: "/query", label: "Ask Memory" },
-  { to: "/files", label: "File Finder" },
-  { to: "/agents", label: "Agents" },
+  { to: "/dashboard", label: "Experiments", icon: "beaker" },
+  { to: "/insights", label: "Insights", icon: "chart" },
+  { to: "/graph", label: "Memory Graph", icon: "graph" },
+  { to: "/preflight", label: "Pre-Flight Guard", icon: "shield" },
+  { to: "/query", label: "Ask Memory", icon: "search" },
+  { to: "/files", label: "File Finder", icon: "folder" },
+  { to: "/agents", label: "Agents", icon: "sparkles" },
 ];
 
 export default function Sidebar({
@@ -20,14 +20,6 @@ export default function Sidebar({
   onToggle,
   onClose,
 }) {
-  const abbrev = (label) =>
-    label
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-
   return (
     <aside
       className={`fixed inset-y-0 z-30 flex h-screen flex-col border-r border-slate-800/70 bg-slate-950 transition-all duration-300 ease-out lg:static ${mobileOpen ? "left-0" : "-left-full"} ${collapsed ? "w-20 items-center" : "w-72"}`}
@@ -62,40 +54,26 @@ export default function Sidebar({
 
       <ProjectBar collapsed={collapsed} />
 
-      {!collapsed && (
-        <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
-          {NAV.map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              title={label}
-              className={({ isActive }) =>
-                `flex items-center px-3 py-2 rounded-xl text-sm transition-all duration-200 ${collapsed ? "justify-center" : ""} ${
-                  isActive ? "bg-slate-800/50 border-l-2 border-blue-400 text-white" : "hover:bg-slate-800/60 text-slate-300"
-                }`
-              }
-            >
-              <div className="flex w-full items-center justify-center gap-3">
-                {collapsed ? (
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--sidebar-hover)] text-[0.75rem] font-semibold text-[var(--sidebar-text)]">
-                    {abbrev(label)}
-                  </span>
-                ) : null}
-
-                <div className={`min-w-0 ${collapsed ? "hidden" : "flex-1"}`}>
-                  <div
-                    className="truncate font-semibold uppercase tracking-[0.1em] text-[0.78rem]"
-                    style={{ color: "var(--sidebar-text)", opacity: 0.92 }}
-                  >
-                    {label}
-                  </div>
-                </div>
-              </div>
-            </NavLink>
-          ))}
-        </nav>
-      )}
+      <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
+        {NAV.map(({ to, label, icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            onClick={onClose}
+            title={label}
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all duration-200 ${collapsed ? "justify-center" : ""} ${
+                isActive ? "bg-slate-800/50 text-white" : "text-slate-300 hover:bg-slate-800/60"
+              }`
+            }
+          >
+            <Icon name={icon} size={20} className="flex-shrink-0" />
+            {!collapsed && (
+              <span className="truncate font-semibold text-[0.82rem]">{label}</span>
+            )}
+          </NavLink>
+        ))}
+      </nav>
     </aside>
   );
 }

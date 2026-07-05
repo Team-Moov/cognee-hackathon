@@ -17,11 +17,11 @@ import {
 import { getInsights, listRuns } from "../services/api";
 import PageHeader from "../components/PageHeader";
 
-const COFFEE = "var(--color-coffee)";
-const OLIVE = "var(--color-olive)";
-const TERRA = "var(--color-terracotta)";
-const LINE = "var(--color-line)";
-const AMBER = "var(--color-ochre)";
+const COFFEE = "#818CF8";
+const OLIVE = "#34D399";
+const TERRA = "#F87171";
+const LINE = "#27272A";
+const AMBER = "#FBBF24";
 
 function acc(m = {}) {
   return m.val_accuracy ?? m.val_acc ?? m.accuracy ?? null;
@@ -168,7 +168,7 @@ export default function InsightsPage() {
                 >
                   <XAxis
                     type="number"
-                    tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -177,7 +177,7 @@ export default function InsightsPage() {
                     type="category"
                     dataKey="parameter"
                     width={110}
-                    tick={{ fontSize: 12, fill: "var(--color-cocoa)" }}
+                    tick={{ fontSize: 12, fill: "#A1A1AA" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -187,7 +187,7 @@ export default function InsightsPage() {
                       fontSize: 12,
                       borderRadius: 8,
                       border: `1px solid ${LINE}`,
-                      backgroundColor: "rgb(var(--color-card))",
+                      backgroundColor: "#111113",
                     }}
                     formatter={(v, _n, p) => [
                       `${v}  (best: ${p.payload.best_value})`,
@@ -196,7 +196,7 @@ export default function InsightsPage() {
                   />
                   <Bar dataKey="sensitivity" radius={[0, 6, 6, 0]}>
                     {sensitivity.map((_, i) => (
-                      <Cell key={i} fill={i === 0 ? COFFEE : "#A07C55"} />
+                      <Cell key={i} fill={i === 0 ? COFFEE : "#4F46E5"} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -218,7 +218,7 @@ export default function InsightsPage() {
                   <CartesianGrid stroke={LINE} strokeDasharray="3 3" />
                   <XAxis
                     dataKey="i"
-                    tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -227,11 +227,11 @@ export default function InsightsPage() {
                       position: "insideBottom",
                       offset: -2,
                       fontSize: 11,
-                      fill: "var(--color-muted)",
+                      fill: "#71717A",
                     }}
                   />
                   <YAxis
-                    tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -242,7 +242,7 @@ export default function InsightsPage() {
                       fontSize: 12,
                       borderRadius: 8,
                       border: `1px solid ${LINE}`,
-                      backgroundColor: "rgb(var(--color-card))",
+                      backgroundColor: "#111113",
                     }}
                     formatter={(v, _n, p) => [
                       `${v} (${p.payload.run}, ${p.payload.status})`,
@@ -289,7 +289,7 @@ export default function InsightsPage() {
                     type="number"
                     dataKey="x"
                     name={activeParam}
-                    tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -298,14 +298,14 @@ export default function InsightsPage() {
                       position: "insideBottom",
                       offset: -2,
                       fontSize: 11,
-                      fill: "var(--color-muted)",
+                      fill: "#71717A",
                     }}
                   />
                   <YAxis
                     type="number"
                     dataKey="y"
                     name="metric"
-                    tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    tick={{ fontSize: 11, fill: "#71717A" }}
                     axisLine={{ stroke: LINE }}
                     tickLine={{ stroke: LINE }}
                     stroke={LINE}
@@ -315,7 +315,7 @@ export default function InsightsPage() {
                       fontSize: 12,
                       borderRadius: 8,
                       border: `1px solid ${LINE}`,
-                      backgroundColor: "rgb(var(--color-card))",
+                      backgroundColor: "#111113",
                     }}
                     cursor={{ strokeDasharray: "3 3" }}
                   />
@@ -388,7 +388,7 @@ export default function InsightsPage() {
                         type="number"
                         domain={[0, 100]}
                         unit="%"
-                        tick={{ fontSize: 10, fill: "var(--color-muted)" }}
+                        tick={{ fontSize: 10, fill: "#71717A" }}
                         axisLine={{ stroke: LINE }}
                         tickLine={{ stroke: LINE }}
                         stroke={LINE}
@@ -397,7 +397,7 @@ export default function InsightsPage() {
                         type="category"
                         dataKey="experiment"
                         width={120}
-                        tick={{ fontSize: 11, fill: "var(--color-cocoa)" }}
+                        tick={{ fontSize: 11, fill: "#A1A1AA" }}
                         axisLine={{ stroke: LINE }}
                         tickLine={{ stroke: LINE }}
                         stroke={LINE}
@@ -436,7 +436,7 @@ export default function InsightsPage() {
                           formatter={(v) => `${v}%`}
                           style={{
                             fontSize: 11,
-                            fill: "var(--color-coffee-deep)",
+                            fill: "#6366F1",
                           }}
                         />
                       </Bar>
