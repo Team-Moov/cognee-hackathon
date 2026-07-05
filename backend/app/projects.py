@@ -78,6 +78,7 @@ def _public(project: Dict[str, Any], include_secrets: bool = False) -> Dict[str,
             "configured": bool((project.get("wandb") or {}).get("api_key")),
             "last_synced_run": (project.get("wandb") or {}).get("last_synced_run"),
             "sync_enabled": (project.get("wandb") or {}).get("sync_enabled", False),
+            "default_dataset": (project.get("wandb") or {}).get("default_dataset"),
         },
         "token": project.get("token"),
     }
@@ -153,7 +154,7 @@ def _get_raw(project_id: str) -> Optional[Dict[str, Any]]:
 
 
 def set_wandb(project_id: str, *, entity: Optional[str] = None, project: Optional[str] = None,
-              api_key: Optional[str] = None) -> Optional[Dict[str, Any]]:
+              api_key: Optional[str] = None, default_dataset: Optional[str] = None) -> Optional[Dict[str, Any]]:
     """Attach/update W&B credentials on a project (stored locally)."""
     with _LOCK:
         data = _load()
@@ -167,6 +168,8 @@ def set_wandb(project_id: str, *, entity: Optional[str] = None, project: Optiona
                 if api_key is not None:
                     wb["api_key"] = api_key
                     wb["sync_enabled"] = True
+                if default_dataset is not None:
+                    wb["default_dataset"] = default_dataset
                 _save(data)
                 return _public(p)
     return None

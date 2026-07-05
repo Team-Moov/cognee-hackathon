@@ -69,13 +69,19 @@ def push_run(
     except ImportError:
         return {"pushed": False, "reason": "wandb not installed"}
 
+    # Tag every app-mirrored run so the W&B->app sync loop can recognise and SKIP
+    # its own echoes — otherwise a project with both mirroring and auto-sync
+    # enabled forms a feedback loop that re-ingests these as duplicate runs.
+    GROUNDHOG_ORIGIN_TAG = "groundhog-origin"
+    all_tags = list(dict.fromkeys([*(tags or []), GROUNDHOG_ORIGIN_TAG]))
+
     try:
         run = wandb.init(
             entity=entity or None,
             project=project,
             name=name or None,
             notes=notes or "",
-            tags=tags or [],
+            tags=all_tags,
             group=group or None,
             job_type=job_type or None,
             config=config or {},

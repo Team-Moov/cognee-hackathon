@@ -29,6 +29,10 @@ class SetWandbRequest(BaseModel):
     entity: Optional[str] = None
     project: Optional[str] = None
     api_key: Optional[str] = None
+    default_dataset: Optional[str] = Field(
+        default=None,
+        description="Dataset name to attach to W&B-synced runs that don't log one in their config",
+    )
 
 class SetSyncRequest(BaseModel):
     enabled: bool
@@ -82,7 +86,8 @@ async def delete_project(project_id: str) -> Dict[str, Any]:
 
 @router.post("/{project_id}/wandb")
 async def set_wandb(project_id: str, req: SetWandbRequest) -> Dict[str, Any]:
-    proj = projects.set_wandb(project_id, entity=req.entity, project=req.project, api_key=req.api_key)
+    proj = projects.set_wandb(project_id, entity=req.entity, project=req.project,
+                              api_key=req.api_key, default_dataset=req.default_dataset)
     if not proj:
         raise HTTPException(status_code=404, detail=f"project not found: {project_id}")
     return proj

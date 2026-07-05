@@ -1,0 +1,11 @@
+{
+  "val_accuracy": 0.8477,
+  "val_loss": 0.4046,
+  "train_loss": 0.45201,
+  "epochs": 2,
+  "wall_clock_seconds": 6.8,
+  "gpu_hours": 0.00189,
+  "throughput_img_s": 4410.0,
+  "n_params": 421642,
+  "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
+}

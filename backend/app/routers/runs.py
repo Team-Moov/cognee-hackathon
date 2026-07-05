@@ -64,10 +64,13 @@ async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
     cognee_status = "skipped (no cognee_api_url configured)"
     stored_run_id = req.run_id or compute_config_hash(req.config, sig_keys)
 
-    # Mirror the run into the project's W&B project (if creds are configured).
-    # Done first + independently so a Cognee outage can't stop the W&B write —
-    # this is the direction a run logged in the app flows back out to W&B.
-    wandb_status = await _mirror_to_wandb(req)
+    # Mirror the run into the project's W&B project (if creds are configured) in
+    # the BACKGROUND. The W&B upload (wandb.init + finish) can take tens of
+    # seconds, so awaiting it inline made every remember() block ~30s and could
+    # time out a whole sweep. Fire-and-forget keeps run recording fast; the mirror
+    # runs after the response and logs its own failures.
+    wandb_status = {"pushed": "queued", "background": True}
+    background_tasks.add_task(_mirror_to_wandb, req)
 
     if settings.cognee_api_url:
         try:

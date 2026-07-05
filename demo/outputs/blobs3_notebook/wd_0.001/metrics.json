@@ -1,0 +1,6 @@
+{
+  "val_accuracy": 0.6364,
+  "val_loss": 0.8089,
+  "train_loss": 0.817,
+  "epochs": 20
+}

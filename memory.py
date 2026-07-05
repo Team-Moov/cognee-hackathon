@@ -655,26 +655,14 @@ async def check_config(
             "similarity_score": 1.0,
         }
 
-    try:
-        exact_results = await cognee.recall(
-            query_text=f"Configuration with hash {config_hash}",
-            query_type=SearchType.CHUNKS,
-            datasets=[dataset_name] if dataset_name else None,
-            node_name=[tag],
-            top_k=3,
-        )
-        if exact_results:
-            logger.info("Exact config tag match found for %s", config_hash[:12])
-            return {
-                "already_tried": True,
-                "match_type": "exact",
-                "config_hash": config_hash,
-                "prior_result": _extract_result_snippet(exact_results[0]),
-                "similarity_score": 1.0,
-            }
-    except Exception as e:
-        logger.warning("Exact tag lookup failed: %s", e)
-
+    # NOTE: the structured index (_prior_from_index above) is the authoritative,
+    # deterministic source for EXACT config-hash matches — every remember writes
+    # it (main.remember -> run_index.record_run). We deliberately do NOT fall back
+    # to a cognee recall() on the confighash tag here: recall() semantic-matches
+    # the query text and does NOT hard-filter by node_set, so it returns the
+    # nearest run doc as a false "exact" match (e.g. a new weight_decay flagged as
+    # already-tried with empty metrics). Only the index decides "exact". A config
+    # not in the index falls through to the SEMANTIC-SIMILAR check below.
     try:
         semantic_results = await cognee.recall(
             query_text=f"Experiment with config: {config_summary}",

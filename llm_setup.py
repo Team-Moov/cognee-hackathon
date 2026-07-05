@@ -134,6 +134,15 @@ def configure_cognee() -> dict:
             ", ".join(preset["key_envs"]),
         )
 
+    # Force instructor's structured-output mode to tool/function calling. In the
+    # adapter's default "json_mode", the model is only *asked* to return JSON
+    # matching a schema; OpenAI-compatible proxies (AI/ML API) + gpt-4o-mini
+    # instead echoed the JSON *schema* itself, failing pydantic validation
+    # ("summary field required") and triggering long instructor retry storms that
+    # slowed cognify and timed out sweeps. Tool calling forces a valid instance,
+    # so the model can't guess the shape. Overridable via LLM_INSTRUCTOR_MODE.
+    os.environ.setdefault("LLM_INSTRUCTOR_MODE", "tool_call")
+
     # --- Configure the chat / extraction LLM via the REAL setters ----------
     cognee.config.set_llm_provider(preset["provider"])
     cognee.config.set_llm_model(model)

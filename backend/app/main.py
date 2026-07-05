@@ -37,17 +37,23 @@ async def _wandb_sync_loop():
         try:
             projs = projects_module.list_projects()
             for p in projs:
-                wb = p.get("wandb") or {}
-                if wb.get("sync_enabled") and wb.get("entity") and wb.get("project"):
+                # list_projects() returns the PUBLIC view (api_key hidden), so we
+                # re-fetch WITH secrets to get the key the sync actually needs.
+                # `entity` is optional (W&B falls back to the default entity), so
+                # we only require a project name + sync_enabled.
+                full = projects_module.get_project(p["project_id"], include_secrets=True) or {}
+                wb = full.get("wandb") or {}
+                if wb.get("sync_enabled") and wb.get("project") and wb.get("api_key"):
                     # Run in executor to avoid blocking the event loop
                     await asyncio.get_event_loop().run_in_executor(
                         None,
                         sync_once,
                         f"http://127.0.0.1:{settings.api_port}",
                         p["project_id"],
-                        wb["entity"],
+                        wb.get("entity"),
                         wb["project"],
-                        wb.get("api_key")
+                        wb.get("api_key"),
+                        wb.get("default_dataset"),
                     )
         except Exception as e:
             logger.warning("Background W&B sync loop error: %s", e)

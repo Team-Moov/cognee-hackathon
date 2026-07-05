@@ -759,10 +759,18 @@ async def find_file(description: str = Query(..., description="Text description 
     for fpath, info in _artifact_registry.items():
         candidates.setdefault(fpath, {"file_path": fpath, **info})
 
+    q = description.strip().lower()
     best_score = 0.0
     best_fpath = None
     for fpath, info in candidates.items():
-        score = _rough_similarity(description, info.get("description", ""))
+        base = os.path.basename(fpath)
+        # Match on the filename AND the description — searching by a file name
+        # (the obvious use case) must work even though the auto-description is
+        # boilerplate. A direct substring hit on the basename wins outright.
+        haystack = f"{base} {info.get('description', '')} {info.get('artifact_type', '')}"
+        score = _rough_similarity(description, haystack)
+        if q and (q in base.lower() or q in fpath.lower()):
+            score = max(score, 0.95)
         if score > best_score:
             best_score = score
             best_fpath = fpath
@@ -777,18 +785,21 @@ async def find_file(description: str = Query(..., description="Text description 
             artifact_type=info.get("artifact_type", "other"),
         )
 
-    # Fall back to graph query
+    # Semantic fallback — but ONLY return a source that is a real path on disk.
+    # Never hand back an LLM completion string as a "file_path" (that produced
+    # hallucinated, non-existent paths).
     from memory import query_memory
     result = await query_memory(f"Find artifact file: {description}")
-    if result.get("sources"):
-        src = result["sources"][0]
-        return FindFileResponse(
-            file_path=str(src),
-            artifact_id=str(src),
-            exists_on_disk=os.path.exists(str(src)),
-            description=result.get("answer", "")[:200],
-            artifact_type="other",
-        )
+    for src in result.get("sources", []):
+        if isinstance(src, str) and os.path.exists(src):
+            info = candidates.get(os.path.abspath(src), {})
+            return FindFileResponse(
+                file_path=src,
+                artifact_id=src,
+                exists_on_disk=True,
+                description=info.get("description", "") or f"Matched via memory graph for: {description}",
+                artifact_type=info.get("artifact_type", _infer_artifact_type(src)),
+            )
 
     raise HTTPException(
         status_code=404,

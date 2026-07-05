@@ -95,9 +95,27 @@ def _result_summary(state: str, metrics: Dict[str, Any], notes: str) -> str:
 _STATE_MAP = {"finished": "completed", "failed": "failed", "crashed": "failed",
               "killed": "aborted", "running": "aborted"}
 
+# Config keys people commonly log a dataset under, so a synced W&B run can be
+# attached to the right dataset node instead of a catch-all "unknown".
+_DATASET_CONFIG_KEYS = ("dataset", "dataset_name", "data", "datamodule", "data_name")
+
+
+def _infer_dataset_name(config: Dict[str, Any], default: Optional[str]) -> Optional[str]:
+    """Best-effort dataset name from a W&B run's config, else the project default."""
+    for k in _DATASET_CONFIG_KEYS:
+        v = config.get(k)
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+        if isinstance(v, dict):
+            name = v.get("name") or v.get("dataset")
+            if isinstance(name, str) and name.strip():
+                return name.strip()
+    return default
+
 
 def fetch_new_runs(entity: str, project: str, api_key: Optional[str],
-                   since_created: Optional[str]) -> List[Dict[str, Any]]:
+                   since_created: Optional[str],
+                   default_dataset: Optional[str] = None) -> List[Dict[str, Any]]:
     """Return W&B runs created after `since_created` (ISO ts), newest last."""
     import wandb
     if api_key:
@@ -107,10 +125,16 @@ def fetch_new_runs(entity: str, project: str, api_key: Optional[str],
 
     collected = []
     for run in runs:
+        # Skip runs the app itself mirrored INTO W&B (tagged groundhog-origin) —
+        # re-ingesting them would duplicate runs that already live in memory and
+        # form a mirror<->sync feedback loop.
+        if "groundhog-origin" in (getattr(run, "tags", None) or []):
+            continue
         created = str(getattr(run, "created_at", "") or "")
         if since_created and created and created <= since_created:
             continue
         clean_config = {k: v for k, v in run.config.items() if not k.startswith("_")}
+        dataset_name = _infer_dataset_name(clean_config, default_dataset)
         clean_config["_wandb_url"] = run.url
         clean_metrics = {k: v for k, v in run.summary.items() if not k.startswith("_")}
         wall = run.summary.get("_runtime", 0.0) or 0.0
@@ -124,6 +148,7 @@ def fetch_new_runs(entity: str, project: str, api_key: Optional[str],
             "gpu_hours": round(wall / 3600.0, 2) if wall else 0.0,
             "experiment": run.group or project,
             "thread": run.job_type or "default",
+            "dataset_name": dataset_name,
         })
     collected.sort(key=lambda r: r["created_at"])
     return collected
@@ -134,11 +159,11 @@ def fetch_new_runs(entity: str, project: str, api_key: Optional[str],
 # ---------------------------------------------------------------------------
 
 def sync_once(backend_url: str, project_id: str, entity: str, project: str,
-              api_key: Optional[str]) -> int:
+              api_key: Optional[str], default_dataset: Optional[str] = None) -> int:
     state = _load_state()
     watermark = state.get(project_id, {}).get("since_created")
     try:
-        new_runs = fetch_new_runs(entity, project, api_key, watermark)
+        new_runs = fetch_new_runs(entity, project, api_key, watermark, default_dataset)
     except Exception as e:
         print(f"[!] W&B fetch failed: {e}")
         return 0
@@ -163,6 +188,8 @@ def sync_once(backend_url: str, project_id: str, entity: str, project: str,
                 "gpu_hours": r["gpu_hours"],
                 "git_commit": "wandb",
             }
+            if r.get("dataset_name"):
+                payload["dataset"] = {"name": r["dataset_name"], "version": "wandb-sync"}
             try:
                 resp = client.post(f"{backend_url}/api/runs/remember", json=payload)
                 resp.raise_for_status()
@@ -180,14 +207,17 @@ def sync_once(backend_url: str, project_id: str, entity: str, project: str,
 def resolve_creds(args) -> Dict[str, Optional[str]]:
     """CLI/env creds win; else pull from the Groundhog project's stored W&B creds."""
     entity, project, api_key = args.wandb_entity, args.wandb_project, args.wandb_api_key
+    default_dataset = getattr(args, "default_dataset", None)
     if (not entity or not project) and args.project_id:
         proj = _load_project(args.project_id)
         wb = (proj or {}).get("wandb", {})
         entity = entity or wb.get("entity")
         project = project or wb.get("project")
         api_key = api_key or wb.get("api_key")
+        default_dataset = default_dataset or wb.get("default_dataset")
     api_key = api_key or os.getenv("WANDB_API_KEY")
-    return {"entity": entity, "project": project, "api_key": api_key}
+    return {"entity": entity, "project": project, "api_key": api_key,
+            "default_dataset": default_dataset}
 
 
 def main():
@@ -197,6 +227,8 @@ def main():
     ap.add_argument("--wandb-entity", default=None)
     ap.add_argument("--wandb-project", default=None)
     ap.add_argument("--wandb-api-key", default=None)
+    ap.add_argument("--default-dataset", dest="default_dataset", default=None,
+                    help="Dataset name for synced runs that don't log one in their W&B config")
     ap.add_argument("--interval", type=int, default=0, help="Poll every N seconds (0 = run once)")
     ap.add_argument("--once", action="store_true", help="Sync once and exit")
     args = ap.parse_args()
@@ -210,14 +242,16 @@ def main():
     print(f"[*] Syncing W&B {creds['entity']}/{creds['project']} -> Groundhog {args.project_id}")
 
     if args.once or args.interval <= 0:
-        n = sync_once(args.backend_url, args.project_id, creds["entity"], creds["project"], creds["api_key"])
+        n = sync_once(args.backend_url, args.project_id, creds["entity"], creds["project"],
+                      creds["api_key"], creds.get("default_dataset"))
         print(f"[+] Done. Ingested {n} run(s).")
         return
 
     print(f"[*] Watch mode: polling every {args.interval}s. Ctrl+C to stop.")
     try:
         while True:
-            sync_once(args.backend_url, args.project_id, creds["entity"], creds["project"], creds["api_key"])
+            sync_once(args.backend_url, args.project_id, creds["entity"], creds["project"],
+                      creds["api_key"], creds.get("default_dataset"))
             time.sleep(args.interval)
     except KeyboardInterrupt:
         print("\n[*] Stopped.")

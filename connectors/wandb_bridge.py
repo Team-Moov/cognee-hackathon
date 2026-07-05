@@ -87,7 +87,7 @@ class WandbBridge:
 
 if __name__ == "__main__":
     # ⚠️ EDIT THIS LINE: Replace with your actual W&B account/entity name and a project name
-    TARGET_PROJECT = "bananyadas-manipal/Groundhog"
+    TARGET_PROJECT = "bananyadas-manipal/Groundhog2"
     
     if "your_wandb_username" in TARGET_PROJECT:
         print("[!] Workspace Notice: Please open connectors/wandb_bridge.py and change TARGET_PROJECT to point to a real W&B project path.")

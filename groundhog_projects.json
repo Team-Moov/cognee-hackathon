@@ -42,6 +42,32 @@
         "last_synced_run": null,
         "sync_enabled": false
       }
+    },
+    {
+      "project_id": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "name": "FashionMNIST CNN Sweep",
+      "dataset": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "token": "RVz7t4TGJT8aM_NfyZYawaKT8-Lri9Rd",
+      "created_at": "2026-07-05T06:11:05.025985",
+      "significant_keys": [
+        "lr",
+        "batch_size",
+        "optimizer",
+        "weight_decay",
+        "dropout",
+        "conv_channels",
+        "hidden_dim",
+        "activation",
+        "epochs"
+      ],
+      "wandb": {
+        "entity": "bananyadas-manipal",
+        "project": "Groundhog2",
+        "api_key": "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",
+        "last_synced_run": null,
+        "sync_enabled": true,
+        "default_dataset": "FashionMNIST"
+      }
     }
   ]
 }

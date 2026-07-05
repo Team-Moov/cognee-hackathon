@@ -82,6 +82,9 @@ export async function deleteProject(id) {
 export async function toggleWandbSync(id, enabled) {
   return put(`/projects/${id}/wandb/sync`, { enabled });
 }
+export async function setProjectWandb(id, { entity, project, api_key, default_dataset }) {
+  return post(`/projects/${id}/wandb`, { entity, project, api_key, default_dataset });
+}
 
 // --- Insights + Graph (scoped) ---
 export async function getInsights() {
