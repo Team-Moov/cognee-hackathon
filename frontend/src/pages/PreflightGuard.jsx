@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { checkConfig } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 
 const PRESETS = [
   { label: "ResNet50 + Adam (already tried!)", config: { model: "ResNet50", optimizer: "Adam", lr: 0.001, batch_size: 64, epochs: 50 } },
@@ -55,11 +56,11 @@ export default function PreflightGuard() {
   const matchType = result?.match_type;
 
   return (
-    <div className="mx-auto max-w-2xl p-6 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Pre-flight Guard</h1>
-        <p className="mt-1 text-sm text-muted">Check if a config has been tried before — save GPU-hours before you waste them.</p>
-      </div>
+    <div className="mx-auto w-full max-w-5xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="Pre-flight Guard"
+        subtitle="Check if a config has been tried before — save GPU-hours before you waste them."
+      />
 
       {/* Presets */}
       <div className="mb-5">

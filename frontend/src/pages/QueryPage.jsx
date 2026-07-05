@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { queryMemory } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import PageHeader from "../components/PageHeader";
 
 const EXAMPLES = [
   "Which runs failed or were aborted?",
@@ -68,11 +69,11 @@ export default function QueryPage() {
   const hasTable = result?.answer?.includes("|");
 
   return (
-    <div className="mx-auto max-w-2xl p-6 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Ask Memory</h1>
-        <p className="mt-1 text-sm text-muted">Natural language queries across all experiment history — including failures.</p>
-      </div>
+    <div className="mx-auto w-full max-w-5xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="Ask Memory"
+        subtitle="Natural language queries across all experiment history — including failures."
+      />
 
       {/* Input */}
       <div className="flex gap-2">

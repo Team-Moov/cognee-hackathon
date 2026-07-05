@@ -4,12 +4,13 @@ import {
   LineChart, Line, CartesianGrid, ScatterChart, Scatter, LabelList,
 } from "recharts";
 import { getInsights, listRuns } from "../services/api";
+import PageHeader from "../components/PageHeader";
 
-const COFFEE = "#7B5836";
-const OLIVE  = "#5E7A46";
-const TERRA  = "#B14A34";
-const LINE   = "#DECBAA";
-const AMBER  = "#D97706";
+const COFFEE = "var(--color-coffee)";
+const OLIVE  = "var(--color-olive)";
+const TERRA  = "var(--color-terracotta)";
+const LINE   = "var(--color-line)";
+const AMBER  = "var(--color-ochre)";
 
 function acc(m = {}) {
   return m.val_accuracy ?? m.val_acc ?? m.accuracy ?? null;
@@ -96,11 +97,11 @@ export default function InsightsPage() {
   const empty = sensitivity.length === 0 && trend.length === 0;
 
   return (
-    <div className="mx-auto max-w-4xl p-6 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Insights</h1>
-        <p className="mt-1 text-sm text-muted">What the memory has learned across this project's runs.</p>
-      </div>
+    <div className="mx-auto w-full max-w-6xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="Insights"
+        subtitle="What the memory has learned across this project's runs."
+      />
 
       {empty && totalRuns === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-card/50 py-16 text-center text-sm text-muted">
@@ -119,8 +120,8 @@ export default function InsightsPage() {
             <Card title="Parameter sensitivity" subtitle="How much each hyperparameter moves the metric (bigger = more impact)">
               <ResponsiveContainer width="100%" height={Math.max(120, sensitivity.length * 44)}>
                 <BarChart data={sensitivity} layout="vertical" margin={{ left: 20, right: 30 }}>
-                  <XAxis type="number" tick={{ fontSize: 11, fill: "#93795C" }} />
-                  <YAxis type="category" dataKey="parameter" width={110} tick={{ fontSize: 12, fill: "#4E3A2A" }} />
+                  <XAxis type="number" tick={{ fontSize: 11, fill: "var(--color-muted)" }} />
+                  <YAxis type="category" dataKey="parameter" width={110} tick={{ fontSize: 12, fill: "var(--color-cocoa)" }} />
                   <Tooltip
                     contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${LINE}` }}
                     formatter={(v, _n, p) => [`${v}  (best: ${p.payload.best_value})`, "impact"]}
@@ -139,9 +140,9 @@ export default function InsightsPage() {
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={trend} margin={{ left: 0, right: 20, top: 10 }}>
                   <CartesianGrid stroke={LINE} strokeDasharray="3 3" />
-                  <XAxis dataKey="i" tick={{ fontSize: 11, fill: "#93795C" }}
-                    label={{ value: "run #", position: "insideBottom", offset: -2, fontSize: 11, fill: "#93795C" }} />
-                  <YAxis tick={{ fontSize: 11, fill: "#93795C" }} domain={["auto", "auto"]} />
+                  <XAxis dataKey="i" tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    label={{ value: "run #", position: "insideBottom", offset: -2, fontSize: 11, fill: "var(--color-muted)" }} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--color-muted)" }} domain={["auto", "auto"]} />
                   <Tooltip
                     contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${LINE}` }}
                     formatter={(v, _n, p) => [`${v} (${p.payload.run}, ${p.payload.status})`, "metric"]}
@@ -170,9 +171,9 @@ export default function InsightsPage() {
               <ResponsiveContainer width="100%" height={220}>
                 <ScatterChart margin={{ left: 0, right: 20, top: 10 }}>
                   <CartesianGrid stroke={LINE} strokeDasharray="3 3" />
-                  <XAxis type="number" dataKey="x" name={activeParam} tick={{ fontSize: 11, fill: "#93795C" }}
-                    label={{ value: activeParam, position: "insideBottom", offset: -2, fontSize: 11, fill: "#93795C" }} />
-                  <YAxis type="number" dataKey="y" name="metric" tick={{ fontSize: 11, fill: "#93795C" }} />
+                  <XAxis type="number" dataKey="x" name={activeParam} tick={{ fontSize: 11, fill: "var(--color-muted)" }}
+                    label={{ value: activeParam, position: "insideBottom", offset: -2, fontSize: 11, fill: "var(--color-muted)" }} />
+                  <YAxis type="number" dataKey="y" name="metric" tick={{ fontSize: 11, fill: "var(--color-muted)" }} />
                   <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${LINE}` }} cursor={{ strokeDasharray: "3 3" }} />
                   <Scatter data={scatter} fill={OLIVE} />
                 </ScatterChart>
@@ -209,8 +210,8 @@ export default function InsightsPage() {
                   </div>
                   <ResponsiveContainer width="100%" height={Math.max(80, failureStats.length * 40)}>
                     <BarChart data={failureStats} layout="vertical" margin={{ left: 10, right: 50 }}>
-                      <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "#93795C" }} />
-                      <YAxis type="category" dataKey="experiment" width={120} tick={{ fontSize: 11, fill: "#4E3A2A" }} />
+                      <XAxis type="number" domain={[0, 100]} unit="%" tick={{ fontSize: 10, fill: "var(--color-muted)" }} />
+                      <YAxis type="category" dataKey="experiment" width={120} tick={{ fontSize: 11, fill: "var(--color-cocoa)" }} />
                       <Tooltip
                         contentStyle={{ fontSize: 12, borderRadius: 8, border: `1px solid ${LINE}` }}
                         formatter={(v, _name, p) => [
@@ -224,7 +225,7 @@ export default function InsightsPage() {
                         ))}
                         <LabelList dataKey="failRate" position="right"
                           formatter={(v) => `${v}%`}
-                          style={{ fontSize: 11, fill: "#6B5040" }} />
+                          style={{ fontSize: 11, fill: "var(--color-coffee-deep)" }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>

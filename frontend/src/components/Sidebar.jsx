@@ -1,96 +1,109 @@
 import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import ProjectBar from "./ProjectBar";
 import Brand from "./Brand";
 import Icon from "./Icon";
-import { useAuth } from "../auth/AuthContext";
 
 const NAV = [
-  { to: "/dashboard", label: "Experiments",     icon: "beaker",   desc: "All runs" },
-  { to: "/insights",  label: "Insights",         icon: "chart",    desc: "What memory learned" },
-  { to: "/graph",     label: "Memory Graph",     icon: "graph",    desc: "The knowledge graph" },
-  { to: "/preflight", label: "Pre-flight Guard", icon: "shield",   desc: "Check before running" },
-  { to: "/query",     label: "Ask Memory",       icon: "search",   desc: "Natural-language query" },
-  { to: "/files",     label: "File Finder",       icon: "folder",   desc: "Artifacts & orphans" },
-  { to: "/agents",    label: "Agents",            icon: "sparkles", desc: "AI suggestions" },
+  { to: "/dashboard", label: "Experiments" },
+  { to: "/insights", label: "Insights" },
+  { to: "/graph", label: "Memory Graph" },
+  { to: "/preflight", label: "Pre-Flight Guard" },
+  { to: "/query", label: "Ask Memory" },
+  { to: "/files", label: "File Finder" },
+  { to: "/agents", label: "Agents" },
 ];
 
-function initials(name = "") {
-  return name
+export default function Sidebar({ collapsed = false, mobileOpen = false, onToggle, onClose, theme = "light", onToggleTheme }) {
+  const abbrev = (label) => label
     .split(" ")
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
+    .map((word) => word[0])
     .join("")
-    .toUpperCase() || "?";
-}
-
-export default function Sidebar() {
-  const { user, logout } = useAuth();
-  const nav = useNavigate();
-
-  function handleLogout() {
-    logout();
-    nav("/", { replace: true });
-  }
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <aside className="flex w-64 flex-shrink-0 flex-col border-r border-line bg-card">
-      <div className="border-b border-line px-5 py-5">
-        <NavLink to="/">
-          <Brand />
-        </NavLink>
+    <aside
+      className={`fixed inset-y-0 z-30 flex h-screen flex-col border-r shadow-[8px_0_30px_rgba(78,58,42,0.08)] transition-all duration-300 ease-out lg:static ${mobileOpen ? "left-0" : "-left-full"} ${collapsed ? "w-20 items-center" : "w-72"}`}
+      style={{ backgroundColor: "var(--sidebar-bg)", borderColor: "var(--sidebar-border)" }}
+    >
+      <div className={`flex items-center border-b ${collapsed ? "justify-center px-2 py-3" : "justify-between px-4 py-3"}`} style={{ borderColor: "var(--sidebar-border)" }}>
+        {collapsed ? (
+          <button
+            type="button"
+            onClick={onToggle}
+            className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-line bg-card text-cocoa shadow-sm transition hover:bg-hover"
+            title="Open navigation"
+          >
+            <Icon name="menu" size={18} />
+          </button>
+        ) : (
+          <>
+            <NavLink to="/dashboard" onClick={onClose} className="min-w-0">
+              <Brand size="sm" tagline={false} />
+            </NavLink>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onToggleTheme}
+                className="flex h-9 w-9 items-center justify-center rounded-full border bg-card text-cocoa shadow-sm transition-colors hover:bg-hover"
+                title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                style={{ borderColor: "var(--sidebar-border)" }}
+              >
+                {theme === "dark" ? "☀︎" : "☾"}
+              </button>
+              <button
+                type="button"
+                onClick={onToggle}
+                className="flex h-9 w-9 items-center justify-center rounded-full border bg-card text-cocoa shadow-sm transition-colors hover:bg-hover"
+                title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                style={{ borderColor: "var(--sidebar-border)" }}
+              >
+                <Icon name={collapsed ? "arrowRight" : "arrowLeft"} size={16} />
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
-      <ProjectBar />
+      <ProjectBar collapsed={collapsed} />
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV.map(({ to, label, icon, desc }) => (
+      {!collapsed && (
+        <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-3">
+        {NAV.map(({ to, label }) => (
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
+            title={label}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+              `flex items-center rounded-xl px-3 py-2.5 text-sm transition-all ${collapsed ? "justify-center" : ""} ${
                 isActive
-                  ? "bg-coffee text-card shadow-soft"
-                  : "text-cocoa hover:bg-sand"
+                  ? "shadow-sm"
+                  : "hover:bg-[var(--sidebar-hover)]"
               }`
             }
+            style={({ isActive }) => ({
+              backgroundColor: isActive ? "var(--sidebar-active-bg)" : undefined,
+              color: isActive ? "var(--sidebar-active-text)" : "var(--sidebar-text)",
+            })}
           >
-            {({ isActive }) => (
-              <>
-                <Icon name={icon} size={18} className="flex-shrink-0" />
-                <div className="min-w-0">
-                  <div className="truncate font-semibold">{label}</div>
-                  <div className={`truncate text-xs ${isActive ? "text-card/70" : "text-muted"}`}>
-                    {desc}
-                  </div>
-                </div>
-              </>
-            )}
+            <div className="flex w-full items-center justify-center gap-3">
+              {collapsed ? (
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-[var(--sidebar-hover)] text-[0.75rem] font-semibold text-[var(--sidebar-text)]">
+                  {abbrev(label)}
+                </span>
+              ) : null}
+
+              <div className={`min-w-0 ${collapsed ? "hidden" : "flex-1"}`}>
+                <div className="truncate font-semibold uppercase tracking-[0.16em] text-[0.78rem]">{label}</div>
+              </div>
+            </div>
           </NavLink>
         ))}
       </nav>
-
-      {/* User + logout */}
-      <div className="border-t border-line px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-full bg-sand text-xs font-semibold text-coffee-deep">
-            {initials(user?.name)}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold text-espresso">{user?.name || "Researcher"}</div>
-            <div className="truncate text-xs text-muted">{user?.email}</div>
-          </div>
-          <button
-            onClick={handleLogout}
-            title="Sign out"
-            className="flex-shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-sand hover:text-terracotta"
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
+      )}
     </aside>
   );
 }

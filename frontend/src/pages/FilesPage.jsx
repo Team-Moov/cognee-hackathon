@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { findFile, getOrphans } from "../services/api";
+import PageHeader from "../components/PageHeader";
 
 export default function FilesPage() {
   const [query, setQuery] = useState("");
@@ -35,11 +36,11 @@ export default function FilesPage() {
   const FIND_EXAMPLES = ["best checkpoint", "bert model", "loss curve plot", "cifar eval report", "gpt2 perplexity"];
 
   return (
-    <div className="mx-auto max-w-2xl p-6 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-espresso">File Finder</h1>
-        <p className="mt-1 text-sm text-muted">Locate any artifact by description — no more spelunking through run_47_v2_final_FINAL/.</p>
-      </div>
+    <div className="mx-auto w-full max-w-5xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="File Finder"
+        subtitle="Locate any artifact by description — no more spelunking through run_47_v2_final_FINAL/."
+      />
 
       {/* Find file */}
       <div className="mb-6 rounded-2xl border border-line bg-card p-5 shadow-soft">

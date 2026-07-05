@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getLineage } from "../services/api";
+import PageHeader from "../components/PageHeader";
 
 const NODE_STYLES = {
   hypothesis: { bg: "bg-coffee/8 border-coffee/30", accent: "bg-coffee",     label: "HYPOTHESIS", text: "text-coffee-deep" },
@@ -116,18 +117,18 @@ export default function LineageExplorer() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl p-6 sm:p-8">
+    <div className="mx-auto w-full max-w-5xl p-6 sm:p-8 lg:px-10">
       <button
         onClick={() => nav("/dashboard")}
-        className="mb-4 flex items-center gap-1 text-sm text-muted transition-colors hover:text-cocoa"
+        className="mb-4 flex items-center gap-1 text-sm text-stone-600 transition-colors hover:text-stone-900"
       >
         ← Back to Dashboard
       </button>
 
-      <div className="mb-5">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Lineage Explorer</h1>
-        <code className="mt-1 block text-sm text-coffee-deep">{runId}</code>
-      </div>
+      <PageHeader
+        title="Lineage Explorer"
+        subtitle={runId}
+      />
 
       {loading && <div className="py-12 text-center text-sm text-muted">Loading lineage…</div>}
       {error   && <div className="py-12 text-center text-sm text-terracotta">Error: {error}</div>}

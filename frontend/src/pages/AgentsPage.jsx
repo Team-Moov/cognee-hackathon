@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState, useCallback } from "react";
 import { getAgentSuggestions, generateReport } from "../services/api";
 import AgentSuggestionCard from "../components/AgentSuggestionCard";
+import PageHeader from "../components/PageHeader";
 
 export default function AgentsPage() {
   const [suggestions, setSuggestions] = useState([]);
@@ -46,13 +47,11 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-6 sm:p-8">
-      <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Agent Suggestions</h1>
-        <p className="mt-1 text-sm text-muted">
-          Insights from Triage, Config Proposer, Literature Review, and Dataset Steward agents.
-        </p>
-      </div>
+    <div className="mx-auto w-full max-w-6xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="Agent Suggestions"
+        subtitle="Insights from Triage, Config Proposer, Literature Review, and Dataset Steward agents."
+      />
 
       {/* Controls */}
       <div className="mb-6 flex flex-wrap gap-3">

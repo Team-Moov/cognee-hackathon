@@ -4,29 +4,27 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Manrope", "ui-sans-serif", "system-ui"],
-        display: ["Space Grotesk", "ui-sans-serif", "system-ui"],
+        sans: ["Inter", "Segoe UI", "ui-sans-serif", "system-ui"],
+        display: ["Inter", "Segoe UI", "ui-sans-serif", "system-ui"],
         mono: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       colors: {
-        // Cream / brown light palette — strict single system
-        paper: "#F4EBDA",      // page background
-        card: "#FDF8EE",       // surfaces / cards
-        sand: "#EEE1CB",       // subtle fills, chips
-        hover: "#E7D8BD",      // hover fills
-        line: "#DECBAA",       // borders / dividers
+        paper: "rgb(var(--color-paper) / <alpha-value>)",
+        card: "rgb(var(--color-card) / <alpha-value>)",
+        sand: "rgb(var(--color-sand) / <alpha-value>)",
+        hover: "rgb(var(--color-hover) / <alpha-value>)",
+        line: "rgb(var(--color-line) / <alpha-value>)",
         coffee: {
-          light: "#A07C55",
-          DEFAULT: "#7B5836",  // primary brown
-          deep: "#5A3E28",
+          light: "rgb(var(--color-coffee-light) / <alpha-value>)",
+          DEFAULT: "rgb(var(--color-coffee) / <alpha-value>)",
+          deep: "rgb(var(--color-coffee-deep) / <alpha-value>)",
         },
-        espresso: "#3A2A1C",   // headings / strongest text
-        cocoa: "#4E3A2A",      // body text
-        muted: "#93795C",      // secondary text
-        // warm status accents that live inside the palette
-        olive: "#5E7A46",      // success
-        terracotta: "#B14A34", // danger
-        ochre: "#B27C24",      // warning
+        espresso: "rgb(var(--color-espresso) / <alpha-value>)",
+        cocoa: "rgb(var(--color-cocoa) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)",
+        olive: "rgb(var(--color-olive) / <alpha-value>)",
+        terracotta: "rgb(var(--color-terracotta) / <alpha-value>)",
+        ochre: "rgb(var(--color-ochre) / <alpha-value>)",
       },
       boxShadow: {
         soft: "0 1px 2px rgba(90, 62, 40, 0.06), 0 4px 16px rgba(90, 62, 40, 0.06)",

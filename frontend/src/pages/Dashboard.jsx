@@ -4,6 +4,7 @@ import { listRuns, getAgentSuggestions } from "../services/api";
 import RunCard from "../components/RunCard";
 import AgentSuggestionCard from "../components/AgentSuggestionCard";
 import LogRunModal from "../components/LogRunModal";
+import PageHeader from "../components/PageHeader";
 
 const STATUSES = ["all", "completed", "failed", "aborted"];
 
@@ -58,15 +59,15 @@ export default function Dashboard() {
     "rounded-xl border border-line bg-card px-3 py-2 text-sm text-cocoa focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20";
 
   return (
-    <div className="mx-auto max-w-5xl p-6 sm:p-8">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl font-semibold text-espresso">Experiment Dashboard</h1>
-          <p className="mt-1 text-sm text-muted">All runs, artifacts, and research history in one place.</p>
-        </div>
+    <div className="mx-auto w-full max-w-6xl p-6 sm:p-8 lg:px-10">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <PageHeader
+          title="Experiment Dashboard"
+          subtitle="All runs, artifacts, and research history in one place."
+        />
         <button
           onClick={() => setShowLog(true)}
-          className="shrink-0 rounded-full bg-coffee px-5 py-2.5 text-sm font-semibold text-card shadow-soft transition-colors hover:bg-coffee-deep"
+          className="shrink-0 rounded-full border border-line bg-coffee px-5 py-2.5 text-sm font-semibold text-card shadow-sm transition hover:bg-coffee-deep"
         >
           + Log run
         </button>

@@ -2,14 +2,15 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import ForceGraph2D from "react-force-graph-2d";
 import { getGraph } from "../services/api";
+import PageHeader from "../components/PageHeader";
 
 const TYPE_COLOR = {
-  experiment: "#7B5836", // coffee
-  run: "#5E7A46",        // olive
-  dataset: "#B27C24",    // ochre
-  artifact: "#93795C",   // muted
+  experiment: "var(--color-coffee)",
+  run: "var(--color-olive)",
+  dataset: "var(--color-ochre)",
+  artifact: "var(--color-muted)",
 };
-const STATUS_COLOR = { completed: "#5E7A46", failed: "#B14A34", aborted: "#B27C24" };
+const STATUS_COLOR = { completed: "var(--color-olive)", failed: "var(--color-terracotta)", aborted: "var(--color-ochre)" };
 
 export default function MemoryGraph() {
   const [data, setData] = useState({ nodes: [], links: [] });
@@ -43,7 +44,7 @@ export default function MemoryGraph() {
   const draw = useCallback((node, ctx, scale) => {
     const label = node.label || node.id;
     const fontSize = 12 / scale;
-    const color = node.type === "run" ? (STATUS_COLOR[node.status] || TYPE_COLOR.run) : (TYPE_COLOR[node.type] || "#999");
+    const color = node.type === "run" ? (STATUS_COLOR[node.status] || TYPE_COLOR.run) : (TYPE_COLOR[node.type] || "var(--color-muted)");
     const r = node.type === "experiment" ? 9 : node.type === "run" ? 6 : 5;
     ctx.beginPath();
     ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
@@ -51,20 +52,18 @@ export default function MemoryGraph() {
     ctx.fill();
     if (scale > 1.1 || node.type !== "run") {
       ctx.font = `${fontSize}px Manrope, sans-serif`;
-      ctx.fillStyle = "#4E3A2A";
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--color-cocoa").trim() || "#4E3A2A";
       ctx.textAlign = "center";
       ctx.fillText(String(label).slice(0, 22), node.x, node.y + r + fontSize);
     }
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl p-6 sm:p-8">
-      <div className="mb-4">
-        <h1 className="font-display text-3xl font-semibold text-espresso">Memory Graph</h1>
-        <p className="mt-1 text-sm text-muted">
-          The project's knowledge graph — experiments, runs, datasets, and how they connect. Click a run to inspect; double-click to open its lineage.
-        </p>
-      </div>
+    <div className="mx-auto w-full max-w-6xl p-6 sm:p-8 lg:px-10">
+      <PageHeader
+        title="Memory Graph"
+        subtitle="The project's knowledge graph — experiments, runs, datasets, and how they connect. Click a run to inspect; double-click to open its lineage."
+      />
 
       <div className="mb-3 flex flex-wrap gap-3 text-xs text-muted">
         {Object.entries(TYPE_COLOR).map(([t, c]) => (
@@ -86,7 +85,7 @@ export default function MemoryGraph() {
             width={dims.w}
             height={dims.h}
             graphData={data}
-            backgroundColor="#FDF8EE"
+            backgroundColor="var(--color-card)"
             nodeCanvasObject={draw}
             nodePointerAreaPaint={(node, color, ctx) => {
               ctx.fillStyle = color;
@@ -94,7 +93,7 @@ export default function MemoryGraph() {
               ctx.arc(node.x, node.y, 8, 0, 2 * Math.PI);
               ctx.fill();
             }}
-            linkColor={() => "#DECBAA"}
+            linkColor={() => "var(--color-line)"}
             linkDirectionalArrowLength={3}
             linkDirectionalArrowRelPos={1}
             linkWidth={1}
