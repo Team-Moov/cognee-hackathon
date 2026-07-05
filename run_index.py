@@ -241,4 +241,7 @@ def list_findings(experiment: Optional[str] = None, limit: int = 200,
     if not include_dismissed:
         findings = [f for f in findings if not f.get("dismissed")]
     findings = sorted(findings, key=lambda f: f.get("timestamp", ""), reverse=True)[:limit]
+    for f in findings:
+        if "payload" not in f and "metadata" in f:
+            f["payload"] = f["metadata"]
     return {"suggestions": findings, "total": len(findings)}

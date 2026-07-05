@@ -1542,6 +1542,153 @@
       "artifacts": [],
       "artifact_paths": [],
       "timestamp": "2026-07-05T09:14:11.780212"
+    },
+    {
+      "run_id": "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b",
+      "config_hash": "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "thread": "default",
+      "config": {
+        "batch_size": 128,
+        "weight_decay": 0.0005,
+        "dropout": 0.0,
+        "conv_channels": 32,
+        "hidden_dim": 128,
+        "activation": "relu",
+        "epochs": 2,
+        "seed": 0,
+        "lr": 0.001,
+        "optimizer": "adam"
+      },
+      "metrics": {
+        "val_accuracy": 0.834,
+        "val_loss": 0.446,
+        "train_loss": 0.42239,
+        "epochs": 2,
+        "wall_clock_seconds": 6.7,
+        "gpu_hours": 0.00186,
+        "throughput_img_s": 4475.3,
+        "n_params": 421642,
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
+      },
+      "status": "completed",
+      "rationale": "sweep run 8: val_acc=0.834 in 6.7s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00186,
+      "wall_clock_seconds": 6.7,
+      "git_commit": "7e44dbbda30d34ba1854d70c8d83b4d02f624e51",
+      "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, weight_decay=0.0005, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.8340 | val_loss=0.4460 | Researcher note: sweep run 8: val_acc=0.834 in 6.7s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "derived_from_config_hash": null,
+      "hypothesis": "cfg #8: lr=0.001 opt=adam",
+      "dataset": {
+        "name": "FashionMNIST",
+        "version": "v1",
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T14:17:55.315131"
+    },
+    {
+      "run_id": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+      "config_hash": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "thread": "default",
+      "config": {
+        "batch_size": 128,
+        "weight_decay": 0.0,
+        "dropout": 0.0,
+        "conv_channels": 32,
+        "hidden_dim": 128,
+        "activation": "relu",
+        "epochs": 2,
+        "seed": 0,
+        "lr": 0.005,
+        "optimizer": "sgd"
+      },
+      "metrics": {
+        "val_accuracy": 0.7947,
+        "val_loss": 0.5371,
+        "train_loss": 0.5936,
+        "epochs": 2,
+        "wall_clock_seconds": 7.13,
+        "gpu_hours": 0.00198,
+        "throughput_img_s": 4205.8,
+        "n_params": 421642,
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
+      },
+      "status": "completed",
+      "rationale": "sweep run 9: val_acc=0.7947 in 7.13s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00198,
+      "wall_clock_seconds": 7.13,
+      "git_commit": "7e44dbbda30d34ba1854d70c8d83b4d02f624e51",
+      "config_summary": "Config: optimizer=sgd, lr=0.005, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.7947 | val_loss=0.5371 | Researcher note: sweep run 9: val_acc=0.7947 in 7.13s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "derived_from_config_hash": null,
+      "hypothesis": "cfg #9: lr=0.005 opt=sgd",
+      "dataset": {
+        "name": "FashionMNIST",
+        "version": "v1",
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T14:18:36.749721"
+    },
+    {
+      "run_id": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+      "config_hash": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "thread": "default",
+      "config": {
+        "batch_size": 128,
+        "weight_decay": 0.0,
+        "dropout": 0.0,
+        "conv_channels": 32,
+        "hidden_dim": 128,
+        "activation": "relu",
+        "epochs": 2,
+        "seed": 0,
+        "lr": 0.1,
+        "optimizer": "sgd"
+      },
+      "metrics": {
+        "val_accuracy": 0.8663,
+        "val_loss": 0.3709,
+        "train_loss": 0.39737,
+        "epochs": 2,
+        "wall_clock_seconds": 8.84,
+        "gpu_hours": 0.00245,
+        "throughput_img_s": 3394.9,
+        "n_params": 421642,
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
+      },
+      "status": "completed",
+      "rationale": "sweep run 10: val_acc=0.8663 in 8.84s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00245,
+      "wall_clock_seconds": 8.84,
+      "git_commit": "7e44dbbda30d34ba1854d70c8d83b4d02f624e51",
+      "config_summary": "Config: optimizer=sgd, lr=0.1, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.8663 | val_loss=0.3709 | Researcher note: sweep run 10: val_acc=0.8663 in 8.84s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "derived_from_config_hash": null,
+      "hypothesis": "cfg #10: lr=0.1 opt=sgd",
+      "dataset": {
+        "name": "FashionMNIST",
+        "version": "v1",
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T14:19:37.326647"
     }
   ],
   "artifacts": [
@@ -2046,51 +2193,6 @@
       "dedup_key": "triage:fmnist_cnn_sweep:26fe22df69d4da147afdcbf3260a20293cce860dd6806dff50237dbdee9d2c81"
     },
     {
-      "agent_type": "literature",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "[\n  {\n    \"title\": \"Adam: A Method for Stochastic Optimization\",\n    \"venue\": \"ICLR 2015\",\n    \"key_insight\": \"This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.\",\n    \"actionable_suggestion\": \"Try experimenting with different beta parameters (\\u03b21, \\u03b22) in the Adam optimizer to see if it affects validation accuracy.\"\n  },\n  {\n    \"title\": \"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift\",\n    \"venue\": \"ICML 2015\",\n    \"key_insight\": \"Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.\",\n    \"actionable_suggestion\": \"Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy.\"\n  },\n  {\n    \"title\": \"Dropout: A Simple Way to Prevent Neural Networks from Overfitting\",\n    \"venue\": \"The Journal of Machine Learning Research 2014\",\n    \"key_insight\": \"This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.\",\n    \"actionable_suggestion\": \"Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value.\"\n  },\n  {\n    \"title\": \"Understanding deep learning requires rethinking generalization\",\n    \"venue\": \"ICLR 2017\",\n    \"key_insight\": \"This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.\",\n    \"actionable_suggestion\": \"Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting.\"\n  },\n  {\n    \"title\": \"Proven, empirical methods for overfitting in neural networks\",\n    \"venue\": \"NeurIPS 2012\",\n    \"key_insight\": \"This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.\",\n    \"actionable_suggestion\": \"Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance.\"\n  }\n]",
-      "metadata": {
-        "papers": [
-          {
-            "title": "Adam: A Method for Stochastic Optimization",
-            "venue": "ICLR 2015",
-            "key_insight": "This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.",
-            "actionable_suggestion": "Try experimenting with different beta parameters (\u03b21, \u03b22) in the Adam optimizer to see if it affects validation accuracy."
-          },
-          {
-            "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
-            "venue": "ICML 2015",
-            "key_insight": "Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.",
-            "actionable_suggestion": "Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy."
-          },
-          {
-            "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
-            "venue": "The Journal of Machine Learning Research 2014",
-            "key_insight": "This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.",
-            "actionable_suggestion": "Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value."
-          },
-          {
-            "title": "Understanding deep learning requires rethinking generalization",
-            "venue": "ICLR 2017",
-            "key_insight": "This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.",
-            "actionable_suggestion": "Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting."
-          },
-          {
-            "title": "Proven, empirical methods for overfitting in neural networks",
-            "venue": "NeurIPS 2012",
-            "key_insight": "This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.",
-            "actionable_suggestion": "Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance."
-          }
-        ]
-      },
-      "severity": null,
-      "id": "82930722ba194f9085784ea0c759bc59",
-      "timestamp": "2026-07-05T07:24:26.408997",
-      "dismissed": false,
-      "dedup_key": "literature:fmnist_cnn_sweep"
-    },
-    {
       "agent_type": "triage",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
@@ -2548,6 +2650,145 @@
       "timestamp": "2026-07-05T09:15:20.756156",
       "dismissed": false,
       "dedup_key": "config_proposer:resnet-failed-test-second"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.7947, which is lower than several previous successful runs, including one with a validation accuracy of 0.8637. This decline suggests potential issues with model performance or configuration effectiveness, particularly as the learning rate and optimizer differ from the more successful runs.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.7947, which is lower than several previous successful runs, including one with a validation accuracy of 0.8637. This decline suggests potential issues with model performance or configuration effectiveness, particularly as the learning rate and optimizer differ from the more successful runs.",
+        "recommendation": "The researcher should investigate the impact of the new learning rate (0.005) and SGD optimizer on model performance, and consider reverting to the previously successful configurations to understand the cause of the lower validation accuracy.",
+        "failure_analysis": {
+          "headline": null,
+          "cause": null,
+          "fix": null
+        },
+        "run_id": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168"
+      },
+      "severity": "medium",
+      "id": "4de1fa5749964cb99bc9d64ccaab6456",
+      "timestamp": "2026-07-05T14:20:07.967977",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168"
+    },
+    {
+      "agent_type": "literature",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "[\n  {\n    \"title\": \"Adam: A Method for Stochastic Optimization\",\n    \"venue\": \"ICLR 2015\",\n    \"key_insight\": \"This paper introduces the Adam optimizer, which has shown to provide effective training for deep learning models across various tasks.\",\n    \"actionable_suggestion\": \"Experiment with different beta hyperparameters in the Adam optimizer to potentially enhance convergence rates and final accuracy.\"\n  },\n  {\n    \"title\": \"SGD: Stochastic Gradient Descent with Restarts\",\n    \"venue\": \"ICML 2016\",\n    \"key_insight\": \"This paper explores the benefits of using a restarting strategy for SGD, which can help escape local minima and improve training performance.\",\n    \"actionable_suggestion\": \"Implement a learning rate schedule with restarts for the SGD optimizer to investigate potential increases in validation accuracy.\"\n  },\n  {\n    \"title\": \"Dropout: A Simple Way to Prevent Neural Networks from Overfitting\",\n    \"venue\": \"JMLR 2014\",\n    \"key_insight\": \"This foundational paper on dropout provides insights into its efficacy for regularization, particularly in preventing overfitting in deep learning models.\",\n    \"actionable_suggestion\": \"Increase the dropout rate in your model configurations incrementally to assess the impact on validation accuracy and generalization.\"\n  },\n  {\n    \"title\": \"Understanding and Improving Convolutional Neural Networks via Concatenated Rectified Linear Units\",\n    \"venue\": \"ICML 2016\",\n    \"key_insight\": \"This research discusses advanced activation functions and their role in enhancing CNN architectures for improved learning performance.\",\n    \"actionable_suggestion\": \"Consider experimenting with other activation functions or architectural modifications as suggested in the paper to improve model performance.\"\n  },\n  {\n    \"title\": \"Dropout: A Simple Way to Prevent Neural Networks from Overfitting\",\n    \"venue\": \"JMLR 2014\",\n    \"key_insight\": \"This paper identifies the critical role of dropout as a regularization technique which may mitigate the overfitting observed in the dataset with variable validation accuracy.\",\n    \"actionable_suggestion\": \"Adjust the dropout rate based on the findings to see if higher dropout improves validation performance across different runs.\"\n  }\n]",
+      "metadata": {
+        "papers": [
+          {
+            "title": "Adam: A Method for Stochastic Optimization",
+            "venue": "ICLR 2015",
+            "key_insight": "This paper introduces the Adam optimizer, which has shown to provide effective training for deep learning models across various tasks.",
+            "actionable_suggestion": "Experiment with different beta hyperparameters in the Adam optimizer to potentially enhance convergence rates and final accuracy."
+          },
+          {
+            "title": "SGD: Stochastic Gradient Descent with Restarts",
+            "venue": "ICML 2016",
+            "key_insight": "This paper explores the benefits of using a restarting strategy for SGD, which can help escape local minima and improve training performance.",
+            "actionable_suggestion": "Implement a learning rate schedule with restarts for the SGD optimizer to investigate potential increases in validation accuracy."
+          },
+          {
+            "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+            "venue": "JMLR 2014",
+            "key_insight": "This foundational paper on dropout provides insights into its efficacy for regularization, particularly in preventing overfitting in deep learning models.",
+            "actionable_suggestion": "Increase the dropout rate in your model configurations incrementally to assess the impact on validation accuracy and generalization."
+          },
+          {
+            "title": "Understanding and Improving Convolutional Neural Networks via Concatenated Rectified Linear Units",
+            "venue": "ICML 2016",
+            "key_insight": "This research discusses advanced activation functions and their role in enhancing CNN architectures for improved learning performance.",
+            "actionable_suggestion": "Consider experimenting with other activation functions or architectural modifications as suggested in the paper to improve model performance."
+          },
+          {
+            "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+            "venue": "JMLR 2014",
+            "key_insight": "This paper identifies the critical role of dropout as a regularization technique which may mitigate the overfitting observed in the dataset with variable validation accuracy.",
+            "actionable_suggestion": "Adjust the dropout rate based on the findings to see if higher dropout improves validation performance across different runs."
+          }
+        ]
+      },
+      "severity": null,
+      "id": "8330fc2e0889478ab805f5244ccb417d",
+      "timestamp": "2026-07-05T14:20:09.530977",
+      "dismissed": false,
+      "dedup_key": "literature:fmnist_cnn_sweep"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "This configuration leverages the best-known learning rate of 0.09 and maximizes the impact of dropout at 0.25, effectively preventing overfitting. Increasing the epochs to 3 allows the model more time to learn from the data, while adjusting the hidden dimension and convolutional channels to their respective best values emphasizes a more complex model architecture that can lead to improved representation of the data.",
+      "metadata": {
+        "suggested_config": {
+          "lr": 0.09,
+          "batch_size": 128,
+          "optimizer": "adam",
+          "epochs": 3,
+          "weight_decay": 0.0,
+          "dropout": 0.25,
+          "conv_channels": 48,
+          "hidden_dim": 192,
+          "activation": "relu"
+        },
+        "rationale": "This configuration leverages the best-known learning rate of 0.09 and maximizes the impact of dropout at 0.25, effectively preventing overfitting. Increasing the epochs to 3 allows the model more time to learn from the data, while adjusting the hidden dimension and convolutional channels to their respective best values emphasizes a more complex model architecture that can lead to improved representation of the data.",
+        "expected_direction": "I expect the validation accuracy to improve, potentially moving from around 0.87 to approximately 0.88 or higher.",
+        "unexplored_regions": [
+          "Higher dropout rates, such as 0.5, to further test regularization effects.",
+          "Learning rates above 0.1, such as 0.15, to examine if the model benefits from faster convergence.",
+          "Additional convolutional channel configurations such as 64 to see if deeper feature extraction yields better results."
+        ]
+      },
+      "severity": null,
+      "id": "43d7d940046849029021312a799605e0",
+      "timestamp": "2026-07-05T14:20:31.597718",
+      "dismissed": false,
+      "dedup_key": "config_proposer:fmnist_cnn_sweep"
+    },
+    {
+      "agent_type": "dataset_steward",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "Investigate the dataset for potential label noise and review dataset splits for consistency.",
+      "metadata": {
+        "issues_detected": true,
+        "issues": [
+          {
+            "type": "label_noise",
+            "description": "High variance in validation accuracy suggests potential issues with label noise or dataset contamination.",
+            "severity": "high",
+            "affected_runs": [
+              "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+              "f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7",
+              "f302bfd3a97451acead77f8201b6db0e289aae1d421d043f7ef9dc23e19a6e74",
+              "69524d3aa3f3f67f9b7a7593f3b7a897bb2375d70b7ef6c662cb41a9f1eb7ffb"
+            ]
+          },
+          {
+            "type": "unstable_split",
+            "description": "Validation accuracy shows fluctuations with some runs deviating significantly from similar configurations.",
+            "severity": "medium",
+            "affected_runs": [
+              "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+              "607de9da0139c78930b252120283782c77336eb3be49283a7dfc5637d76062e7",
+              "4eb4fb23f92fbd3c8104bec46aaf06bf424ddc2197e85d18a355d8a6d7a2cf37"
+            ]
+          }
+        ],
+        "overall_health": "warning",
+        "recommendation": "Investigate the dataset for potential label noise and review dataset splits for consistency."
+      },
+      "severity": null,
+      "id": "db129eed152e4832bdc8c4cc463e60a0",
+      "timestamp": "2026-07-05T14:21:04.592375",
+      "dismissed": false,
+      "dedup_key": "dataset_steward:fmnist_cnn_sweep"
     }
   ],
   "insights": {
@@ -2664,8 +2905,8 @@
       "generated_at": "2026-07-05T13:45:47.089541"
     },
     "proj_fashionmnist_cnn_sweep_3cddf661": {
-      "n_runs": 15,
-      "n_completed": 14,
+      "n_runs": 18,
+      "n_completed": 17,
       "parameter_sensitivity": [
         {
           "parameter": "lr",
@@ -2676,16 +2917,18 @@
             "0.0003",
             "0.001",
             "0.003",
+            "0.005",
             "0.01",
             "0.03",
-            "0.09"
+            "0.09",
+            "0.1"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
         },
         {
           "parameter": "hidden_dim",
-          "sensitivity": 0.0344,
+          "sensitivity": 0.0339,
           "best_value": "192",
           "best_metric_mean": 0.8637,
           "values_tried": [
@@ -2697,7 +2940,7 @@
         },
         {
           "parameter": "conv_channels",
-          "sensitivity": 0.0344,
+          "sensitivity": 0.0339,
           "best_value": "48",
           "best_metric_mean": 0.8637,
           "values_tried": [
@@ -2722,12 +2965,25 @@
         },
         {
           "parameter": "weight_decay",
-          "sensitivity": 0.0102,
+          "sensitivity": 0.0091,
           "best_value": "0.0",
-          "best_metric_mean": 0.8362,
+          "best_metric_mean": 0.835,
           "values_tried": [
             "0",
-            "0.0"
+            "0.0",
+            "0.0005"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "optimizer",
+          "sensitivity": 0.0014,
+          "best_value": "adam",
+          "best_metric_mean": 0.8319,
+          "values_tried": [
+            "adam",
+            "sgd"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
@@ -2752,8 +3008,8 @@
           "metric_value": 0.87
         }
       ],
-      "summary": "Across 14 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'weight_decay' had the least effect (0.0102). Best on FashionMNIST: val_accuracy=0.87.",
-      "generated_at": "2026-07-05T13:45:48.791264"
+      "summary": "Across 17 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'optimizer' had the least effect (0.0014). Best on FashionMNIST: val_accuracy=0.87.",
+      "generated_at": "2026-07-05T14:20:05.601014"
     },
     "main_dataset": {
       "n_runs": 33,

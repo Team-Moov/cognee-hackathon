@@ -679,6 +679,7 @@ async def agent_finding(req: AgentFindingRequest):
                 "experiment": req.experiment_name,
                 "content": req.content,
                 "metadata": req.metadata,
+                "payload": req.metadata,
                 "severity": (req.metadata or {}).get("severity"),
             },
             dedup_key=dedup_key,

@@ -54,7 +54,11 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
         </button>
       </div>
 
-      {/* Main content */}
+      {/* Main content — the finding text lives on `content`; payload extras
+          (metadata) are optional and only present for some agents. */}
+      {suggestion.content && !payload.rationale && !payload.message && (
+        <p className="mt-2 text-sm text-slate-100 leading-relaxed">{suggestion.content}</p>
+      )}
       {payload.rationale && (
         <p className="mt-2 text-sm text-slate-100 leading-relaxed">{payload.rationale}</p>
       )}
