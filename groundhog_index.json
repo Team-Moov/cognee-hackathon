@@ -2789,6 +2789,51 @@
       "timestamp": "2026-07-05T14:21:04.592375",
       "dismissed": false,
       "dedup_key": "dataset_steward:fmnist_cnn_sweep"
+    },
+    {
+      "agent_type": "literature",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "[\n  {\n    \"title\": \"Adam: A Method for Stochastic Optimization\",\n    \"venue\": \"ICLR 2015\",\n    \"key_insight\": \"This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.\",\n    \"actionable_suggestion\": \"Try experimenting with different beta parameters (\\u03b21, \\u03b22) in the Adam optimizer to see if it affects validation accuracy.\"\n  },\n  {\n    \"title\": \"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift\",\n    \"venue\": \"ICML 2015\",\n    \"key_insight\": \"Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.\",\n    \"actionable_suggestion\": \"Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy.\"\n  },\n  {\n    \"title\": \"Dropout: A Simple Way to Prevent Neural Networks from Overfitting\",\n    \"venue\": \"The Journal of Machine Learning Research 2014\",\n    \"key_insight\": \"This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.\",\n    \"actionable_suggestion\": \"Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value.\"\n  },\n  {\n    \"title\": \"Understanding deep learning requires rethinking generalization\",\n    \"venue\": \"ICLR 2017\",\n    \"key_insight\": \"This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.\",\n    \"actionable_suggestion\": \"Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting.\"\n  },\n  {\n    \"title\": \"Proven, empirical methods for overfitting in neural networks\",\n    \"venue\": \"NeurIPS 2012\",\n    \"key_insight\": \"This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.\",\n    \"actionable_suggestion\": \"Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance.\"\n  }\n]",
+      "metadata": {
+        "papers": [
+          {
+            "title": "Adam: A Method for Stochastic Optimization",
+            "venue": "ICLR 2015",
+            "key_insight": "This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.",
+            "actionable_suggestion": "Try experimenting with different beta parameters (\u03b21, \u03b22) in the Adam optimizer to see if it affects validation accuracy."
+          },
+          {
+            "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
+            "venue": "ICML 2015",
+            "key_insight": "Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.",
+            "actionable_suggestion": "Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy."
+          },
+          {
+            "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+            "venue": "The Journal of Machine Learning Research 2014",
+            "key_insight": "This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.",
+            "actionable_suggestion": "Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value."
+          },
+          {
+            "title": "Understanding deep learning requires rethinking generalization",
+            "venue": "ICLR 2017",
+            "key_insight": "This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.",
+            "actionable_suggestion": "Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting."
+          },
+          {
+            "title": "Proven, empirical methods for overfitting in neural networks",
+            "venue": "NeurIPS 2012",
+            "key_insight": "This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.",
+            "actionable_suggestion": "Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance."
+          }
+        ]
+      },
+      "severity": null,
+      "id": "82930722ba194f9085784ea0c759bc59",
+      "timestamp": "2026-07-05T07:24:26.408997",
+      "dismissed": false,
+      "dedup_key": "literature:fmnist_cnn_sweep"
     }
   ],
   "insights": {

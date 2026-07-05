@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { dismissSuggestion } from "../services/api";
 
 const AGENT_META = {
@@ -56,7 +56,7 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
 
       {/* Main content — the finding text lives on `content`; payload extras
           (metadata) are optional and only present for some agents. */}
-      {suggestion.content && !payload.rationale && !payload.message && (
+      {suggestion.content && !payload.rationale && !payload.message && !payload.papers && !payload.issues && (
         <p className="mt-2 text-sm text-slate-100 leading-relaxed">{suggestion.content}</p>
       )}
       {payload.rationale && (
