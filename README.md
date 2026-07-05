@@ -1,7 +1,5 @@
 <div align="center">
-  <img src="https://via.placeholder.com/150x150.png?text=Groundhog" alt="Groundhog Logo" width="150"/>
-
-  # Groundhog
+  <h1>🐿️ Groundhog</h1>
   **The Enterprise Memory-Graph Layer for Machine Learning Experiments**
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -62,9 +60,9 @@ graph TD
 
     %% Storage Layer
     subgraph Storage["Embedded Database Stack"]
-        G[(Kuzu Graph DB)<br>Semantic Relationships]:::db
-        H[(LanceDB)<br>Vector Embeddings]:::db
-        I[(SQLite)<br>Relational Metadata]:::db
+        G[(Kuzu Graph DB)]:::db
+        H[(LanceDB)]:::db
+        I[(SQLite)]:::db
     end
 
     %% Connections
