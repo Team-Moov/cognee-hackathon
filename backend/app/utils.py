@@ -1,4 +1,4 @@
-﻿"""Shared utilities: config hashing, similarity, LLM + embedding wrappers."""
+"""Shared utilities: config hashing, similarity, LLM + embedding wrappers."""
 from __future__ import annotations
 
 import asyncio
@@ -56,7 +56,7 @@ def canonical_config(config: Dict[str, Any], significant_keys: Optional[List[str
         elif key in CONFIG_NOISE_KEYS:
             continue
         if isinstance(value, dict):
-            value = canonical_config(value)
+            value = canonical_config(value, significant_keys)
         out[key] = value
     return _round_floats(out)
 
@@ -128,7 +128,7 @@ async def llm_generate(prompt: str) -> str:
     if cfg.get("api_base"):
         kwargs["api_base"] = cfg["api_base"]
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     response = await loop.run_in_executor(None, lambda: litellm.completion(**kwargs))
     return response.choices[0].message.content
 
@@ -142,7 +142,7 @@ async def llm_generate_json(prompt: str) -> Any:
     try:
         return json.loads(text)
     except json.JSONDecodeError:
-        logger.warning("Groq returned non-JSON, falling back to raw")
+        logger.warning("LLM returned non-JSON, falling back to raw: %s", text[:200])
         return {"raw": text}
 
 
@@ -178,7 +178,7 @@ async def embed_text(text: str) -> Optional[List[float]]:
     if not text.strip():
         return None
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     from app.config import settings
     return await loop.run_in_executor(
         None,
@@ -191,7 +191,7 @@ async def embed_query(text: str) -> Optional[List[float]]:
     if not text.strip():
         return None
 
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     from app.config import settings
     return await loop.run_in_executor(
         None,

@@ -1,10 +1,10 @@
-﻿"""
+"""
 Orchestrator — event router for the blackboard architecture.
 
 On every `run_remembered` event, the orchestrator fans out to whichever
 subagents care about that event. No subagent talks to another directly —
 coordination flows through the Cognee memory server, which keeps two views of
-each finding (Postgres was removed):
+each finding:
 
   - The structured index (run_index) on the Cognee server — the UI-facing,
     deduplicated, dismissible cards served via GET /agent-findings.
@@ -12,8 +12,8 @@ each finding (Postgres was removed):
     context (decisions, hypotheses, other agents' findings) before reasoning,
     and WRITES its own finding back via /agent-finding (remember_agent_finding),
     so the next agent — or a human via the NL query bar — can recall() it
-    later. This is what makes "the graph is the coordination layer" (plan
-    Section 7) true, instead of every agent only ever seeing its own private row.
+    later. This is what makes "the graph is the coordination layer" true,
+    instead of every agent only ever seeing its own private row.
 
 This runs as a FastAPI BackgroundTask, so it never blocks the API response.
 """

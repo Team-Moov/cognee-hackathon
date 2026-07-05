@@ -109,5 +109,5 @@ def push_run(
 
 async def push_run_async(**kwargs: Any) -> Dict[str, Any]:
     """Run the blocking push off the event loop so it can't stall the server."""
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
     return await loop.run_in_executor(None, lambda: push_run(**kwargs))

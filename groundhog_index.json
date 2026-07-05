@@ -1353,6 +1353,195 @@
       "artifacts": [],
       "artifact_paths": [],
       "timestamp": "2026-07-05T08:08:55.401772"
+    },
+    {
+      "run_id": "89e858a1310b5d21998b66bd38fcc299a28970296a18bdbdd487527a84adbe90",
+      "config_hash": "89e858a1310b5d21998b66bd38fcc299a28970296a18bdbdd487527a84adbe90",
+      "project": "main_dataset",
+      "experiment": "mcp-tool-test",
+      "thread": "default",
+      "config": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "epochs": 30,
+        "lr": 0.0005,
+        "model": "resnet50",
+        "optimizer": "adamw"
+      },
+      "metrics": {
+        "train_accuracy": 0.971,
+        "train_loss": 0.098,
+        "val_accuracy": 0.963,
+        "val_loss": 0.142
+      },
+      "status": "completed",
+      "rationale": "MCP tool live test \u2014 trying lower lr=0.0005 with dropout=0.2 to reduce overfitting seen at lr=0.001. Hypothesis: regularization + conservative step size improves generalisation on val set.",
+      "gpu_hours": 1.2,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=resnet50, optimizer=adamw, lr=0.0005, batch_size=64, epochs=30, dropout=0.2",
+      "result_summary": "Result: val_accuracy=0.9630 | val_loss=0.1420 | Researcher note: MCP tool live test \u2014 trying lower lr=0.0005 with dropout=0.2 to reduce overfitting seen at lr=0.001. Hypothesis: regularization + conservative step size improves generalisation on val set.",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T08:49:15.986082"
+    },
+    {
+      "run_id": "186e4165c84698aa4ba02d3368744a148e5ef5db13a1aa1fe7dd356cfbccbdf0",
+      "config_hash": "186e4165c84698aa4ba02d3368744a148e5ef5db13a1aa1fe7dd356cfbccbdf0",
+      "project": "main_dataset",
+      "experiment": "feature-test",
+      "thread": "default",
+      "config": {
+        "batch_size": 16,
+        "optimizer": "sgd",
+        "lr": 0.9,
+        "model": "resnet50"
+      },
+      "metrics": {
+        "train_loss": 3.1,
+        "val_accuracy": 0.34,
+        "val_loss": 2.87
+      },
+      "status": "failed",
+      "rationale": "Testing very high lr=0.9 to see if it converges faster",
+      "gpu_hours": 0.3,
+      "wall_clock_seconds": null,
+      "git_commit": "unknown",
+      "config_summary": "Config: model=resnet50, optimizer=sgd, lr=0.9, batch_size=16",
+      "result_summary": "Result: Run failed. | val_accuracy=0.3400 | val_loss=2.8700 | Researcher note: Testing very high lr=0.9 to see if it converges faster",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T09:00:17.864556"
+    },
+    {
+      "run_id": "ce4ce76eecb19346a71af0e622be162221351c6432540aaedfd991295c9644fb",
+      "config_hash": "ce4ce76eecb19346a71af0e622be162221351c6432540aaedfd991295c9644fb",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "iris-feature-test",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "lr": 0.01,
+        "batch_size": 16,
+        "epochs": 50
+      },
+      "metrics": {
+        "val_accuracy": 0.91,
+        "val_loss": 0.28,
+        "train_accuracy": 0.93
+      },
+      "status": "completed",
+      "rationale": "",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "frontend",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.01, batch_size=16, epochs=50",
+      "result_summary": "Result: val_accuracy=0.9100 | val_loss=0.2800",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T09:01:36.349583"
+    },
+    {
+      "run_id": "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e",
+      "config_hash": "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "iris-feature-test",
+      "thread": "default",
+      "config": {
+        "model": "softmax",
+        "optimizer": "sgd",
+        "lr": 0.9,
+        "batch_size": 16,
+        "epochs": 50
+      },
+      "metrics": {
+        "val_accuracy": 0.33,
+        "val_loss": 3.87,
+        "train_accuracy": 0.31
+      },
+      "status": "failed",
+      "rationale": "Tried aggressive lr=0.9 expecting faster convergence but it blew up",
+      "gpu_hours": 0.2,
+      "wall_clock_seconds": null,
+      "git_commit": "frontend",
+      "config_summary": "Config: model=softmax, optimizer=sgd, lr=0.9, batch_size=16, epochs=50",
+      "result_summary": "Result: Run failed. | val_accuracy=0.3300 | val_loss=3.8700 | Researcher note: Tried aggressive lr=0.9 expecting faster convergence but it blew up",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T09:03:03.267047"
+    },
+    {
+      "run_id": "59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5",
+      "config_hash": "59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "resnet-failed-test-second",
+      "thread": "default",
+      "config": {
+        "model": "ResNet50",
+        "learning_rate": 0.5,
+        "batch_size": 256,
+        "optimizer": "Adam"
+      },
+      "metrics": {
+        "val_loss": 8.4,
+        "val_accuracy": 0.1
+      },
+      "status": "failed",
+      "rationale": "Testing a very aggressive learning rate and large batch size to speed up training.",
+      "gpu_hours": null,
+      "wall_clock_seconds": null,
+      "git_commit": "frontend",
+      "config_summary": "Config: model=ResNet50, optimizer=Adam, lr=0.5, batch_size=256",
+      "result_summary": "Result: Run failed. | val_accuracy=0.1000 | val_loss=8.4000 | Researcher note: Testing a very aggressive learning rate and large batch size to speed up training.",
+      "derived_from_config_hash": null,
+      "hypothesis": "",
+      "dataset": {
+        "name": "unknown",
+        "version": "v1",
+        "preprocessing": "",
+        "split_rationale": "",
+        "quality_issues": ""
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T09:14:11.780212"
     }
   ],
   "artifacts": [
@@ -2079,6 +2268,286 @@
       "timestamp": "2026-07-05T08:09:46.974137",
       "dismissed": false,
       "dedup_key": "config_proposer:instructor_test"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "main_dataset",
+      "experiment": "mcp-tool-test",
+      "content": "Increasing the batch size to 128 can help stabilize the training and lead to better convergence, especially with a lower learning rate of 0.0003, which aims to further reduce the risk of overfitting while maintaining the benefits of regularization. Additionally, a slight increase in the dropout rate to 0.3 allows for enhanced regularization, potentially leading to improved generalization on the validation set.",
+      "metadata": {
+        "suggested_config": {
+          "batch_size": 128,
+          "dropout": 0.3,
+          "epochs": 30,
+          "lr": 0.0003,
+          "model": "resnet50",
+          "optimizer": "adamw"
+        },
+        "rationale": "Increasing the batch size to 128 can help stabilize the training and lead to better convergence, especially with a lower learning rate of 0.0003, which aims to further reduce the risk of overfitting while maintaining the benefits of regularization. Additionally, a slight increase in the dropout rate to 0.3 allows for enhanced regularization, potentially leading to improved generalization on the validation set.",
+        "expected_direction": "We expect validation accuracy to improve, aiming for an increase of approximately 0.5% to reach about 0.9685.",
+        "unexplored_regions": [
+          "Higher dropout rates (0.4 or greater) combined with lower learning rates.",
+          "Different optimizers (e.g., SGD with momentum) to explore their impact on training dynamics.",
+          "Variations in the number of epochs (fewer than 30 or more than 30) to assess the optimal training duration for generalization."
+        ]
+      },
+      "severity": null,
+      "id": "9fd15e5c33d441f481a5a5e54b5ae0c0",
+      "timestamp": "2026-07-05T08:49:52.403029",
+      "dismissed": false,
+      "dedup_key": "config_proposer:mcp-tool-test"
+    },
+    {
+      "agent_type": "triage",
+      "project": "main_dataset",
+      "experiment": "feature-test",
+      "content": "The new run failed due to loss divergence with NaN values detected in gradients, indicating that the high learning rate of 0.9 may be too aggressive for the ResNet50 model, leading to instability during training.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "divergence",
+        "severity": "high",
+        "message": "The new run failed due to loss divergence with NaN values detected in gradients, indicating that the high learning rate of 0.9 may be too aggressive for the ResNet50 model, leading to instability during training.",
+        "recommendation": "The researcher should consider reducing the learning rate and re-running the experiment to stabilize training.",
+        "failure_analysis": {
+          "headline": "Loss divergence at high learning rate",
+          "cause": "The learning rate of 0.9 caused instability in the training gradients.",
+          "fix": "Reduce the learning rate to a smaller value like 0.01 or 0.001."
+        },
+        "run_id": "186e4165c84698aa4ba02d3368744a148e5ef5db13a1aa1fe7dd356cfbccbdf0"
+      },
+      "severity": "high",
+      "id": "42f1082efdb3474992139383640a3982",
+      "timestamp": "2026-07-05T09:01:23.934383",
+      "dismissed": false,
+      "dedup_key": "triage:feature-test:186e4165c84698aa4ba02d3368744a148e5ef5db13a1aa1fe7dd356cfbccbdf0"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "main_dataset",
+      "experiment": "feature-test",
+      "content": "This configuration retains the best-known values for the high-impact parameters, particularly the learning rate (0.0005), optimizer (adamw), and model (resnet50), which have demonstrated high validation accuracy in previous runs. The batch size and dropout have been adjusted to balance model capacity and regularization while leveraging the benefits of a more stable optimizer than SGD, given the failed experiments with a high learning rate.",
+      "metadata": {
+        "suggested_config": {
+          "batch_size": 64,
+          "dropout": 0.2,
+          "epochs": 30,
+          "lr": 0.0005,
+          "model": "resnet50",
+          "optimizer": "adamw"
+        },
+        "rationale": "This configuration retains the best-known values for the high-impact parameters, particularly the learning rate (0.0005), optimizer (adamw), and model (resnet50), which have demonstrated high validation accuracy in previous runs. The batch size and dropout have been adjusted to balance model capacity and regularization while leveraging the benefits of a more stable optimizer than SGD, given the failed experiments with a high learning rate.",
+        "expected_direction": "I expect the validation accuracy to improve, possibly reaching or exceeding the previously achieved metric of 0.963.",
+        "unexplored_regions": [
+          "Experimenting with different dropout rates, such as 0.3 or 0.5.",
+          "Testing different optimizers aside from adamw, like RMSprop or AdaGrad.",
+          "Modifying the number of epochs beyond 30 to assess its impact on convergence."
+        ]
+      },
+      "severity": null,
+      "id": "b808dc40a384496081539313ae47ce68",
+      "timestamp": "2026-07-05T09:01:52.166428",
+      "dismissed": false,
+      "dedup_key": "config_proposer:feature-test"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "iris-feature-test",
+      "content": "The new run with a learning rate of 0.9 showed a significant divergence in performance, with a validation accuracy of 0.33 and validation loss of 3.87, indicating a failure of the model to converge, unlike the prior successful run which had a validation accuracy of 0.91 and loss of 0.28.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "divergence",
+        "severity": "high",
+        "message": "The new run with a learning rate of 0.9 showed a significant divergence in performance, with a validation accuracy of 0.33 and validation loss of 3.87, indicating a failure of the model to converge, unlike the prior successful run which had a validation accuracy of 0.91 and loss of 0.28.",
+        "recommendation": "Consider reducing the learning rate significantly and re-running the experiment, possibly starting at 0.01 or testing the proposed adjustment to 0.03.",
+        "failure_analysis": {
+          "headline": "High learning rate caused divergence",
+          "cause": "The learning rate of 0.9 was too aggressive, leading to poor model performance.",
+          "fix": "Try a lower learning rate, such as 0.01 or 0.03, for better convergence."
+        },
+        "run_id": "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e"
+      },
+      "severity": "high",
+      "id": "735d1cdaab2648598d0bd0f5b6d4c032",
+      "timestamp": "2026-07-05T09:03:50.908816",
+      "dismissed": false,
+      "dedup_key": "triage:iris-feature-test:591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "iris-feature-test",
+      "content": "By increasing the learning rate to 0.03, we leverage the high parameter sensitivity noted previously, potentially leading to a more effective training process. At the same time, we maintain the batch size at 16 and epochs at 50, which were successful in the prior run. Introducing a small weight decay of 0.01 may help regularize the model, minimizing overfitting while still allowing exploration in the hyperparameter space that was previously successful.",
+      "metadata": {
+        "suggested_config": {
+          "model": "softmax",
+          "optimizer": "sgd",
+          "lr": 0.03,
+          "batch_size": 16,
+          "epochs": 50,
+          "weight_decay": 0.01
+        },
+        "rationale": "By increasing the learning rate to 0.03, we leverage the high parameter sensitivity noted previously, potentially leading to a more effective training process. At the same time, we maintain the batch size at 16 and epochs at 50, which were successful in the prior run. Introducing a small weight decay of 0.01 may help regularize the model, minimizing overfitting while still allowing exploration in the hyperparameter space that was previously successful.",
+        "expected_direction": "I expect the validation accuracy to improve, potentially reaching around 0.92, as the updated learning rate and inclusion of weight decay are anticipated to enhance model performance.",
+        "unexplored_regions": [
+          "Higher batch sizes (like 32 or 64) which may impact training dynamics",
+          "Different optimizers (e.g., Adam or RMSprop) could yield better convergence properties",
+          "A wider range of weight decay values (e.g., 0.001, 0.1) to gauge its effect on regularization"
+        ]
+      },
+      "severity": null,
+      "id": "4244a6aa81d74c41b87b20d4837af213",
+      "timestamp": "2026-07-05T09:04:18.062661",
+      "dismissed": false,
+      "dedup_key": "config_proposer:iris-feature-test"
+    },
+    {
+      "agent_type": "dataset_steward",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "iris-feature-test",
+      "content": "Investigate data splitting methods, assess for potential label noise, and examine the distribution of the dataset for consistency.",
+      "metadata": {
+        "issues_detected": true,
+        "issues": [
+          {
+            "type": "unstable_split",
+            "description": "The variance between the metrics of the successful run (val_accuracy: 0.91, train_accuracy: 0.93) and the failed run (val_accuracy: 0.33, train_accuracy: 0.31) suggests instability in the data splits or label noise.",
+            "severity": "high",
+            "affected_runs": [
+              "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e",
+              "ce4ce76eecb19346a71af0e622be162221351c6432540aaedfd991295c9644fb"
+            ]
+          },
+          {
+            "type": "eval_contamination",
+            "description": "The validation accuracy is significantly lower than the training accuracy in the failed run, suggesting possible contamination of the evaluation set.",
+            "severity": "medium",
+            "affected_runs": [
+              "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e"
+            ]
+          },
+          {
+            "type": "distribution_shift",
+            "description": "The contrast between the successful and failed runs may indicate a possible distribution shift or dataset bugs affecting model performance.",
+            "severity": "medium",
+            "affected_runs": [
+              "591c13c24b338bc5f15680aee7f343fa192b3c9f00553c3762f2a55a7c7dc49e",
+              "ce4ce76eecb19346a71af0e622be162221351c6432540aaedfd991295c9644fb"
+            ]
+          }
+        ],
+        "overall_health": "warning",
+        "recommendation": "Investigate data splitting methods, assess for potential label noise, and examine the distribution of the dataset for consistency."
+      },
+      "severity": null,
+      "id": "1a7c4f77cc7e4836bde089457f0186c5",
+      "timestamp": "2026-07-05T09:04:18.362205",
+      "dismissed": false,
+      "dedup_key": "dataset_steward:iris-feature-test"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "resnet-failed-test",
+      "content": "The run experienced a failure with very poor validation metrics (val_loss of 8.4 and val_accuracy of 0.1), consistent with prior findings suggesting that the aggressive learning rate and large batch size may have hampered performance.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "failed_run",
+        "severity": "high",
+        "message": "The run experienced a failure with very poor validation metrics (val_loss of 8.4 and val_accuracy of 0.1), consistent with prior findings suggesting that the aggressive learning rate and large batch size may have hampered performance.",
+        "recommendation": "The researcher should consider lowering the learning rate significantly and reducing the batch size to stabilize training.",
+        "failure_analysis": {
+          "headline": "Failed due to aggressive configuration",
+          "cause": "The high learning rate and large batch size led to poor model performance.",
+          "fix": "Try using a more conservative learning rate and a smaller batch size."
+        },
+        "run_id": "59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5"
+      },
+      "severity": "high",
+      "id": "983d572252fe4ebda54a9543698d1d1d",
+      "timestamp": "2026-07-05T09:09:54.657158",
+      "dismissed": false,
+      "dedup_key": "triage:resnet-failed-test:59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "resnet-failed-test",
+      "content": "This configuration uses a learning rate of 0.01, which has shown to significantly improve validation accuracy based on the sensitivity analysis. The batch size is reduced to 32, aligning with the best-known value for effective training without sacrificing too much computational efficiency. The number of epochs is increased to 50 to allow the model more training time, which is important for convergence, especially in complex architectures like ResNet50. Finally, adding a small weight decay of 0.01 may help in generalization despite its low sensitivity ranking.",
+      "metadata": {
+        "suggested_config": {
+          "model": "ResNet50",
+          "learning_rate": 0.01,
+          "batch_size": 32,
+          "optimizer": "Adam",
+          "epochs": 50,
+          "weight_decay": 0.01
+        },
+        "rationale": "This configuration uses a learning rate of 0.01, which has shown to significantly improve validation accuracy based on the sensitivity analysis. The batch size is reduced to 32, aligning with the best-known value for effective training without sacrificing too much computational efficiency. The number of epochs is increased to 50 to allow the model more training time, which is important for convergence, especially in complex architectures like ResNet50. Finally, adding a small weight decay of 0.01 may help in generalization despite its low sensitivity ranking.",
+        "expected_direction": "I expect the validation accuracy to improve significantly, potentially reaching values above 0.91, especially given the performance metrics from prior configurations.",
+        "unexplored_regions": [
+          "Higher batch sizes like 64 and 128 to see effects on convergence and stability.",
+          "Testing with optimizers like SGD or RMSprop to compare impacts against Adam.",
+          "Adjusting weight decay to 0.001 or 0.005 to explore regularization effects further."
+        ]
+      },
+      "severity": null,
+      "id": "278e2403f7784b2090e88d0d7c6e562c",
+      "timestamp": "2026-07-05T09:10:11.101951",
+      "dismissed": false,
+      "dedup_key": "config_proposer:resnet-failed-test"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "resnet-failed-test-second",
+      "content": "The new run diverged due to very aggressive hyperparameter settings, resulting in the training loss becoming NaN after just 5 epochs. This is consistent with prior findings that emphasized the risks associated with such configurations.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "divergence",
+        "severity": "high",
+        "message": "The new run diverged due to very aggressive hyperparameter settings, resulting in the training loss becoming NaN after just 5 epochs. This is consistent with prior findings that emphasized the risks associated with such configurations.",
+        "recommendation": "Consider lowering the learning rate significantly and possibly reducing the batch size for stability in training.",
+        "failure_analysis": {
+          "headline": "Loss diverged to NaN",
+          "cause": "The chosen learning rate of 0.5 and large batch size of 256 caused the model to diverge quickly.",
+          "fix": "Lower the learning rate to a more standard value, such as 0.001 or 0.01."
+        },
+        "run_id": "59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5"
+      },
+      "severity": "high",
+      "id": "e04bc451806742b883a342800253e8a8",
+      "timestamp": "2026-07-05T09:15:01.131194",
+      "dismissed": false,
+      "dedup_key": "triage:resnet-failed-test-second:59fe702a20f742ee90f246f3a0c73088edd33c44eaf08bb1f03461fc838040b5"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_blobs3_sgd_demo_0d78c7c9",
+      "experiment": "resnet-failed-test-second",
+      "content": "This configuration leverages the best-known value for the learning rate from previous runs and makes the batch size smaller, as the prior large batch was likely too aggressive given the failed status. Additionally, incorporating a small weight decay can help improve generalization without reducing performance significantly, while increasing the number of epochs allows for better convergence and more training iterations.",
+      "metadata": {
+        "suggested_config": {
+          "model": "ResNet50",
+          "learning_rate": 0.01,
+          "batch_size": 32,
+          "optimizer": "Adam",
+          "weight_decay": 0.01,
+          "epochs": 50
+        },
+        "rationale": "This configuration leverages the best-known value for the learning rate from previous runs and makes the batch size smaller, as the prior large batch was likely too aggressive given the failed status. Additionally, incorporating a small weight decay can help improve generalization without reducing performance significantly, while increasing the number of epochs allows for better convergence and more training iterations.",
+        "expected_direction": "I expect the validation accuracy to improve significantly, potentially reaching values over 0.9, given the performance seen with the best learning rate and batch size configuration.",
+        "unexplored_regions": [
+          "Learning rates between 0.01 and 0.03, to find the optimal rate closer to the top end of the previously explored range.",
+          "Batch sizes smaller than 16, such as 8, to investigate potential gains from even further reduced batch sizes.",
+          "Additional epochs beyond 50, such as 100, to explore the effect of further extended training on accuracy."
+        ]
+      },
+      "severity": null,
+      "id": "c45d444cdade44638ac6619b41fe816c",
+      "timestamp": "2026-07-05T09:15:20.756156",
+      "dismissed": false,
+      "dedup_key": "config_proposer:resnet-failed-test-second"
     }
   ],
   "insights": {
@@ -2119,19 +2588,44 @@
       "generated_at": "2026-07-05T04:24:00.355751"
     },
     "proj_blobs3_sgd_demo_0d78c7c9": {
-      "n_runs": 7,
-      "n_completed": 6,
+      "n_runs": 10,
+      "n_completed": 7,
       "parameter_sensitivity": [
         {
           "parameter": "lr",
-          "sensitivity": 0.0354,
-          "best_value": "0.5",
-          "best_metric_mean": 0.6566,
+          "sensitivity": 0.2888,
+          "best_value": "0.01",
+          "best_metric_mean": 0.91,
           "values_tried": [
             "0.005",
+            "0.01",
             "0.03",
             "0.1",
             "0.5"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "epochs",
+          "sensitivity": 0.2745,
+          "best_value": "50",
+          "best_metric_mean": 0.91,
+          "values_tried": [
+            "20",
+            "50"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "batch_size",
+          "sensitivity": 0.2745,
+          "best_value": "16",
+          "best_metric_mean": 0.91,
+          "values_tried": [
+            "16",
+            "32"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
@@ -2166,8 +2660,8 @@
           "metric_value": 0.6566
         }
       ],
-      "summary": "Across 6 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.0354); best value seen: 0.5. 'weight_decay' had the least effect (0.0013). Best on blobs3: val_accuracy=0.6566.",
-      "generated_at": "2026-07-05T06:17:32.527748"
+      "summary": "Across 7 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.2888); best value seen: 0.01. 'weight_decay' had the least effect (0.0013). Best on blobs3: val_accuracy=0.6566.",
+      "generated_at": "2026-07-05T09:14:30.690878"
     },
     "proj_fashionmnist_cnn_sweep_3cddf661": {
       "n_runs": 15,
@@ -2260,6 +2754,68 @@
       ],
       "summary": "Across 14 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'weight_decay' had the least effect (0.0102). Best on FashionMNIST: val_accuracy=0.87.",
       "generated_at": "2026-07-05T08:09:19.352372"
+    },
+    "main_dataset": {
+      "n_runs": 5,
+      "n_completed": 4,
+      "parameter_sensitivity": [
+        {
+          "parameter": "lr",
+          "sensitivity": 0.053,
+          "best_value": "0.0005",
+          "best_metric_mean": 0.963,
+          "values_tried": [
+            "0.0001004523",
+            "0.0001005725",
+            "0.0001009148",
+            "0.0005"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "optimizer",
+          "sensitivity": 0.053,
+          "best_value": "adamw",
+          "best_metric_mean": 0.963,
+          "values_tried": [
+            "AdamW",
+            "adamw"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "model",
+          "sensitivity": 0.053,
+          "best_value": "resnet50",
+          "best_metric_mean": 0.963,
+          "values_tried": [
+            "ResNet50",
+            "resnet50"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        }
+      ],
+      "best_per_dataset": [
+        {
+          "dataset": "unknown",
+          "best_config": {
+            "batch_size": 64,
+            "dropout": 0.2,
+            "epochs": 30,
+            "lr": 0.0005,
+            "model": "resnet50",
+            "optimizer": "adamw"
+          },
+          "best_run_id": "89e858a1310b5d21998b66bd38fcc299a28970296a18bdbdd487527a84adbe90",
+          "metric": "val_accuracy",
+          "metric_value": 0.963
+        }
+      ],
+      "summary": "Across 4 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.053); best value seen: 0.0005. 'model' had the least effect (0.053). Best on unknown: val_accuracy=0.963.",
+      "generated_at": "2026-07-05T09:00:32.976399"
     }
   }
 }

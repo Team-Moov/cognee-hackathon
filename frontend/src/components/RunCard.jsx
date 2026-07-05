@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "./StatusBadge";
-import { deleteRun } from "../services/api";
+import { deleteRun, explainRun } from "../services/api";
 
 // alias-tolerant primary metric (labs disagree on val_acc vs val_accuracy)
 function primaryMetric(metrics = {}) {
@@ -19,9 +19,21 @@ function fmtDuration(sec) {
   return h ? `${h}h ${m}m` : `${m}m`;
 }
 
+// Feature 1: colour-coded severity badge for triage findings
+const SEVERITY_STYLES = {
+  high:   "border-terracotta/30 bg-terracotta/10 text-terracotta",
+  medium: "border-amber-400/30 bg-amber-50 text-amber-700",
+  low:    "border-coffee/20 bg-coffee/5 text-coffee-deep",
+};
+
 export default function RunCard({ run, onDeleted }) {
   const nav = useNavigate();
   const metric = primaryMetric(run.metrics);
+
+  // Feature 7: explain panel state
+  const [explaining, setExplaining] = useState(false);
+  const [explanation, setExplanation] = useState(null);
+  const [explainError, setExplainError] = useState(null);
 
   async function handleDelete(e) {
     e.stopPropagation();
@@ -33,6 +45,23 @@ export default function RunCard({ run, onDeleted }) {
       alert("Delete failed: " + err.message);
     }
   }
+
+  // Feature 7: load explanation on demand
+  async function handleExplain(e) {
+    e.stopPropagation();
+    if (explanation) { setExplanation(null); return; } // toggle off
+    setExplaining(true);
+    setExplainError(null);
+    try {
+      const data = await explainRun(run.run_id);
+      setExplanation(data);
+    } catch (err) {
+      setExplainError(err.message);
+    } finally {
+      setExplaining(false);
+    }
+  }
+
   const dataset = run.dataset && run.dataset.name && run.dataset.name !== "unknown" ? run.dataset : null;
   const artifacts = Array.isArray(run.artifacts) ? run.artifacts : [];
   const wall = fmtDuration(run.wall_clock_seconds);
@@ -44,6 +73,32 @@ export default function RunCard({ run, onDeleted }) {
     m[t] = (m[t] || 0) + 1;
     return m;
   }, {});
+
+  // Feature 1: always show failure analysis for failed/aborted runs
+  // Derived deterministically from the run's own fields — no agent wait needed.
+  const isFailed = run.status === "failed" || run.status === "aborted";
+  const failureHeadline = isFailed
+    ? run.error_message
+      ? run.error_message.slice(0, 80)
+      : run.status === "aborted"
+      ? "Run was aborted before completion"
+      : "Run failed — no error message recorded"
+    : null;
+
+  // Suggest a fix based on common patterns in the config + metrics
+  function inferFix(run) {
+    const cfg  = run.config  || {};
+    const mets = run.metrics || {};
+    const lr   = parseFloat(cfg.lr || cfg.learning_rate || 0);
+    const loss = parseFloat(mets.val_loss || mets.loss || 0);
+    if (lr > 0.1)      return `lr=${lr} is very high — try cutting it by 10× (e.g. lr=${(lr / 10).toFixed(4)})`;
+    if (loss > 2)      return "Loss is very high — check for NaN in gradients; try gradient clipping (max_norm=1.0)";
+    if (cfg.batch_size > 128) return `batch_size=${cfg.batch_size} may exceed GPU memory — try 32 or 64`;
+    if (run.gpu_hours && run.gpu_hours > 5) return "Long run that failed — add checkpointing to resume from last epoch";
+    return "Review the error message above and check your data pipeline for NaN/Inf values";
+  }
+
+  const failureFix = isFailed ? inferFix(run) : null;
 
   return (
     <div
@@ -71,6 +126,18 @@ export default function RunCard({ run, onDeleted }) {
               <div className="text-xs text-muted">{metric.label}</div>
             </div>
           )}
+          {/* Feature 7: Explain button */}
+          <button
+            onClick={handleExplain}
+            title="Explain this run"
+            className={`rounded-md px-2 py-0.5 text-xs font-medium transition-all opacity-0 group-hover:opacity-100 ${
+              explanation
+                ? "bg-coffee text-card"
+                : "border border-coffee/30 text-coffee hover:bg-coffee/10"
+            }`}
+          >
+            {explaining ? "…" : explanation ? "Close" : "Explain"}
+          </button>
           {onDeleted && (
             <button
               onClick={handleDelete}
@@ -124,9 +191,61 @@ export default function RunCard({ run, onDeleted }) {
         <span className="ml-auto font-medium text-coffee/70 transition-colors group-hover:text-coffee">View lineage →</span>
       </div>
 
-      {run.status === "failed" && run.error_message && (
+      {/* Feature 1: Plain error message for failed runs (existing) */}
+      {run.status === "failed" && run.error_message && !failureHeadline && (
         <div className="mt-2 truncate rounded-lg border border-terracotta/20 bg-terracotta/10 px-2 py-1 font-mono text-xs text-terracotta">
           {run.error_message}
+        </div>
+      )}
+
+      {/* Feature 1: Structured failure analysis panel (immediate logic) */}
+      {isFailed && (
+        <div className={`mt-2 rounded-xl border p-3 ${SEVERITY_STYLES.high}`}>
+          <div className="mb-1 flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider opacity-70">
+              🔴 Why it failed
+            </span>
+          </div>
+          {failureHeadline && (
+            <div className="text-sm font-semibold">{failureHeadline}</div>
+          )}
+          {run.rationale && (
+            <div className="mt-0.5 text-xs opacity-80">Context: {run.rationale}</div>
+          )}
+          {failureFix && (
+            <div className="mt-1.5 rounded-md bg-white/40 px-2 py-1 text-xs font-medium">
+              💡 Fix: {failureFix}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Feature 7: Explain panel (on-demand) */}
+      {(explanation || explainError) && (
+        <div
+          className="mt-3 rounded-xl border border-coffee/20 bg-coffee/5 p-3"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="mb-2 text-xs font-bold uppercase tracking-wider text-coffee/70">
+            🔍 Run Explanation
+          </div>
+          {explainError ? (
+            <div className="text-xs text-terracotta">{explainError}</div>
+          ) : explanation ? (
+            <div className="space-y-2">
+              <p className="text-xs leading-relaxed text-cocoa">{explanation.explanation}</p>
+              {explanation.best_sibling && (
+                <div className="rounded-lg border border-olive/20 bg-olive/5 px-2 py-1.5 text-xs text-olive">
+                  <span className="font-semibold">Best sibling: </span>
+                  val_acc={explanation.best_sibling.metrics?.val_accuracy ?? "—"} —{" "}
+                  {Object.entries(explanation.best_sibling.config || {}).slice(0, 3).map(([k,v]) => `${k}=${v}`).join(", ")}
+                </div>
+              )}
+              {explanation.sibling_count > 0 && (
+                <div className="text-xs text-muted">{explanation.sibling_count} other run(s) in this experiment</div>
+              )}
+            </div>
+          ) : null}
         </div>
       )}
 
@@ -134,12 +253,12 @@ export default function RunCard({ run, onDeleted }) {
       {run.config && run.config._wandb_url && (
         <div className="mt-4 pt-4 border-t border-line" onClick={(e) => e.stopPropagation()}>
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold text-espresso">Weights & Biases Telemetry</span>
+            <span className="text-xs font-semibold text-espresso">Weights &amp; Biases Telemetry</span>
             <a href={run.config._wandb_url} target="_blank" rel="noreferrer" className="text-[10px] text-coffee hover:underline">Open in new tab ↗</a>
           </div>
           <div className="h-48 w-full overflow-hidden rounded-xl border border-line bg-white">
-            <iframe 
-              src={run.config._wandb_url} 
+            <iframe
+              src={run.config._wandb_url}
               className="h-full w-full border-none"
               title="W&B Run Dashboard"
               loading="lazy"

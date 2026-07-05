@@ -1,7 +1,11 @@
-﻿"""
+"""
 Triage Agent — flags anomalies in new run results.
 Checks for suspiciously good results (possible data leak), contradictions
 with prior trends, and OOM/divergence patterns.
+
+Feature 1: When status == "failed", generates a structured plain-English
+failure analysis ("Why did this fail?") and writes it as a dedicated
+agent finding so it shows up on the run card in the dashboard.
 """
 from __future__ import annotations
 
@@ -34,10 +38,15 @@ Check for anomalies:
 Return a JSON object with exactly these keys:
 {{
   "anomaly_detected": true/false,
-  "anomaly_type": "data_leak" | "contradicts_trend" | "suspicious_metrics" | "oom_pattern" | "divergence" | null,
+  "anomaly_type": "data_leak" | "contradicts_trend" | "suspicious_metrics" | "oom_pattern" | "divergence" | "failed_run" | null,
   "severity": "high" | "medium" | "low" | null,
   "message": "one paragraph explaining the finding (or 'No anomalies detected.' if clean)",
-  "recommendation": "what the researcher should check or do next"
+  "recommendation": "what the researcher should check or do next",
+  "failure_analysis": {{
+    "headline": "3-8 word summary of what went wrong (null if run succeeded)",
+    "cause": "one sentence technical cause (null if run succeeded)",
+    "fix": "one sentence concrete fix suggestion (null if run succeeded)"
+  }}
 }}
 
 Only return the JSON object, no markdown fences."""
@@ -74,8 +83,20 @@ async def triage_run(
     try:
         result = await llm_generate_json(prompt)
         if isinstance(result, dict) and "anomaly_detected" in result:
+            # Feature 1: For failed runs, always flag even if no "anomaly" in the
+            # traditional sense — the failure itself is the finding.
+            if new_run.get("status") in ("failed", "aborted") and not result.get("anomaly_detected"):
+                result["anomaly_detected"] = True
+                result["anomaly_type"] = result.get("anomaly_type") or "failed_run"
+                result["severity"] = result.get("severity") or "high"
+                if not result.get("message") or result["message"] == "No anomalies detected.":
+                    result["message"] = (
+                        f"Run failed with status '{new_run.get('status')}'. "
+                        + (f"Error: {new_run.get('error_message', 'no error message recorded')}")
+                    )
             return result
         return None
     except Exception as e:
         logger.error("Triage agent failed: %s", e)
         return None
+

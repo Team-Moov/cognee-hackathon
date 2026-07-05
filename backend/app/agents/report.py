@@ -1,4 +1,4 @@
-﻿"""
+"""
 Report Agent — assembles retrospectives and model cards on demand.
 Traverses all lineage and run history for an experiment.
 """

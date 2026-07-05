@@ -114,7 +114,7 @@ async def remember(req: RememberRequest, background_tasks: BackgroundTasks):
     }
 
 
-async def _mirror_to_wandb(req: RememberRequest) -> Dict[str, Any]:
+async def _mirror_to_wandb(req: RememberRequest) -> None:
     """Push this run to the project's W&B project if it has W&B creds attached."""
     if not req.project_id:
         return {"pushed": False, "reason": "no project_id"}
@@ -245,3 +245,112 @@ async def _orchestrate(run_data: Dict[str, Any]) -> None:
         await on_run_remembered(run_data)
     except Exception as e:
         logger.error("Orchestrator error: %s", e)
+
+
+# ── Feature 7: Explain a run ────────────────────────────────────────────────
+
+@router.get("/explain/{run_id}")
+async def explain_run(run_id: str):
+    """
+    Feature 7 — 'groundhog_explain' MCP tool backend.
+
+    Returns a full narrative explanation of a run: what the researcher was
+    testing, what happened, how it compares to sibling runs in the same
+    experiment, and what to try next.
+    """
+    if not settings.cognee_api_url:
+        raise HTTPException(status_code=503, detail="Cognee server is not configured")
+
+    # 1. Fetch all runs to find the target and its siblings
+    try:
+        all_result = await cognee_client.list_runs(
+            settings.cognee_api_url,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Could not fetch run index: {e}")
+
+    all_runs = all_result.get("runs", [])
+    target = next((r for r in all_runs if r.get("run_id") == run_id), None)
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Run not found: {run_id}")
+
+    experiment = target.get("experiment", "")
+    siblings = [r for r in all_runs if r.get("experiment") == experiment and r.get("run_id") != run_id]
+
+    # 2. Build comparison context
+    def _fmt_run(r):
+        m = r.get("metrics", {}) or {}
+        cfg = r.get("config", {}) or {}
+        return {
+            "run_id": (r.get("run_id") or "")[:12],
+            "status": r.get("status"),
+            "config": {k: v for k, v in list(cfg.items())[:6] if not str(k).startswith("_")},
+            "metrics": {k: v for k, v in list(m.items())[:4]},
+            "rationale": r.get("rationale", ""),
+        }
+
+    target_fmt = _fmt_run(target)
+    siblings_fmt = [_fmt_run(s) for s in siblings[:8]]
+
+    # 3. Synthesize explanation with LLM
+    from app.utils import llm_generate
+    prompt = f"""You are a helpful ML experiment memory assistant.
+
+A researcher is asking about run {run_id[:12]} in experiment '{experiment}'.
+
+Target run:
+{json.dumps(target_fmt, indent=2)}
+
+Sibling runs in the same experiment for comparison:
+{json.dumps(siblings_fmt, indent=2)}
+
+Write a clear, concise narrative explanation (4-6 sentences max) covering:
+1. What this run was testing and why (from the rationale and config)
+2. What happened (outcome: metrics, status)
+3. How it compares to the best and worst sibling runs
+4. One concrete recommendation for what to try next
+
+Write in plain English as if explaining to a researcher resuming after a break.
+Do NOT use markdown headers. Just write the narrative paragraph."""
+
+    try:
+        narrative = await llm_generate(prompt)
+    except Exception as e:
+        narrative = f"Could not generate explanation: {e}"
+
+    # 4. Gather any agent findings for this run
+    agent_findings = []
+    try:
+        findings_result = await cognee_client.list_agent_suggestions(
+            settings.cognee_api_url,
+            experiment=experiment,
+            timeout=settings.cognee_call_timeout_seconds,
+        )
+        all_findings = findings_result.get("suggestions", [])
+        # Filter to findings that mention this run_id
+        agent_findings = [
+            f for f in all_findings
+            if run_id in json.dumps(f.get("metadata", {}))
+            or run_id[:12] in (f.get("content") or "")
+        ][:3]
+    except Exception:
+        pass
+
+    return {
+        "run_id": run_id,
+        "experiment": experiment,
+        "explanation": narrative,
+        "run_summary": target_fmt,
+        "sibling_count": len(siblings),
+        "best_sibling": max(
+            siblings,
+            key=lambda r: (r.get("metrics") or {}).get("val_accuracy", 0),
+            default=None,
+        ) and _fmt_run(max(
+            siblings,
+            key=lambda r: (r.get("metrics") or {}).get("val_accuracy", 0),
+        )),
+        "agent_findings": agent_findings,
+    }
+

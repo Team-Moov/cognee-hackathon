@@ -7,6 +7,11 @@ from app.config import settings
 from app import cognee_client
 from app.cognee_client import CogneeClientError
 
+# NOTE: This router intentionally shares the /runs prefix with runs.py so that
+# lineage endpoints live at /api/runs/lineage/{run_id} alongside run CRUD.
+# FastAPI correctly prioritises the literal segment "lineage" over the {run_id}
+# param in runs.py, so there is no routing ambiguity. Do NOT change the prefix
+# without also updating the frontend api.js calls.
 router = APIRouter(prefix="/runs", tags=["Lineage"])
 logger = logging.getLogger("groundhog.routers.lineage")
 

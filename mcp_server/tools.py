@@ -7,10 +7,13 @@ and return plain-text responses that MCP clients (Claude Code, Cursor, etc.)
 can read.
 
 Backend endpoints used:
-  POST /api/runs/check-config  → groundhog_check_config
-  POST /api/runs/remember      → groundhog_remember
-  POST /api/query              → groundhog_query
-  GET  /api/files/find         → groundhog_find
+  POST /api/runs/check-config     → groundhog_check_config
+  POST /api/runs/remember         → groundhog_remember
+  POST /api/query                 → groundhog_query
+  GET  /api/files/find            → groundhog_find
+  GET  /api/insights              → groundhog_insights
+  GET  /api/runs/                 → groundhog_history
+  GET  /api/runs/explain/{run_id} → groundhog_explain  [Feature 7]
 """
 from __future__ import annotations
 
@@ -333,3 +336,61 @@ async def tool_history(project_id: Optional[str] = None, limit: int = 10) -> str
         cfg = ", ".join(f"{k}={v}" for k, v in list((r.get("config") or {}).items())[:4] if not str(k).startswith("_"))
         lines.append(f"- `{(r.get('run_id') or '')[:10]}` [{r.get('status')}] {cfg}" + (f" → val_acc={acc}" if acc is not None else ""))
     return "\n".join(lines)
+
+
+async def tool_explain(run_id: str) -> str:
+    """
+    Feature 7 — Explain This Run.
+
+    Returns a full narrative explanation of a run: what the researcher was
+    testing, what happened, how it compares to siblings, and what to do next.
+
+    Args:
+        run_id: The full run_id hash to explain.
+
+    Returns:
+        A plain-English narrative explanation with comparison context.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            resp = await client.get(_backend_url(f"/api/runs/explain/{run_id}"))
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 404:
+            return f"❌ Run `{run_id[:12]}` not found in Groundhog memory."
+        return f"[groundhog_explain] Backend error {e.response.status_code}: {e.response.text[:200]}"
+    except Exception as e:
+        return f"[groundhog_explain] Connection error: {e}"
+
+    explanation = data.get("explanation", "No explanation available.")
+    experiment = data.get("experiment", "unknown")
+    sibling_count = data.get("sibling_count", 0)
+    best = data.get("best_sibling")
+    run_summary = data.get("run_summary", {})
+
+    lines = [
+        f"🔍 **Explanation — run `{run_id[:12]}` in experiment `{experiment}`**\n",
+        explanation,
+        "",
+        f"**Siblings in this experiment:** {sibling_count} other run(s)",
+    ]
+
+    if best:
+        best_cfg = ", ".join(f"{k}={v}" for k, v in list(best.get("config", {}).items())[:4])
+        best_m = best.get("metrics", {})
+        best_acc = best_m.get("val_accuracy", best_m.get("val_acc", "—"))
+        lines.append(f"**Best sibling:** `{best.get('run_id','')}` — val_acc={best_acc} ({best_cfg})")
+
+    target_m = run_summary.get("metrics", {})
+    target_acc = target_m.get("val_accuracy", target_m.get("val_acc", "—"))
+    lines.append(f"**This run's val_acc:** {target_acc} | status: {run_summary.get('status', '—')}")
+
+    agent_findings = data.get("agent_findings", [])
+    if agent_findings:
+        lines.append("\n**Agent findings for this run:**")
+        for f in agent_findings:
+            lines.append(f"- [{f.get('agent_type', 'agent')}] {(f.get('content') or '')[:120]}")
+
+    return "\n".join(lines)
+

@@ -110,6 +110,9 @@ export async function checkConfig(config, experiment) {
 export async function getLineage(runId) {
   return get(`/runs/lineage/${runId}`);
 }
+export async function explainRun(runId) {
+  return get(`/runs/explain/${runId}`);
+}
 export async function deleteRun(runId) {
   return del(`/runs/${runId}`);
 }

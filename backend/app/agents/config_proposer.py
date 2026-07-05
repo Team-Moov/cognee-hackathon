@@ -1,4 +1,4 @@
-﻿"""
+"""
 Config Proposer — suggests the next experiment configuration.
 Reads all prior runs for the experiment, calls Groq to identify
 unexplored parameter regions, and writes a dismissible suggestion card.

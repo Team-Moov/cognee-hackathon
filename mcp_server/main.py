@@ -73,6 +73,7 @@ from mcp_server.tools import (
     tool_remember,
     tool_insights,
     tool_history,
+    tool_explain,
 )
 
 # Shared project_id property injected into every tool schema so agents scope to
@@ -89,6 +90,15 @@ logging.basicConfig(
     format="%(asctime)s [%(name)s] %(levelname)s %(message)s",
 )
 logger = logging.getLogger("groundhog.mcp")
+
+# BUG-04 fix: Warn at startup if the backend URL is still the default localhost,
+# which is almost certainly wrong when deployed to a cloud host.
+if "localhost" in settings.groundhog_api_url or "127.0.0.1" in settings.groundhog_api_url:
+    logging.getLogger("groundhog.mcp").warning(
+        "GROUNDHOG_API_URL is set to '%s' (localhost). "
+        "If running in production, set GROUNDHOG_API_URL to the deployed backend URL.",
+        settings.groundhog_api_url,
+    )
 
 # ── FastAPI app ────────────────────────────────────────────────────────────────
 
@@ -270,6 +280,25 @@ TOOLS: List[Tool] = [
             },
         },
     ),
+    Tool(
+        name="groundhog_explain",
+        description=(
+            "Explain a specific run in plain English — what was being tested, what happened, "
+            "how it compares to sibling runs, and what to try next. "
+            "Use this when a researcher asks 'what happened in run X?' or wants to resume work after a break. "
+            "Requires the full run_id hash."
+        ),
+        inputSchema={
+            "type": "object",
+            "properties": {
+                "run_id": {
+                    "type": "string",
+                    "description": "The full run_id hash to explain (from groundhog_history or groundhog_remember).",
+                },
+            },
+            "required": ["run_id"],
+        },
+    ),
 ]
 
 # Inject project_id into every tool's schema so agents can always scope calls.
@@ -320,6 +349,9 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> CallToolResult:
 
         elif name == "groundhog_history":
             result = await tool_history(project_id=pid, limit=arguments.get("limit", 10))
+
+        elif name == "groundhog_explain":
+            result = await tool_explain(run_id=arguments["run_id"])
 
         else:
             result = f"Unknown tool: {name}"

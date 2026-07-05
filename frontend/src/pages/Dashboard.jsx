@@ -23,6 +23,7 @@ export default function Dashboard() {
     setLoading(true);
     listRuns()
       .then(d => setRuns(d.runs || []))
+      .catch(() => setRuns([]))
       .finally(() => setLoading(false));
   }
 

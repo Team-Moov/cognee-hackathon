@@ -1,4 +1,4 @@
-﻿"""
+"""
 Literature Agent — suggests relevant papers for the active research thread.
 Uses Groq knowledge to propose papers matching the model/dataset/technique.
 """

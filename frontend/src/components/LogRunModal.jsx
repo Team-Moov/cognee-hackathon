@@ -20,8 +20,9 @@ export default function LogRunModal({ onClose, onLogged }) {
   );
   const [rationale, setRationale] = useState("");
   const [gpuHours, setGpuHours] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
   const [result, setResult] = useState(null);
 
   const projectId = getCurrentProject();
@@ -41,7 +42,7 @@ export default function LogRunModal({ onClose, onLogged }) {
     e.preventDefault();
     if (!experiment.trim()) return;
     setBusy(true);
-    setError(null);
+    setSubmitError(null);
     try {
       const config = parseJson(configText, "Config");
       const metrics = parseJson(metricsText, "Metrics");
@@ -55,11 +56,14 @@ export default function LogRunModal({ onClose, onLogged }) {
         git_commit: "frontend",
       };
       if (gpuHours.trim() && !Number.isNaN(Number(gpuHours))) data.gpu_hours = Number(gpuHours);
+      if ((status === "failed" || status === "aborted") && errorMessage.trim()) {
+        data.error_message = errorMessage.trim();
+      }
       const res = await rememberRun(data);
       setResult(res);
       onLogged?.(res);
     } catch (err) {
-      setError(err.message);
+      setSubmitError(err.message);
     } finally {
       setBusy(false);
     }
@@ -134,7 +138,14 @@ export default function LogRunModal({ onClose, onLogged }) {
               <textarea className={input} rows={2} value={rationale} onChange={(e) => setRationale(e.target.value)} placeholder="What this run tested and what happened." />
             </div>
 
-            {error && <div className="text-sm text-terracotta bg-terracotta/10 border border-terracotta/25 rounded-xl p-2">{error}</div>}
+            {(status === "failed" || status === "aborted") && (
+              <div>
+                <label className={label}>Error message <span className="text-muted">(optional)</span></label>
+                <textarea className={input} rows={2} value={errorMessage} onChange={(e) => setErrorMessage(e.target.value)} placeholder="e.g. Loss diverged to NaN after 5 epochs" />
+              </div>
+            )}
+
+            {submitError && <div className="text-sm text-terracotta bg-terracotta/10 border border-terracotta/25 rounded-xl p-2">{submitError}</div>}
 
             <div className="flex gap-2 justify-end pt-2">
               <button type="button" onClick={onClose} className="text-sm text-muted hover:text-cocoa px-3 py-2">Cancel</button>

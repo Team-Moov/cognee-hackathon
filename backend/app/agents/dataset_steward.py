@@ -1,4 +1,4 @@
-﻿"""
+"""
 Dataset Steward — watches for drift, quality issues, and anomalous metric
 variance that might indicate dataset problems rather than model problems.
 """
