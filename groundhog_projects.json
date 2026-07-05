@@ -65,7 +65,7 @@
         "project": "Groundhog2",
         "api_key": "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",
         "last_synced_run": null,
-        "sync_enabled": true,
+        "sync_enabled": false,
         "default_dataset": "FashionMNIST"
       }
     }

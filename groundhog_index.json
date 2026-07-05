@@ -657,23 +657,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.833,
-        "val_loss": 0.4414,
-        "train_loss": 0.41981,
+        "val_accuracy": 0.8347,
+        "val_loss": 0.4415,
+        "train_loss": 0.41975,
         "epochs": 2,
-        "wall_clock_seconds": 7.37,
-        "gpu_hours": 0.00205,
-        "throughput_img_s": 4071.9,
+        "wall_clock_seconds": 6.35,
+        "gpu_hours": 0.00176,
+        "throughput_img_s": 4727.1,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 1: val_acc=0.833 in 7.37s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00205,
-      "wall_clock_seconds": 7.37,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 1: val_acc=0.8347 in 6.35s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00176,
+      "wall_clock_seconds": 6.35,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8330 | val_loss=0.4414 | Researcher note: sweep run 1: val_acc=0.833 in 7.37s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8347 | val_loss=0.4415 | Researcher note: sweep run 1: val_acc=0.8347 in 6.35s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #1: lr=0.001 opt=adam",
       "dataset": {
@@ -685,7 +685,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:19:43.151176"
+      "timestamp": "2026-07-05T08:15:22.768530"
     },
     {
       "run_id": "0d2b2ea89222de1ced3825967951755cbecb4f6152e898ed2c466a12f9d32ad0",
@@ -706,23 +706,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.8573,
-        "val_loss": 0.3736,
-        "train_loss": 0.36361,
+        "val_accuracy": 0.8597,
+        "val_loss": 0.3717,
+        "train_loss": 0.36414,
         "epochs": 2,
-        "wall_clock_seconds": 6.58,
-        "gpu_hours": 0.00183,
-        "throughput_img_s": 4556.6,
+        "wall_clock_seconds": 6.4,
+        "gpu_hours": 0.00178,
+        "throughput_img_s": 4686.8,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 2: val_acc=0.8573 in 6.58s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00183,
-      "wall_clock_seconds": 6.58,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 2: val_acc=0.8597 in 6.4s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00178,
+      "wall_clock_seconds": 6.4,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.003, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8573 | val_loss=0.3736 | Researcher note: sweep run 2: val_acc=0.8573 in 6.58s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8597 | val_loss=0.3717 | Researcher note: sweep run 2: val_acc=0.8597 in 6.4s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #2: lr=0.003 opt=adam",
       "dataset": {
@@ -734,7 +734,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:20:21.000499"
+      "timestamp": "2026-07-05T08:16:04.965330"
     },
     {
       "run_id": "1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47",
@@ -756,22 +756,22 @@
       },
       "metrics": {
         "val_accuracy": 0.8137,
-        "val_loss": 0.495,
-        "train_loss": 0.50973,
+        "val_loss": 0.4944,
+        "train_loss": 0.50983,
         "epochs": 2,
-        "wall_clock_seconds": 6.55,
-        "gpu_hours": 0.00182,
-        "throughput_img_s": 4576.8,
+        "wall_clock_seconds": 6.92,
+        "gpu_hours": 0.00192,
+        "throughput_img_s": 4333.1,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 3: val_acc=0.8137 in 6.55s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00182,
-      "wall_clock_seconds": 6.55,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 3: val_acc=0.8137 in 6.92s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00192,
+      "wall_clock_seconds": 6.92,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.0003, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8137 | val_loss=0.4950 | Researcher note: sweep run 3: val_acc=0.8137 in 6.55s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8137 | val_loss=0.4944 | Researcher note: sweep run 3: val_acc=0.8137 in 6.92s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #3: lr=0.0003 opt=adam",
       "dataset": {
@@ -783,7 +783,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:21:14.223870"
+      "timestamp": "2026-07-05T08:16:50.907129"
     },
     {
       "run_id": "df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9",
@@ -804,23 +804,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.833,
-        "val_loss": 0.4621,
-        "train_loss": 0.45196,
+        "val_accuracy": 0.8213,
+        "val_loss": 0.4863,
+        "train_loss": 0.45371,
         "epochs": 2,
-        "wall_clock_seconds": 6.98,
-        "gpu_hours": 0.00194,
-        "throughput_img_s": 4296.1,
+        "wall_clock_seconds": 7.1,
+        "gpu_hours": 0.00197,
+        "throughput_img_s": 4226.0,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 4: val_acc=0.833 in 6.98s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00194,
-      "wall_clock_seconds": 6.98,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 4: val_acc=0.8213 in 7.1s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00197,
+      "wall_clock_seconds": 7.1,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.01, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8330 | val_loss=0.4621 | Researcher note: sweep run 4: val_acc=0.833 in 6.98s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8213 | val_loss=0.4863 | Researcher note: sweep run 4: val_acc=0.8213 in 7.1s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #4: lr=0.01 opt=adam",
       "dataset": {
@@ -832,7 +832,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:22:49.752733"
+      "timestamp": "2026-07-05T08:17:37.378552"
     },
     {
       "run_id": "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda",
@@ -853,23 +853,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.771,
-        "val_loss": 0.6506,
-        "train_loss": 0.85149,
+        "val_accuracy": 0.6727,
+        "val_loss": 0.8129,
+        "train_loss": 0.95056,
         "epochs": 2,
-        "wall_clock_seconds": 6.82,
-        "gpu_hours": 0.00189,
-        "throughput_img_s": 4401.8,
+        "wall_clock_seconds": 7.18,
+        "gpu_hours": 0.002,
+        "throughput_img_s": 4175.9,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 5: val_acc=0.771 in 6.82s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00189,
-      "wall_clock_seconds": 6.82,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 5: val_acc=0.6727 in 7.18s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.002,
+      "wall_clock_seconds": 7.18,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.03, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.7710 | val_loss=0.6506 | Researcher note: sweep run 5: val_acc=0.771 in 6.82s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.6727 | val_loss=0.8129 | Researcher note: sweep run 5: val_acc=0.6727 in 7.18s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #5: lr=0.03 opt=adam",
       "dataset": {
@@ -881,7 +881,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:24:07.837784"
+      "timestamp": "2026-07-05T08:18:40.124184"
     },
     {
       "run_id": "e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4",
@@ -902,23 +902,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.8477,
-        "val_loss": 0.4046,
-        "train_loss": 0.45201,
+        "val_accuracy": 0.8453,
+        "val_loss": 0.4089,
+        "train_loss": 0.4527,
         "epochs": 2,
-        "wall_clock_seconds": 6.8,
-        "gpu_hours": 0.00189,
-        "throughput_img_s": 4410.0,
+        "wall_clock_seconds": 6.84,
+        "gpu_hours": 0.0019,
+        "throughput_img_s": 4386.5,
         "n_params": 421642,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 6: val_acc=0.8477 in 6.8s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00189,
-      "wall_clock_seconds": 6.8,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 6: val_acc=0.8453 in 6.84s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.0019,
+      "wall_clock_seconds": 6.84,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.25, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8477 | val_loss=0.4046 | Researcher note: sweep run 6: val_acc=0.8477 in 6.8s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8453 | val_loss=0.4089 | Researcher note: sweep run 6: val_acc=0.8453 in 6.84s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #6: lr=0.001 opt=adam",
       "dataset": {
@@ -930,46 +930,7 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:24:57.650751"
-    },
-    {
-      "run_id": "26fe22df69d4da147afdcbf3260a20293cce860dd6806dff50237dbdee9d2c81",
-      "config_hash": "26fe22df69d4da147afdcbf3260a20293cce860dd6806dff50237dbdee9d2c81",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "thread": "default",
-      "config": {
-        "lr": 0.008,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "sgd",
-        "activation": "relu",
-        "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/g7c81p9l"
-      },
-      "metrics": {},
-      "status": "failed",
-      "rationale": "Run status: failed. val_loss=N/A, val_accuracy=N/A. Researcher notes: Run status: failed. val_loss=N/A, val_accuracy=N/A. Researcher notes: Run status: failed. val_loss=N/A, val_accuracy=N/A. Researcher notes: Run status: running. val_loss=N/A, val_accuracy=N/A.",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=sgd, lr=0.008, batch_size=128, epochs=2, dropout=0, activation=relu, hidden_dim=128, weight_decay=0",
-      "result_summary": "Result: Run failed. | Researcher note: Run status: failed. val_loss=N/A, val_accuracy=N/A. Researcher notes: Run status: failed. val_loss=N/A, val_accuracy=N/A. Researcher notes: Run status: failed. val_loss=N/A, val_accuracy=N/A. Research",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:29:42.070887"
+      "timestamp": "2026-07-05T08:19:25.410511"
     },
     {
       "run_id": "69524d3aa3f3f67f9b7a7593f3b7a897bb2375d70b7ef6c662cb41a9f1eb7ffb",
@@ -990,23 +951,23 @@
         "optimizer": "adam"
       },
       "metrics": {
-        "val_accuracy": 0.8637,
+        "val_accuracy": 0.863,
         "val_loss": 0.3691,
-        "train_loss": 0.38945,
+        "train_loss": 0.38885,
         "epochs": 2,
-        "wall_clock_seconds": 16.5,
-        "gpu_hours": 0.00458,
-        "throughput_img_s": 1818.5,
+        "wall_clock_seconds": 7.56,
+        "gpu_hours": 0.0021,
+        "throughput_img_s": 3968.2,
         "n_params": 947338,
         "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "sweep run 7: val_acc=0.8637 in 16.5s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.00458,
-      "wall_clock_seconds": 16.5,
-      "git_commit": "ee797eb07f51a008986f282a27572f72b9a1f497",
+      "rationale": "sweep run 7: val_acc=0.863 in 7.56s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.0021,
+      "wall_clock_seconds": 7.56,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
       "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=48, hidden_dim=192",
-      "result_summary": "Result: val_accuracy=0.8637 | val_loss=0.3691 | Researcher note: sweep run 7: val_acc=0.8637 in 16.5s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "result_summary": "Result: val_accuracy=0.8630 | val_loss=0.3691 | Researcher note: sweep run 7: val_acc=0.863 in 7.56s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
       "hypothesis": "cfg #7: lr=0.001 opt=adam",
       "dataset": {
@@ -1018,341 +979,154 @@
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:35:40.465791"
+      "timestamp": "2026-07-05T08:20:32.767728"
     },
     {
-      "run_id": "4eb4fb23f92fbd3c8104bec46aaf06bf424ddc2197e85d18a355d8a6d7a2cf37",
-      "config_hash": "4eb4fb23f92fbd3c8104bec46aaf06bf424ddc2197e85d18a355d8a6d7a2cf37",
+      "run_id": "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b",
+      "config_hash": "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
       "thread": "default",
       "config": {
-        "lr": 0.0003,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "adam",
-        "activation": "relu",
         "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
+        "weight_decay": 0.0005,
+        "dropout": 0.0,
         "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/yijgvjpe"
-      },
-      "metrics": {
+        "hidden_dim": 128,
+        "activation": "relu",
         "epochs": 2,
-        "gpu_hours": 0.00182,
-        "n_params": 421642,
-        "throughput_img_s": 4576.8,
-        "train_loss": 0.50973,
-        "val_accuracy": 0.8137,
-        "val_loss": 0.495,
-        "wall_clock_seconds": 6.55
-      },
-      "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.495, val_accuracy=0.8137. Researcher notes: sweep run 3: val_acc=0.8137 in 6.55s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.0003, batch_size=128, epochs=2, seed=0, dropout=0, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8137 | val_loss=0.4950 | Researcher note: Run status: finished. val_loss=0.495, val_accuracy=0.8137. Researcher notes: sweep run 3: val_acc=0.8137 in 6.55s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:35:40.968519"
-    },
-    {
-      "run_id": "808949577f8b5498f12b01d6eebcfb7ba10923b71d560ccf93ec142fefa8c3f2",
-      "config_hash": "808949577f8b5498f12b01d6eebcfb7ba10923b71d560ccf93ec142fefa8c3f2",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "thread": "default",
-      "config": {
+        "seed": 0,
         "lr": 0.001,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "adam",
-        "activation": "relu",
-        "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/z1t8fihz"
+        "optimizer": "adam"
       },
       "metrics": {
+        "val_accuracy": 0.832,
+        "val_loss": 0.4485,
+        "train_loss": 0.42324,
         "epochs": 2,
-        "gpu_hours": 0.00205,
-        "n_params": 421642,
-        "throughput_img_s": 4071.9,
-        "train_loss": 0.41981,
-        "val_accuracy": 0.833,
-        "val_loss": 0.4414,
-        "wall_clock_seconds": 7.37
-      },
-      "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.4414, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4414, val_accuracy=0.833. Researcher notes: sweep run 1: val_acc=0.833 in 7.37s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, seed=0, dropout=0, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8330 | val_loss=0.4414 | Researcher note: Run status: finished. val_loss=0.4414, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4414, val_accuracy=0.833. Researcher notes: sweep run 1: val_acc=0.833 in 7.37s on NVIDIA ",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:35:41.299104"
-    },
-    {
-      "run_id": "f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7",
-      "config_hash": "f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "thread": "default",
-      "config": {
-        "lr": 0.03,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "adam",
-        "activation": "relu",
-        "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/4po6kj51"
-      },
-      "metrics": {
-        "epochs": 2,
-        "gpu_hours": 0.00189,
-        "n_params": 421642,
-        "throughput_img_s": 4401.8,
-        "train_loss": 0.85149,
-        "val_accuracy": 0.771,
-        "val_loss": 0.6506,
-        "wall_clock_seconds": 6.82
-      },
-      "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.6506, val_accuracy=0.771. Researcher notes: Run status: finished. val_loss=0.6506, val_accuracy=0.771. Researcher notes: sweep run 5: val_acc=0.771 in 6.82s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.03, batch_size=128, epochs=2, seed=0, dropout=0, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.7710 | val_loss=0.6506 | Researcher note: Run status: finished. val_loss=0.6506, val_accuracy=0.771. Researcher notes: Run status: finished. val_loss=0.6506, val_accuracy=0.771. Researcher notes: sweep run 5: val_acc=0.771 in 6.82s on NVIDIA ",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:42:43.929955"
-    },
-    {
-      "run_id": "c5e9bf2edf62de167a2dddf4def1b3cd25e0d4cda7ab7c3b417c6abcde9107c4",
-      "config_hash": "c5e9bf2edf62de167a2dddf4def1b3cd25e0d4cda7ab7c3b417c6abcde9107c4",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "thread": "default",
-      "config": {
-        "lr": 0.003,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "adam",
-        "activation": "relu",
-        "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/zl35dn6b"
-      },
-      "metrics": {
-        "epochs": 2,
-        "gpu_hours": 0.00183,
-        "n_params": 421642,
-        "throughput_img_s": 4556.6,
-        "train_loss": 0.36361,
-        "val_accuracy": 0.8573,
-        "val_loss": 0.3736,
-        "wall_clock_seconds": 6.58
-      },
-      "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.3736, val_accuracy=0.8573. Researcher notes: Run status: finished. val_loss=0.3736, val_accuracy=0.8573. Researcher notes: Run status: finished. val_loss=0.3736, val_accuracy=0.8573. Researcher notes: sweep run 2: val_acc=0.8573 in 6.58s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.003, batch_size=128, epochs=2, seed=0, dropout=0, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8573 | val_loss=0.3736 | Researcher note: Run status: finished. val_loss=0.3736, val_accuracy=0.8573. Researcher notes: Run status: finished. val_loss=0.3736, val_accuracy=0.8573. Researcher notes: Run status: finished. val_loss=0.3736, val_a",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:43:13.379550"
-    },
-    {
-      "run_id": "607de9da0139c78930b252120283782c77336eb3be49283a7dfc5637d76062e7",
-      "config_hash": "607de9da0139c78930b252120283782c77336eb3be49283a7dfc5637d76062e7",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "thread": "default",
-      "config": {
-        "lr": 0.01,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0,
-        "optimizer": "adam",
-        "activation": "relu",
-        "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/7qtndshe"
-      },
-      "metrics": {
-        "epochs": 2,
+        "wall_clock_seconds": 6.99,
         "gpu_hours": 0.00194,
+        "throughput_img_s": 4289.1,
         "n_params": 421642,
-        "throughput_img_s": 4296.1,
-        "train_loss": 0.45196,
-        "val_accuracy": 0.833,
-        "val_loss": 0.4621,
-        "wall_clock_seconds": 6.98
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.4621, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4621, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4621, val_accuracy=0.833. Researcher notes: sweep run 4: val_acc=0.833 in 6.98s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.01, batch_size=128, epochs=2, seed=0, dropout=0, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8330 | val_loss=0.4621 | Researcher note: Run status: finished. val_loss=0.4621, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4621, val_accuracy=0.833. Researcher notes: Run status: finished. val_loss=0.4621, val_acc",
+      "rationale": "sweep run 8: val_acc=0.832 in 6.99s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00194,
+      "wall_clock_seconds": 6.99,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
+      "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, weight_decay=0.0005, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.8320 | val_loss=0.4485 | Researcher note: sweep run 8: val_acc=0.832 in 6.99s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
-      "hypothesis": "",
+      "hypothesis": "cfg #8: lr=0.001 opt=adam",
       "dataset": {
-        "name": "unknown",
+        "name": "FashionMNIST",
         "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T07:59:15.618485"
+      "timestamp": "2026-07-05T08:21:12.381461"
     },
     {
-      "run_id": "f302bfd3a97451acead77f8201b6db0e289aae1d421d043f7ef9dc23e19a6e74",
-      "config_hash": "f302bfd3a97451acead77f8201b6db0e289aae1d421d043f7ef9dc23e19a6e74",
+      "run_id": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+      "config_hash": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
       "thread": "default",
       "config": {
-        "lr": 0.001,
-        "seed": 0,
-        "epochs": 2,
-        "dropout": 0.25,
-        "optimizer": "adam",
-        "activation": "relu",
         "batch_size": 128,
-        "hidden_dim": 128,
-        "weight_decay": 0,
-        "conv_channels": 32,
-        "_wandb_url": "https://wandb.ai/bananyadas-manipal/Groundhog2/runs/ujjqnru6"
-      },
-      "metrics": {
-        "epochs": 2,
-        "gpu_hours": 0.00189,
-        "n_params": 421642,
-        "throughput_img_s": 4410,
-        "train_loss": 0.45201,
-        "val_accuracy": 0.8477,
-        "val_loss": 0.4046,
-        "wall_clock_seconds": 6.8
-      },
-      "status": "completed",
-      "rationale": "Run status: finished. val_loss=0.4046, val_accuracy=0.8477. Researcher notes: Run status: finished. val_loss=0.4046, val_accuracy=0.8477. Researcher notes: sweep run 6: val_acc=0.8477 in 6.8s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
-      "gpu_hours": 0.0,
-      "wall_clock_seconds": null,
-      "git_commit": "wandb",
-      "config_summary": "Config: optimizer=adam, lr=0.001, batch_size=128, epochs=2, seed=0, dropout=0.25, activation=relu, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8477 | val_loss=0.4046 | Researcher note: Run status: finished. val_loss=0.4046, val_accuracy=0.8477. Researcher notes: Run status: finished. val_loss=0.4046, val_accuracy=0.8477. Researcher notes: sweep run 6: val_acc=0.8477 in 6.8s on NVIDI",
-      "derived_from_config_hash": null,
-      "hypothesis": "",
-      "dataset": {
-        "name": "unknown",
-        "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
-      },
-      "artifacts": [],
-      "artifact_paths": [],
-      "timestamp": "2026-07-05T07:59:16.571747"
-    },
-    {
-      "run_id": "0b8cdae9b896ccc15fea2be997801ea0f09e815203b69b58a9b6f20d9f0d3785",
-      "config_hash": "0b8cdae9b896ccc15fea2be997801ea0f09e815203b69b58a9b6f20d9f0d3785",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "instructor_test",
-      "thread": "default",
-      "config": {
-        "lr": 0.09,
-        "batch_size": 128,
-        "optimizer": "adam",
-        "epochs": 2,
         "weight_decay": 0.0,
         "dropout": 0.0,
         "conv_channels": 32,
         "hidden_dim": 128,
-        "activation": "relu"
+        "activation": "relu",
+        "epochs": 2,
+        "seed": 0,
+        "lr": 0.005,
+        "optimizer": "sgd"
       },
       "metrics": {
-        "val_accuracy": 0.87
+        "val_accuracy": 0.7947,
+        "val_loss": 0.5382,
+        "train_loss": 0.5945,
+        "epochs": 2,
+        "wall_clock_seconds": 6.48,
+        "gpu_hours": 0.0018,
+        "throughput_img_s": 4627.4,
+        "n_params": 421642,
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
       },
       "status": "completed",
-      "rationale": "",
-      "gpu_hours": null,
-      "wall_clock_seconds": null,
-      "git_commit": "unknown",
-      "config_summary": "Config: optimizer=adam, lr=0.09, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
-      "result_summary": "Result: val_accuracy=0.8700",
+      "rationale": "sweep run 9: val_acc=0.7947 in 6.48s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.0018,
+      "wall_clock_seconds": 6.48,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
+      "config_summary": "Config: optimizer=sgd, lr=0.005, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.7947 | val_loss=0.5382 | Researcher note: sweep run 9: val_acc=0.7947 in 6.48s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
       "derived_from_config_hash": null,
-      "hypothesis": "",
+      "hypothesis": "cfg #9: lr=0.005 opt=sgd",
       "dataset": {
         "name": "FashionMNIST",
         "version": "v1",
-        "preprocessing": "",
-        "split_rationale": "",
-        "quality_issues": ""
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
       },
       "artifacts": [],
       "artifact_paths": [],
-      "timestamp": "2026-07-05T08:08:55.401772"
+      "timestamp": "2026-07-05T08:21:59.908235"
+    },
+    {
+      "run_id": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+      "config_hash": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "thread": "default",
+      "config": {
+        "batch_size": 128,
+        "weight_decay": 0.0,
+        "dropout": 0.0,
+        "conv_channels": 32,
+        "hidden_dim": 128,
+        "activation": "relu",
+        "epochs": 2,
+        "seed": 0,
+        "lr": 0.1,
+        "optimizer": "sgd"
+      },
+      "metrics": {
+        "val_accuracy": 0.863,
+        "val_loss": 0.3643,
+        "train_loss": 0.39345,
+        "epochs": 2,
+        "wall_clock_seconds": 7.58,
+        "gpu_hours": 0.00211,
+        "throughput_img_s": 3958.4,
+        "n_params": 421642,
+        "device": "NVIDIA GeForce RTX 3050 6GB Laptop GPU"
+      },
+      "status": "completed",
+      "rationale": "sweep run 10: val_acc=0.863 in 7.58s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "gpu_hours": 0.00211,
+      "wall_clock_seconds": 7.58,
+      "git_commit": "7b59c31769ef107e9c97f4859c15b7f1f25a985e",
+      "config_summary": "Config: optimizer=sgd, lr=0.1, batch_size=128, epochs=2, weight_decay=0.0, dropout=0.0, conv_channels=32, hidden_dim=128",
+      "result_summary": "Result: val_accuracy=0.8630 | val_loss=0.3643 | Researcher note: sweep run 10: val_acc=0.863 in 7.58s on NVIDIA GeForce RTX 3050 6GB Laptop GPU",
+      "derived_from_config_hash": null,
+      "hypothesis": "cfg #10: lr=0.1 opt=sgd",
+      "dataset": {
+        "name": "FashionMNIST",
+        "version": "v1",
+        "preprocessing": "ToTensor + normalize(mean=0.2860, std=0.3530)",
+        "split_rationale": "subset: 15000 train / 3000 val (fixed seed) for fast 10-run sweeps",
+        "quality_issues": "shirt/coat/pullover classes are visually confusable (inherent)"
+      },
+      "artifacts": [],
+      "artifact_paths": [],
+      "timestamp": "2026-07-05T08:22:43.513350"
     }
   ],
   "artifacts": [
@@ -1746,44 +1520,6 @@
       "agent_type": "triage",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
-      "content": "The new run's validation accuracy of 0.8153 is lower than the previous best result of 0.8567, despite employing a lower learning rate from one of the hypotheses suggesting that a higher learning rate could improve performance. This trend of decreasing validation accuracy raises concerns about the effectiveness of the current parameter settings.",
-      "metadata": {
-        "anomaly_detected": true,
-        "anomaly_type": "contradicts_trend",
-        "severity": "medium",
-        "message": "The new run's validation accuracy of 0.8153 is lower than the previous best result of 0.8567, despite employing a lower learning rate from one of the hypotheses suggesting that a higher learning rate could improve performance. This trend of decreasing validation accuracy raises concerns about the effectiveness of the current parameter settings.",
-        "recommendation": "The researcher should investigate potential issues in the dataset, such as label noise or preprocessing discrepancies, and consider experimenting with different parameter configurations, possibly including adjusting the learning rate and increasing the number of epochs for further training.",
-        "run_id": "1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47"
-      },
-      "severity": "medium",
-      "id": "274ac13f698a4cb6a5e2ef9a7a26a7a7",
-      "timestamp": "2026-07-05T06:52:36.463432",
-      "dismissed": false,
-      "dedup_key": "triage:fmnist_cnn_sweep:1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47"
-    },
-    {
-      "agent_type": "triage",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "The new run achieved a validation accuracy of 0.835, which is significantly lower than the previous best run that achieved a validation accuracy of 0.8567 with a learning rate of 0.003. This suggests a potential inconsistency in model performance given the setup and findings from prior experiments.",
-      "metadata": {
-        "anomaly_detected": true,
-        "anomaly_type": "contradicts_trend",
-        "severity": "medium",
-        "message": "The new run achieved a validation accuracy of 0.835, which is significantly lower than the previous best run that achieved a validation accuracy of 0.8567 with a learning rate of 0.003. This suggests a potential inconsistency in model performance given the setup and findings from prior experiments.",
-        "recommendation": "The researcher should investigate the differences in learning rate and consider re-evaluating the dataset and training setup to identify any potential discrepancies leading to decreased validation accuracy.",
-        "run_id": "df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9"
-      },
-      "severity": "medium",
-      "id": "f30fc89e67514bc4801f11f001fb0ed4",
-      "timestamp": "2026-07-05T06:53:55.095658",
-      "dismissed": false,
-      "dedup_key": "triage:fmnist_cnn_sweep:df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9"
-    },
-    {
-      "agent_type": "triage",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
       "content": "The new run shows a validation accuracy of 0.86 and a validation loss of 0.4, which is better than most of the prior results, especially considering that previous runs with similar configurations showed lower accuracy and higher loss values. This improvement is contrasting to the established trends seen in earlier runs, which may indicate potential overfitting or issues with the validation set.",
       "metadata": {
         "anomaly_detected": true,
@@ -1822,25 +1558,6 @@
       "agent_type": "triage",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
-      "content": "The new run achieved a validation accuracy of 0.833, which is a decrease from the recent runs with higher validation accuracy of 0.8600 and 0.8567. This drop raises concerns about potential inconsistencies in dataset quality or issues with the current configuration that diverges from previously established successful settings.",
-      "metadata": {
-        "anomaly_detected": true,
-        "anomaly_type": "contradicts_trend",
-        "severity": "medium",
-        "message": "The new run achieved a validation accuracy of 0.833, which is a decrease from the recent runs with higher validation accuracy of 0.8600 and 0.8567. This drop raises concerns about potential inconsistencies in dataset quality or issues with the current configuration that diverges from previously established successful settings.",
-        "recommendation": "The researcher should check the dataset for any potential issues such as label noise or contamination. Additionally, it might be prudent to review the configuration and ensure that no parameters deviate from those that yielded better results in the earlier runs.",
-        "run_id": "318b809317cff66b16efe56b2b9443d78258ccf3e772867185acaad491fc9e25"
-      },
-      "severity": "medium",
-      "id": "7da6f03fffd84dfabf4f21dce7cb8af0",
-      "timestamp": "2026-07-05T07:20:48.844086",
-      "dismissed": false,
-      "dedup_key": "triage:fmnist_cnn_sweep:318b809317cff66b16efe56b2b9443d78258ccf3e772867185acaad491fc9e25"
-    },
-    {
-      "agent_type": "triage",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
       "content": "The latest run has failed without providing any validation loss or accuracy metrics, reflecting a complete lack of meaningful output data. This is suspicious as prior runs have consistently produced validation metrics. The status messages indicate a potential ongoing processing issue, suggesting that the model might have encountered an out-of-memory (OOM) error or other critical failure during training.",
       "metadata": {
         "anomaly_detected": true,
@@ -1855,70 +1572,6 @@
       "timestamp": "2026-07-05T07:22:18.144967",
       "dismissed": false,
       "dedup_key": "triage:fmnist_cnn_sweep:26fe22df69d4da147afdcbf3260a20293cce860dd6806dff50237dbdee9d2c81"
-    },
-    {
-      "agent_type": "literature",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "[\n  {\n    \"title\": \"Adam: A Method for Stochastic Optimization\",\n    \"venue\": \"ICLR 2015\",\n    \"key_insight\": \"This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.\",\n    \"actionable_suggestion\": \"Try experimenting with different beta parameters (\\u03b21, \\u03b22) in the Adam optimizer to see if it affects validation accuracy.\"\n  },\n  {\n    \"title\": \"Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift\",\n    \"venue\": \"ICML 2015\",\n    \"key_insight\": \"Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.\",\n    \"actionable_suggestion\": \"Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy.\"\n  },\n  {\n    \"title\": \"Dropout: A Simple Way to Prevent Neural Networks from Overfitting\",\n    \"venue\": \"The Journal of Machine Learning Research 2014\",\n    \"key_insight\": \"This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.\",\n    \"actionable_suggestion\": \"Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value.\"\n  },\n  {\n    \"title\": \"Understanding deep learning requires rethinking generalization\",\n    \"venue\": \"ICLR 2017\",\n    \"key_insight\": \"This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.\",\n    \"actionable_suggestion\": \"Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting.\"\n  },\n  {\n    \"title\": \"Proven, empirical methods for overfitting in neural networks\",\n    \"venue\": \"NeurIPS 2012\",\n    \"key_insight\": \"This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.\",\n    \"actionable_suggestion\": \"Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance.\"\n  }\n]",
-      "metadata": {
-        "papers": [
-          {
-            "title": "Adam: A Method for Stochastic Optimization",
-            "venue": "ICLR 2015",
-            "key_insight": "This foundational paper introduces the Adam optimizer, which is central to understanding its benefits over SGD.",
-            "actionable_suggestion": "Try experimenting with different beta parameters (\u03b21, \u03b22) in the Adam optimizer to see if it affects validation accuracy."
-          },
-          {
-            "title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift",
-            "venue": "ICML 2015",
-            "key_insight": "Batch normalization is a technique that can improve convergence and stability of deep networks, potentially leading to higher accuracy.",
-            "actionable_suggestion": "Implement batch normalization layers in the CNN architecture to stabilize training and potentially improve validation accuracy."
-          },
-          {
-            "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
-            "venue": "The Journal of Machine Learning Research 2014",
-            "key_insight": "This paper presents dropout as a regularization technique that can prevent overfitting, relevant to the current dropout experimentation.",
-            "actionable_suggestion": "Increase the dropout rate further and analyze its impact on validation metrics to find the optimal dropout value."
-          },
-          {
-            "title": "Understanding deep learning requires rethinking generalization",
-            "venue": "ICLR 2017",
-            "key_insight": "This paper discusses factors affecting generalization in deep learning, which may enlighten unexpected validation losses.",
-            "actionable_suggestion": "Investigate whether increasing the training epochs while using early stopping could yield better generalization without overfitting."
-          },
-          {
-            "title": "Proven, empirical methods for overfitting in neural networks",
-            "venue": "NeurIPS 2012",
-            "key_insight": "This work reviews various methods and strategies for dealing with overfitting in neural networks, directly addressing current challenges.",
-            "actionable_suggestion": "Experiment with varying learning rates during training (learning rate schedules) to help mitigate overfitting and improve validation performance."
-          }
-        ]
-      },
-      "severity": null,
-      "id": "82930722ba194f9085784ea0c759bc59",
-      "timestamp": "2026-07-05T07:24:26.408997",
-      "dismissed": false,
-      "dedup_key": "literature:fmnist_cnn_sweep"
-    },
-    {
-      "agent_type": "triage",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "The new result shows a validation accuracy of 0.771, which is significantly lower than the best prior runs (up to 0.8573). This marks a clear contradiction to the trend observed in previous results, where validation accuracy generally improved with lower learning rates. Additionally, the training loss (0.85149) is notably higher than all previous runs, raising concerns about model performance and indicating potential issues with the recent configuration.",
-      "metadata": {
-        "anomaly_detected": true,
-        "anomaly_type": "contradicts_trend",
-        "severity": "high",
-        "message": "The new result shows a validation accuracy of 0.771, which is significantly lower than the best prior runs (up to 0.8573). This marks a clear contradiction to the trend observed in previous results, where validation accuracy generally improved with lower learning rates. Additionally, the training loss (0.85149) is notably higher than all previous runs, raising concerns about model performance and indicating potential issues with the recent configuration.",
-        "recommendation": "Investigate potential reasons for the drop in performance, including reviewing the dataset for inconsistencies, examining the impact of the increased learning rate (0.03), and ensuring that the validation set is free from contamination or label noise.",
-        "run_id": "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
-      },
-      "severity": "high",
-      "id": "86f14e841ae34a5eb438d82233267080",
-      "timestamp": "2026-07-05T07:34:29.000866",
-      "dismissed": false,
-      "dedup_key": "triage:fmnist_cnn_sweep:454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
     },
     {
       "agent_type": "triage",
@@ -1943,25 +1596,6 @@
       "agent_type": "triage",
       "project": "proj_fashionmnist_cnn_sweep_3cddf661",
       "experiment": "fmnist_cnn_sweep",
-      "content": "The latest run achieved a validation accuracy of 0.8477, which is lower than the best prior result of 0.8573 and below recently observed trends of achieving accuracy above 0.8600. This suggests that despite improvement from earlier runs, the results do not align with the upward trend of validation accuracy seen in configurations with similar parameters.",
-      "metadata": {
-        "anomaly_detected": true,
-        "anomaly_type": "contradicts_trend",
-        "severity": "medium",
-        "message": "The latest run achieved a validation accuracy of 0.8477, which is lower than the best prior result of 0.8573 and below recently observed trends of achieving accuracy above 0.8600. This suggests that despite improvement from earlier runs, the results do not align with the upward trend of validation accuracy seen in configurations with similar parameters.",
-        "recommendation": "The researcher should investigate the dataset for consistency and integrity, checking for potential label noise or contamination. Additionally, reviewing the training process and the configurations for any deviations from successful runs may help identify issues.",
-        "run_id": "e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4"
-      },
-      "severity": "medium",
-      "id": "d33a1a2f094442ef980f5a9547293865",
-      "timestamp": "2026-07-05T07:35:39.240626",
-      "dismissed": false,
-      "dedup_key": "triage:fmnist_cnn_sweep:e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4"
-    },
-    {
-      "agent_type": "triage",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
       "content": "The new run has a validation accuracy of 0.771 and a validation loss of 0.6506, which is the same as a prior run that also had the same metrics, suggesting a lack of improvement despite a higher learning rate of 0.03. This performance is significantly lower than earlier runs where configurations yielded much better validation accuracy, indicating either a configuration issue or a potential dataset issue.",
       "metadata": {
         "anomaly_detected": true,
@@ -1976,78 +1610,6 @@
       "timestamp": "2026-07-05T07:43:44.295748",
       "dismissed": false,
       "dedup_key": "triage:fmnist_cnn_sweep:f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7"
-    },
-    {
-      "agent_type": "dataset_steward",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "Investigate the dataset for label quality and perform a thorough review of dataset splits to ensure stability and integrity.",
-      "metadata": {
-        "issues_detected": true,
-        "issues": [
-          {
-            "type": "label_noise",
-            "description": "High variance in validation accuracy among runs suggests potential label noise affecting model performance.",
-            "severity": "high",
-            "affected_runs": [
-              "f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7",
-              "607de9da0139c78930b252120283782c77336eb3be49283a7dfc5637d76062e7",
-              "4eb4fb23f92fbd3c8104bec46aaf06bf424ddc2197e85d18a355d8a6d7a2cf37",
-              "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
-            ]
-          },
-          {
-            "type": "unstable_split",
-            "description": "Validation accuracy shows drops in several runs under similar configurations, indicating potential issues with dataset splits.",
-            "severity": "medium",
-            "affected_runs": [
-              "f5a4f8c1e966aeab51d95132d439be717d95b39b16e5c04366b589556e6ecdd7",
-              "607de9da0139c78930b252120283782c77336eb3be49283a7dfc5637d76062e7",
-              "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda",
-              "6c4bdbe30ff02a255136ab4e5d8a2c9d8e88876e566dd0ba75f7f0b8473e0b8c"
-            ]
-          }
-        ],
-        "overall_health": "warning",
-        "recommendation": "Investigate the dataset for label quality and perform a thorough review of dataset splits to ensure stability and integrity."
-      },
-      "severity": null,
-      "id": "02ae9d61c93e41408d605ebcc999f4fa",
-      "timestamp": "2026-07-05T07:59:15.006713",
-      "dismissed": false,
-      "dedup_key": "dataset_steward:fmnist_cnn_sweep"
-    },
-    {
-      "agent_type": "config_proposer",
-      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
-      "experiment": "fmnist_cnn_sweep",
-      "content": "This configuration maintains the previously identified optimal learning rate (0.003) and dropout (0.0) while enhancing the network\u2019s capacity by increasing the hidden dimension to 192 and the convolutional channels to 48, which have been shown to produce better performance in prior runs. These adjustments align with the parameter sensitivity results, focusing on high-impact variables while keeping low-impact parameters stable.",
-      "metadata": {
-        "suggested_config": {
-          "lr": 0.003,
-          "seed": 0,
-          "epochs": 2,
-          "dropout": 0.0,
-          "optimizer": "adam",
-          "activation": "relu",
-          "batch_size": 128,
-          "hidden_dim": 192,
-          "weight_decay": 0.0,
-          "conv_channels": 48
-        },
-        "rationale": "This configuration maintains the previously identified optimal learning rate (0.003) and dropout (0.0) while enhancing the network\u2019s capacity by increasing the hidden dimension to 192 and the convolutional channels to 48, which have been shown to produce better performance in prior runs. These adjustments align with the parameter sensitivity results, focusing on high-impact variables while keeping low-impact parameters stable.",
-        "expected_direction": "I expect that this configuration will improve the validation accuracy, potentially increasing it by approximately 1-2% based on the effects seen in past experiments.",
-        "unexplored_regions": [
-          "Exploring a learning rate of 0.005, which is mid-range between 0.003 and 0.01.",
-          "Testing a dropout rate of 0.1 or 0.15 to see if a small amount of regularization improves performance.",
-          "Expanding the conv_channels beyond 48 to see if higher configuration improves feature extraction."
-        ]
-      },
-      "severity": null,
-      "id": "3de8f5152a9b486c92276387cc3a89bc",
-      "timestamp": "2026-07-05T07:59:15.305769",
-      "dismissed": false,
-      "dedup_key": "config_proposer:fmnist_cnn_sweep"
     },
     {
       "agent_type": "config_proposer",
@@ -2079,6 +1641,298 @@
       "timestamp": "2026-07-05T08:09:46.974137",
       "dismissed": false,
       "dedup_key": "config_proposer:instructor_test"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.8347, which is lower than previous successful runs that reached up to 0.8600. This drop indicates a potential inconsistency in the model's performance relative to historical data, suggesting possible dataset quality issues or configuration mismatches.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.8347, which is lower than previous successful runs that reached up to 0.8600. This drop indicates a potential inconsistency in the model's performance relative to historical data, suggesting possible dataset quality issues or configuration mismatches.",
+        "recommendation": "Investigate the dataset for potential label noise or contamination, and ensure the configuration aligns with successful prior runs. Consider extending the number of epochs and testing different learning rates to identify any improvements.",
+        "run_id": "318b809317cff66b16efe56b2b9443d78258ccf3e772867185acaad491fc9e25"
+      },
+      "severity": "medium",
+      "id": "288ee3fc71c94be3bfe5bb1b3d8532fc",
+      "timestamp": "2026-07-05T08:16:28.103460",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:318b809317cff66b16efe56b2b9443d78258ccf3e772867185acaad491fc9e25"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.8137, which is significantly lower than the previous best accuracy of 0.8597. This decrease contradicts the established trend of improving validation accuracy with varying learning rates in prior runs, suggesting potential misconfigurations or dataset inconsistencies.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.8137, which is significantly lower than the previous best accuracy of 0.8597. This decrease contradicts the established trend of improving validation accuracy with varying learning rates in prior runs, suggesting potential misconfigurations or dataset inconsistencies.",
+        "recommendation": "The researcher should investigate the dataset quality and ensure that the validation set is free from contamination or label noise. Additionally, verifying the hyperparameter settings used in this run compared to previous successful runs could yield insights into the discrepancy.",
+        "run_id": "1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47"
+      },
+      "severity": "medium",
+      "id": "393d7ddc815f4a7cbe06d853564a0ff7",
+      "timestamp": "2026-07-05T08:18:14.984557",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.8213, which is lower than the previous best of 0.8597, despite a higher learning rate of 0.01 compared to 0.003. This contradicts the established trend where increased learning rates (0.001 and 0.003) provided better results. Additionally, fluctuations in validation accuracy across prior runs suggest potential issues with dataset quality or configuration consistency.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.8213, which is lower than the previous best of 0.8597, despite a higher learning rate of 0.01 compared to 0.003. This contradicts the established trend where increased learning rates (0.001 and 0.003) provided better results. Additionally, fluctuations in validation accuracy across prior runs suggest potential issues with dataset quality or configuration consistency.",
+        "recommendation": "The researcher should investigate the dataset for possible quality issues and reassess the impact of the learning rate on the model's performance. Furthermore, they should consider rerunning the experiment with stable configurations to confirm these results.",
+        "run_id": "df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9"
+      },
+      "severity": "medium",
+      "id": "260d7a5309494f0cadfadf97c3b9a354",
+      "timestamp": "2026-07-05T08:18:40.459588",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run's validation accuracy of 0.6727 is significantly lower than the previous runs, which achieved validation accuracies above 0.81, indicating a potential issue with the recent training configuration or data quality. Additionally, ongoing fluctuations in validation accuracy suggest that the dataset may contain inconsistencies or errors, leading to unreliable evaluations.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "high",
+        "message": "The new run's validation accuracy of 0.6727 is significantly lower than the previous runs, which achieved validation accuracies above 0.81, indicating a potential issue with the recent training configuration or data quality. Additionally, ongoing fluctuations in validation accuracy suggest that the dataset may contain inconsistencies or errors, leading to unreliable evaluations.",
+        "recommendation": "The researcher should review the dataset for quality issues, including possible label noise, as well as check the model configuration for any errors or inconsistencies that could explain the drop in performance.",
+        "run_id": "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
+      },
+      "severity": "high",
+      "id": "6c513002197d4869b9750ab226236b0d",
+      "timestamp": "2026-07-05T08:20:01.262462",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.8453, which is higher than some earlier configurations but lower than the top-performing configurations (0.8597) from previous runs. This suggests a significant inconsistency, as the majority of past runs with similar configurations are showing lower validation accuracies or higher losses, hinting at a potential misalignment in performance expectations.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.8453, which is higher than some earlier configurations but lower than the top-performing configurations (0.8597) from previous runs. This suggests a significant inconsistency, as the majority of past runs with similar configurations are showing lower validation accuracies or higher losses, hinting at a potential misalignment in performance expectations.",
+        "recommendation": "Investigate the dataset for potential issues, including label noise or contamination, and ensure that configurations align with the most successful parameter settings from previous runs.",
+        "run_id": "e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4"
+      },
+      "severity": "medium",
+      "id": "1fc34921c217470eb07c605766496d9a",
+      "timestamp": "2026-07-05T08:20:33.098300",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.863, which is significantly higher than most prior runs, which peaked at 0.8597. This sudden improvement raises concerns about potential anomalies such as a data leak or other evaluation set contamination, especially given that the learning rate and other hyperparameters have not changed significantly relative to previous results.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.863, which is significantly higher than most prior runs, which peaked at 0.8597. This sudden improvement raises concerns about potential anomalies such as a data leak or other evaluation set contamination, especially given that the learning rate and other hyperparameters have not changed significantly relative to previous results.",
+        "recommendation": "The researcher should verify the integrity of the evaluation dataset for any potential contamination, reassess the data splitting process, and ensure that no training examples were inadvertently included in the validation set.",
+        "run_id": "69524d3aa3f3f67f9b7a7593f3b7a897bb2375d70b7ef6c662cb41a9f1eb7ffb"
+      },
+      "severity": "medium",
+      "id": "9e170f7f8ace433eb73ad2aa74558a0b",
+      "timestamp": "2026-07-05T08:21:37.945586",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:69524d3aa3f3f67f9b7a7593f3b7a897bb2375d70b7ef6c662cb41a9f1eb7ffb"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.832, which is lower than multiple prior runs, particularly a run that achieved 0.863. This indicates a potential inconsistency in results and suggests that the model's performance may not be improving, despite adjustments such as changing weight decay and dropout settings. Furthermore, the performance does not follow the previously established trend of improving accuracies in recent runs.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.832, which is lower than multiple prior runs, particularly a run that achieved 0.863. This indicates a potential inconsistency in results and suggests that the model's performance may not be improving, despite adjustments such as changing weight decay and dropout settings. Furthermore, the performance does not follow the previously established trend of improving accuracies in recent runs.",
+        "recommendation": "The researcher should investigate potential inconsistencies in the dataset or configurations used in this run. It may also be beneficial to evaluate the training and validation datasets for quality and label noise or revisit hyperparameter tuning strategies to ensure they align with the hyperparameters yielding better results in previous runs.",
+        "run_id": "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b"
+      },
+      "severity": "medium",
+      "id": "f2003f0426844fef80de66dbe90284e5",
+      "timestamp": "2026-07-05T08:22:23.608286",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run's validation accuracy of 0.7947 is significantly lower than the highest validation accuracy of 0.863 from prior runs, despite using a learning rate of 0.005 with SGD, which is not expected to yield better results than configurations using Adam with lower learning rates that produced higher accuracies in earlier runs.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "high",
+        "message": "The new run's validation accuracy of 0.7947 is significantly lower than the highest validation accuracy of 0.863 from prior runs, despite using a learning rate of 0.005 with SGD, which is not expected to yield better results than configurations using Adam with lower learning rates that produced higher accuracies in earlier runs.",
+        "recommendation": "Investigate possible issues with the dataset or configuration, as well as further explore the effects of the optimizer and learning rate selections. Consider whether the training data used in this run has been contaminated or differs from previous configurations.",
+        "run_id": "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168"
+      },
+      "severity": "high",
+      "id": "404620d737a0464fbc8c1ee8d905676b",
+      "timestamp": "2026-07-05T08:23:09.360619",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168"
+    },
+    {
+      "agent_type": "triage",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "The new run achieved a validation accuracy of 0.863, which is significantly higher than most prior runs, especially considering that the previous best was 0.863 with a different configuration. This improvement, combined with the use of a much higher learning rate (0.1), raises concerns about potential inconsistencies with the dataset quality or the validity of the results.",
+      "metadata": {
+        "anomaly_detected": true,
+        "anomaly_type": "contradicts_trend",
+        "severity": "medium",
+        "message": "The new run achieved a validation accuracy of 0.863, which is significantly higher than most prior runs, especially considering that the previous best was 0.863 with a different configuration. This improvement, combined with the use of a much higher learning rate (0.1), raises concerns about potential inconsistencies with the dataset quality or the validity of the results.",
+        "recommendation": "Investigate the dataset for any inconsistencies or potential contamination. Additionally, consider validating results against a held-out test set to ensure that the performance is not a result of overfitting or other anomalies.",
+        "run_id": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84"
+      },
+      "severity": "medium",
+      "id": "6a86ae7a24a64076aae3cb23f6fc6b56",
+      "timestamp": "2026-07-05T08:23:34.505220",
+      "dismissed": false,
+      "dedup_key": "triage:fmnist_cnn_sweep:3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84"
+    },
+    {
+      "agent_type": "config_proposer",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "This configuration leverages the highest-impact parameter, learning rate (lr) set at 0.1, which has consistently shown to significantly improve validation accuracy. Additionally, it increases the number of epochs to 3 for enhanced training while maintaining higher values of dropout (0.25) to help with regularization and prevent overfitting. The conv_channels and hidden_dim have also been set to their best values observed, which allows for a more complex model that can capture the nuances of the FashionMNIST dataset.",
+      "metadata": {
+        "suggested_config": {
+          "batch_size": 128,
+          "weight_decay": 0.0,
+          "dropout": 0.25,
+          "conv_channels": 48,
+          "hidden_dim": 192,
+          "activation": "relu",
+          "epochs": 3,
+          "seed": 0,
+          "lr": 0.1,
+          "optimizer": "sgd"
+        },
+        "rationale": "This configuration leverages the highest-impact parameter, learning rate (lr) set at 0.1, which has consistently shown to significantly improve validation accuracy. Additionally, it increases the number of epochs to 3 for enhanced training while maintaining higher values of dropout (0.25) to help with regularization and prevent overfitting. The conv_channels and hidden_dim have also been set to their best values observed, which allows for a more complex model that can capture the nuances of the FashionMNIST dataset.",
+        "expected_direction": "I expect the validation accuracy to improve, potentially exceeding the previously achieved 0.863 by up to 0.02 based on the impact of fine-tuning these parameters.",
+        "unexplored_regions": [
+          "learning rates between 0.005 and 0.03 which may provide alternative performance characteristics",
+          "the combination of higher weight decay values, such as 0.001, for potential regularization benefits",
+          "increased dropout rates above 0.25 to further investigate their effect on model performance"
+        ]
+      },
+      "severity": null,
+      "id": "aaa866376edc40d48a02cc5e1d439285",
+      "timestamp": "2026-07-05T08:23:55.093407",
+      "dismissed": false,
+      "dedup_key": "config_proposer:fmnist_cnn_sweep"
+    },
+    {
+      "agent_type": "literature",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "[\n  {\n    \"title\": \"Adam: A Method for Stochastic Optimization\",\n    \"venue\": \"ICLR 2015\",\n    \"key_insight\": \"This foundational paper introduces the Adam optimizer, demonstrating its efficiency and effectiveness in training deep learning models compared to traditional methods.\",\n    \"actionable_suggestion\": \"Experiment with finer adjustments to the learning rate schedule when using Adam to stabilize the training process.\"\n  },\n  {\n    \"title\": \"Understanding Deep Learning Requires Re-thinking Generalization\",\n    \"venue\": \"ICLR 2017\",\n    \"key_insight\": \"This paper discusses how standard generalization metrics may not adequately predict model performance, offering insights into overfitting and the biases introduced by training methods.\",\n    \"actionable_suggestion\": \"Increase dropout rates or introduce Batch Normalization to improve generalization and reduce overfitting as noted in the paper.\"\n  },\n  {\n    \"title\": \"Regularization Techniques for Neural Networks\",\n    \"venue\": \"IEEE Transactions on Neural Networks and Learning Systems, 2018\",\n    \"key_insight\": \"This review covers various regularization techniques, including dropout, weight decay, and their impacts on model performance.\",\n    \"actionable_suggestion\": \"Incorporate weight decay adjustments mentioned in the paper to prevent overfitting while training, particularly in configurations with high capacity.\"\n  },\n  {\n    \"title\": \"Deep Learning for Computer Vision: A Brief Review\",\n    \"venue\": \"ACM Computing Surveys, 2018\",\n    \"key_insight\": \"This survey highlights the key architectural designs and techniques in computer vision tasks, emphasizing their implications on performance and accuracy.\",\n    \"actionable_suggestion\": \"Explore architectural variations, such as deeper convolutions or residual connections, that may enhance model performance in the fashion MNIST task.\"\n  },\n  {\n    \"title\": \"On the Importance of Initialization and Momentum in Deep Learning\",\n    \"venue\": \"ICLR 2016\",\n    \"key_insight\": \"This study presents the role of weight initialization and momentum in training deep neural networks, impacting convergence and overall accuracy.\",\n    \"actionable_suggestion\": \"Implement momentum in the SGD optimizer to potentially improve convergence rates and validation accuracy.\"\n  }\n]",
+      "metadata": {
+        "papers": [
+          {
+            "title": "Adam: A Method for Stochastic Optimization",
+            "venue": "ICLR 2015",
+            "key_insight": "This foundational paper introduces the Adam optimizer, demonstrating its efficiency and effectiveness in training deep learning models compared to traditional methods.",
+            "actionable_suggestion": "Experiment with finer adjustments to the learning rate schedule when using Adam to stabilize the training process."
+          },
+          {
+            "title": "Understanding Deep Learning Requires Re-thinking Generalization",
+            "venue": "ICLR 2017",
+            "key_insight": "This paper discusses how standard generalization metrics may not adequately predict model performance, offering insights into overfitting and the biases introduced by training methods.",
+            "actionable_suggestion": "Increase dropout rates or introduce Batch Normalization to improve generalization and reduce overfitting as noted in the paper."
+          },
+          {
+            "title": "Regularization Techniques for Neural Networks",
+            "venue": "IEEE Transactions on Neural Networks and Learning Systems, 2018",
+            "key_insight": "This review covers various regularization techniques, including dropout, weight decay, and their impacts on model performance.",
+            "actionable_suggestion": "Incorporate weight decay adjustments mentioned in the paper to prevent overfitting while training, particularly in configurations with high capacity."
+          },
+          {
+            "title": "Deep Learning for Computer Vision: A Brief Review",
+            "venue": "ACM Computing Surveys, 2018",
+            "key_insight": "This survey highlights the key architectural designs and techniques in computer vision tasks, emphasizing their implications on performance and accuracy.",
+            "actionable_suggestion": "Explore architectural variations, such as deeper convolutions or residual connections, that may enhance model performance in the fashion MNIST task."
+          },
+          {
+            "title": "On the Importance of Initialization and Momentum in Deep Learning",
+            "venue": "ICLR 2016",
+            "key_insight": "This study presents the role of weight initialization and momentum in training deep neural networks, impacting convergence and overall accuracy.",
+            "actionable_suggestion": "Implement momentum in the SGD optimizer to potentially improve convergence rates and validation accuracy."
+          }
+        ]
+      },
+      "severity": null,
+      "id": "45965ee7872f44e49d6d3f5a38298faa",
+      "timestamp": "2026-07-05T08:23:55.463294",
+      "dismissed": false,
+      "dedup_key": "literature:fmnist_cnn_sweep"
+    },
+    {
+      "agent_type": "dataset_steward",
+      "project": "proj_fashionmnist_cnn_sweep_3cddf661",
+      "experiment": "fmnist_cnn_sweep",
+      "content": "Investigate the dataset for label noise and ensure stable dataset splits to improve validation accuracy consistency.",
+      "metadata": {
+        "issues_detected": true,
+        "issues": [
+          {
+            "type": "unstable_split",
+            "description": "High variance in validation accuracy between runs with similar configurations indicates potential issues with dataset splits.",
+            "severity": "high",
+            "affected_runs": [
+              "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
+              "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+              "774605804bf9771940a75ec7f02b3f022b0a29c19fe3dfcabe7c14c77b2cbf4b",
+              "69524d3aa3f3f67f9b7a7593f3b7a897bb2375d70b7ef6c662cb41a9f1eb7ffb",
+              "e6c2584fb93c3ecd6e9afd9b3916611473c9c0905ec6a10dea29dddc5480e2f4",
+              "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda",
+              "df8ec3c81b797b484201d25454a836bdb223f2e4448a88c0fe26f6b3989a97c9",
+              "1b0aa142d1c0347b118f017a717a8837ad2c95b6b1236ee066ce82e1e7582b47",
+              "0d2b2ea89222de1ced3825967951755cbecb4f6152e898ed2c466a12f9d32ad0",
+              "318b809317cff66b16efe56b2b9443d78258ccf3e772867185acaad491fc9e25"
+            ]
+          },
+          {
+            "type": "label_noise",
+            "description": "Significant fluctuations in validation accuracy suggest possible label noise in the dataset.",
+            "severity": "medium",
+            "affected_runs": [
+              "612b31ed3b3e0cde350895678d33be2133c53e7be1dfb381eb900a9af0c15168",
+              "454dd14e1f0d1deccc4cbc8d5754903c17d0a5fe533643469497e84c55610eda"
+            ]
+          }
+        ],
+        "overall_health": "warning",
+        "recommendation": "Investigate the dataset for label noise and ensure stable dataset splits to improve validation accuracy consistency."
+      },
+      "severity": null,
+      "id": "f0df5d9cd6a4426285eabbfe688c6682",
+      "timestamp": "2026-07-05T08:23:56.162093",
+      "dismissed": false,
+      "dedup_key": "dataset_steward:fmnist_cnn_sweep"
     }
   ],
   "insights": {
@@ -2170,30 +2024,31 @@
       "generated_at": "2026-07-05T06:17:32.527748"
     },
     "proj_fashionmnist_cnn_sweep_3cddf661": {
-      "n_runs": 15,
-      "n_completed": 14,
+      "n_runs": 10,
+      "n_completed": 10,
       "parameter_sensitivity": [
         {
           "parameter": "lr",
-          "sensitivity": 0.099,
-          "best_value": "0.09",
-          "best_metric_mean": 0.87,
+          "sensitivity": 0.1903,
+          "best_value": "0.1",
+          "best_metric_mean": 0.863,
           "values_tried": [
             "0.0003",
             "0.001",
             "0.003",
+            "0.005",
             "0.01",
             "0.03",
-            "0.09"
+            "0.1"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
         },
         {
           "parameter": "hidden_dim",
-          "sensitivity": 0.0344,
+          "sensitivity": 0.0478,
           "best_value": "192",
-          "best_metric_mean": 0.8637,
+          "best_metric_mean": 0.863,
           "values_tried": [
             "128",
             "192"
@@ -2203,9 +2058,9 @@
         },
         {
           "parameter": "conv_channels",
-          "sensitivity": 0.0344,
+          "sensitivity": 0.0478,
           "best_value": "48",
-          "best_metric_mean": 0.8637,
+          "best_metric_mean": 0.863,
           "values_tried": [
             "32",
             "48"
@@ -2215,11 +2070,10 @@
         },
         {
           "parameter": "dropout",
-          "sensitivity": 0.0261,
+          "sensitivity": 0.0281,
           "best_value": "0.25",
-          "best_metric_mean": 0.8477,
+          "best_metric_mean": 0.8453,
           "values_tried": [
-            "0",
             "0.0",
             "0.25"
           ],
@@ -2228,12 +2082,24 @@
         },
         {
           "parameter": "weight_decay",
-          "sensitivity": 0.0102,
-          "best_value": "0.0",
-          "best_metric_mean": 0.8362,
+          "sensitivity": 0.0133,
+          "best_value": "0.0005",
+          "best_metric_mean": 0.832,
           "values_tried": [
-            "0",
-            "0.0"
+            "0.0",
+            "0.0005"
+          ],
+          "metric": "val_accuracy",
+          "direction": "higher_is_better"
+        },
+        {
+          "parameter": "optimizer",
+          "sensitivity": 0.0111,
+          "best_value": "sgd",
+          "best_metric_mean": 0.8288,
+          "values_tried": [
+            "adam",
+            "sgd"
           ],
           "metric": "val_accuracy",
           "direction": "higher_is_better"
@@ -2243,23 +2109,24 @@
         {
           "dataset": "FashionMNIST",
           "best_config": {
-            "lr": 0.09,
             "batch_size": 128,
-            "optimizer": "adam",
-            "epochs": 2,
             "weight_decay": 0.0,
             "dropout": 0.0,
             "conv_channels": 32,
             "hidden_dim": 128,
-            "activation": "relu"
+            "activation": "relu",
+            "epochs": 2,
+            "seed": 0,
+            "lr": 0.1,
+            "optimizer": "sgd"
           },
-          "best_run_id": "0b8cdae9b896ccc15fea2be997801ea0f09e815203b69b58a9b6f20d9f0d3785",
+          "best_run_id": "3ac2c081d46af5626c5e4522d7df8b614281a3ef958f9f7954ddb105f07c3d84",
           "metric": "val_accuracy",
-          "metric_value": 0.87
+          "metric_value": 0.863
         }
       ],
-      "summary": "Across 14 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'weight_decay' had the least effect (0.0102). Best on FashionMNIST: val_accuracy=0.87.",
-      "generated_at": "2026-07-05T08:09:19.352372"
+      "summary": "Across 10 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.1903); best value seen: 0.1. 'optimizer' had the least effect (0.0111). Best on FashionMNIST: val_accuracy=0.863.",
+      "generated_at": "2026-07-05T08:23:04.537482"
     }
   }
 }
