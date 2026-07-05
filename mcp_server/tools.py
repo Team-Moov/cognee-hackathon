@@ -57,7 +57,7 @@ async def tool_check_config(
         payload["project_id"] = project_id
 
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.post(_backend_url("/api/runs/check-config"), json=payload)
             resp.raise_for_status()
             data = resp.json()
@@ -158,7 +158,7 @@ async def tool_remember(
         payload["project_id"] = project_id
 
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.post(_backend_url("/api/runs/remember"), json=payload)
             resp.raise_for_status()
             data = resp.json()
@@ -200,7 +200,7 @@ async def tool_query(question: str, project_id: Optional[str] = None) -> str:
         payload["project_id"] = project_id
 
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.post(_backend_url("/api/query"), json=payload)
             resp.raise_for_status()
             data = resp.json()
@@ -245,7 +245,7 @@ async def tool_find(description: str) -> str:
         The exact file path and associated run metadata, or a not-found message.
     """
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.get(
                 _backend_url("/api/files/find"),
                 params={"q": description},
@@ -286,7 +286,7 @@ async def tool_insights(project_id: Optional[str] = None) -> str:
     """
     params = {"project_id": project_id} if project_id else None
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.get(_backend_url("/api/insights"), params=params)
             resp.raise_for_status()
             data = resp.json()
@@ -319,7 +319,7 @@ async def tool_history(project_id: Optional[str] = None, limit: int = 10) -> str
     if project_id:
         params["project_id"] = project_id
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.get(_backend_url("/api/runs/"), params=params)
             resp.raise_for_status()
             data = resp.json()

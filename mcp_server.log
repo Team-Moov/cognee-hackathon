@@ -1,0 +1,102 @@
+2026-07-05 21:11:26,950 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:11:36,171 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:12:06,108 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:12:08,043 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:12:29,319 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:12:29,356 [mcp.server.lowlevel.server] INFO Processing request of type ListToolsRequest
+2026-07-05 21:12:39,574 [groundhog.mcp] WARNING GROUNDHOG_API_URL is set to 'http://localhost:8000' (localhost). If running in production, set GROUNDHOG_API_URL to the deployed backend URL.
+2026-07-05 21:12:39,619 [mcp.server.lowlevel.server] INFO Processing request of type ListToolsRequest
+2026-07-05 21:12:42,368 [watchfiles.main] INFO 11 changes detected
+2026-07-05 21:13:00,917 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:13:02,686 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:13:08,841 [httpx] INFO HTTP Request: POST http://localhost:8000/api/runs/check-config "HTTP/1.1 200 OK"
+2026-07-05 21:13:08,899 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:14:23,311 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:14:24,681 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:14:27,912 [watchfiles.main] INFO 7 changes detected
+2026-07-05 21:14:29,228 [watchfiles.main] INFO 36 changes detected
+2026-07-05 21:14:29,834 [watchfiles.main] INFO 18 changes detected
+2026-07-05 21:14:30,187 [watchfiles.main] INFO 36 changes detected
+2026-07-05 21:14:31,001 [watchfiles.main] INFO 18 changes detected
+2026-07-05 21:14:31,466 [watchfiles.main] INFO 26 changes detected
+2026-07-05 21:14:32,222 [watchfiles.main] INFO 19 changes detected
+2026-07-05 21:14:32,581 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:14:35,359 [watchfiles.main] INFO 5 changes detected
+2026-07-05 21:14:35,717 [watchfiles.main] INFO 5 changes detected
+2026-07-05 21:14:36,077 [watchfiles.main] INFO 5 changes detected
+2026-07-05 21:14:36,438 [watchfiles.main] INFO 5 changes detected
+2026-07-05 21:14:36,793 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:15:01,217 [watchfiles.main] INFO 11 changes detected
+2026-07-05 21:15:02,532 [watchfiles.main] INFO 54 changes detected
+2026-07-05 21:15:02,987 [watchfiles.main] INFO 31 changes detected
+2026-07-05 21:15:03,703 [watchfiles.main] INFO 36 changes detected
+2026-07-05 21:15:04,568 [watchfiles.main] INFO 18 changes detected
+2026-07-05 21:15:05,225 [watchfiles.main] INFO 28 changes detected
+2026-07-05 21:15:06,080 [watchfiles.main] INFO 40 changes detected
+2026-07-05 21:15:06,584 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:15:06,947 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:15:07,132 [httpx] INFO HTTP Request: POST http://localhost:8000/api/runs/remember "HTTP/1.1 200 OK"
+2026-07-05 21:15:07,305 [watchfiles.main] INFO 8 changes detected
+2026-07-05 21:15:08,619 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:17,486 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:20,216 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:30,439 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:15:31,548 [watchfiles.main] INFO 22 changes detected
+2026-07-05 21:15:33,848 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:36,131 [watchfiles.main] INFO 2 changes detected
+2026-07-05 21:15:36,510 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:39,076 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:15:44,928 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:15:45,286 [watchfiles.main] INFO 6 changes detected
+2026-07-05 21:15:45,643 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:15:46,002 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:15:48,373 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:53,016 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:15:53,376 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:55,294 [watchfiles.main] INFO 22 changes detected
+2026-07-05 21:15:56,202 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:15:57,038 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:15:58,404 [httpx] INFO HTTP Request: GET http://localhost:8000/api/runs/?limit=10&project_id=mcp_demo_n "HTTP/1.1 200 OK"
+2026-07-05 21:16:00,181 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:16:00,543 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:16:01,302 [watchfiles.main] INFO 11 changes detected
+2026-07-05 21:16:02,368 [watchfiles.main] INFO 18 changes detected
+2026-07-05 21:16:02,921 [watchfiles.main] INFO 46 changes detected
+2026-07-05 21:16:04,035 [watchfiles.main] INFO 25 changes detected
+2026-07-05 21:16:04,839 [watchfiles.main] INFO 26 changes detected
+2026-07-05 21:16:06,860 [watchfiles.main] INFO 28 changes detected
+2026-07-05 21:16:08,283 [watchfiles.main] INFO 40 changes detected
+2026-07-05 21:16:08,741 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:09,093 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:09,453 [watchfiles.main] INFO 8 changes detected
+2026-07-05 21:16:16,385 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:16:17,623 [httpx] INFO HTTP Request: GET http://localhost:8000/api/insights?project_id=mcp_demo_n "HTTP/1.1 200 OK"
+2026-07-05 21:16:17,670 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:20,497 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:20,854 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:16:21,314 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:21,778 [watchfiles.main] INFO 22 changes detected
+2026-07-05 21:16:22,281 [watchfiles.main] INFO 4 changes detected
+2026-07-05 21:16:53,354 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:16:58,997 [httpx] INFO HTTP Request: GET http://localhost:8000/api/runs/explain/36a95d413afe633d41e1eb8190692c110a55219def5f1a60eba2dc7f79242c6d "HTTP/1.1 200 OK"
+2026-07-05 21:16:59,000 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:17:00,202 [httpx] INFO HTTP Request: GET http://localhost:8000/api/files/find?q=best+model+checkpoint+from+mcp_demo_n "HTTP/1.1 200 OK"
+2026-07-05 21:17:06,360 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:17:07,708 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:17:15,414 [watchfiles.main] INFO 2 changes detected
+2026-07-05 21:17:21,983 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:17:22,349 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:17:23,351 [httpx] INFO HTTP Request: GET http://localhost:8000/api/files/find?q=checkpoint+file+for+mcp_demo_n+run+36a95d413afe "HTTP/1.1 502 Bad Gateway"
+2026-07-05 21:17:23,413 [watchfiles.main] INFO 22 changes detected
+2026-07-05 21:17:57,251 [mcp.server.lowlevel.server] INFO Processing request of type CallToolRequest
+2026-07-05 21:17:58,599 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:18:03,339 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:18:05,969 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:18:06,324 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:18:18,831 [watchfiles.main] INFO 3 changes detected
+2026-07-05 21:18:19,190 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:18:20,865 [httpx] INFO HTTP Request: POST http://localhost:8000/api/query "HTTP/1.1 200 OK"
+2026-07-05 21:18:20,959 [watchfiles.main] INFO 22 changes detected
+2026-07-05 21:37:59,131 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:37:59,588 [watchfiles.main] INFO 1 change detected
+2026-07-05 21:38:00,451 [watchfiles.main] INFO 1 change detected
