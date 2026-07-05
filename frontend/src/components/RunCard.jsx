@@ -103,34 +103,34 @@ export default function RunCard({ run, onDeleted }) {
   return (
     <div
       onClick={() => nav(`/lineage/${run.run_id}`)}
-      className="group cursor-pointer rounded-2xl border border-line bg-card p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-coffee/40 hover:shadow-lift"
+      className="group cursor-pointer overflow-hidden rounded-3xl border border-slate-800/80 bg-slate-900/85 p-5 shadow-xl shadow-slate-950/20 transition duration-200 hover:border-slate-700/80 hover:bg-slate-900/95"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <code className="rounded bg-sand px-1.5 py-0.5 font-mono text-xs text-coffee-deep" title={run.run_id}>
+            <div className="rounded-full border border-slate-700 bg-slate-950/70 px-2 py-1 text-xs font-mono text-slate-400">
               {shortId}…
-            </code>
+            </div>
             <StatusBadge status={run.status} />
           </div>
-          <div className="mt-1.5 truncate text-sm font-semibold text-espresso">{run.experiment}</div>
-          {run.rationale && <div className="mt-0.5 line-clamp-2 text-xs text-muted">{run.rationale}</div>}
+          <div className="mt-1.5 truncate text-sm font-semibold text-slate-100">{run.experiment}</div>
+          {run.rationale && <div className="mt-0.5 line-clamp-2 text-xs text-slate-400">{run.rationale}</div>}
         </div>
 
         <div className="flex flex-shrink-0 items-start gap-2">
           {metric != null && (
             <div className="text-right">
-              <div className="font-display text-lg font-semibold text-espresso">
+              <div className="font-mono text-2xl font-semibold text-emerald-400 tracking-tight">
                 {typeof metric.value === "number" ? metric.value.toFixed(3) : metric.value}
               </div>
-              <div className="text-xs text-muted">{metric.label}</div>
+              <div className="text-xs uppercase tracking-[0.18em] text-slate-500">{metric.label}</div>
             </div>
           )}
           {/* Feature 7: Explain button */}
           <button
             onClick={handleExplain}
             title="Explain this run"
-            className={`rounded-md px-2 py-0.5 text-xs font-medium transition-all opacity-0 group-hover:opacity-100 ${
+            className={`rounded-md px-3 py-1 text-xs font-medium transition-all duration-200 opacity-0 group-hover:opacity-100 ${
               explanation
                 ? "bg-coffee text-card"
                 : "border border-coffee/30 text-coffee hover:bg-coffee/10"
@@ -142,7 +142,7 @@ export default function RunCard({ run, onDeleted }) {
             <button
               onClick={handleDelete}
               title="Delete run"
-              className="rounded-md px-1.5 py-0.5 text-xs text-muted opacity-0 transition-opacity hover:bg-terracotta/10 hover:text-terracotta group-hover:opacity-100"
+              className="rounded-md px-3 py-1 text-xs text-slate-400 opacity-0 transition duration-200 hover:bg-slate-800 hover:text-rose-300 group-hover:opacity-100"
             >
               ✕
             </button>
@@ -152,20 +152,26 @@ export default function RunCard({ run, onDeleted }) {
 
       {/* hypothesis */}
       {run.hypothesis && (
-        <div className="mt-2 rounded-lg border-l-2 border-coffee/40 bg-coffee/5 px-3 py-1.5 text-xs text-coffee-deep">
-          <span className="font-semibold uppercase tracking-wide text-coffee/70">Hypothesis · </span>
-          {run.hypothesis}
+        <div className="mt-2 rounded-r-lg border-l-2 border-indigo-500/40 bg-indigo-950/10 px-3 py-2 text-sm text-slate-300">
+          <span className="font-semibold uppercase tracking-wide text-slate-300/80">Hypothesis</span>
+          <div className="mt-1 leading-relaxed text-slate-300">{run.hypothesis}</div>
         </div>
       )}
 
       {/* config */}
-      <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-xs text-muted">
-        <span>{Object.entries(run.config || {}).slice(0, 3).map(([k, v]) => `${k}=${v}`).join("  ·  ")}</span>
-      </div>
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-mono text-slate-400">
+            {Object.entries(run.config || {})
+              .slice(0, 4)
+              .map(([k, v]) => (
+                <span key={k} className="rounded border border-slate-700/80 bg-slate-950/70 px-2 py-1 text-[11px] text-indigo-300">
+                  {k}={v}
+                </span>
+              ))}
+          </div>
 
       {/* dataset + artifacts row */}
       {(dataset || artifacts.length > 0) && (
-        <div className="mt-2 flex flex-wrap items-center gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted">
           {dataset && (
             <span
               className="rounded border border-coffee/20 bg-coffee/10 px-2 py-0.5 text-xs text-coffee-deep"
@@ -176,7 +182,7 @@ export default function RunCard({ run, onDeleted }) {
             </span>
           )}
           {Object.entries(artByType).map(([t, n]) => (
-            <span key={t} className="rounded border border-line bg-sand px-2 py-0.5 text-xs text-cocoa">
+            <span key={t} className="rounded border border-line bg-sand px-2 py-0.5 text-xs text-muted/90">
               {n} {t}{n > 1 ? "s" : ""}
             </span>
           ))}
@@ -184,7 +190,7 @@ export default function RunCard({ run, onDeleted }) {
       )}
 
       {/* footer: cost + time */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-2 text-xs text-muted">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line pt-2 text-xs text-muted/80">
         {run.gpu_hours != null && <span>{run.gpu_hours}h GPU</span>}
         {wall && <span>{wall} wall</span>}
         {run.timestamp && <span>{run.timestamp.slice(0, 10)}</span>}
@@ -251,12 +257,35 @@ export default function RunCard({ run, onDeleted }) {
 
       {/* W&B Iframe Embedding */}
       {run.config && run.config._wandb_url && (
-        <div className="mt-4 pt-4 border-t border-line" onClick={(e) => e.stopPropagation()}>
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-xs font-semibold text-espresso">Weights &amp; Biases Telemetry</span>
-            <a href={run.config._wandb_url} target="_blank" rel="noreferrer" className="text-[10px] text-coffee hover:underline">Open in new tab ↗</a>
+        <div className="mt-4 rounded-3xl border border-slate-800/70 bg-slate-950/90 shadow-xl shadow-slate-950/20">
+          <div className="flex items-center justify-between border-b border-slate-800/70 bg-slate-900/80 px-4 py-3">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-800/80 text-xs font-semibold text-slate-100">
+                W&B
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-slate-100">Weights &amp; Biases</div>
+                <div className="text-xs text-slate-500">Telemetry snapshot</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href={run.config._wandb_url}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full px-2 py-1 text-[11px] font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-100"
+              >
+                Open in new tab
+              </a>
+              <button
+                type="button"
+                className="rounded-full px-2 py-1 text-[11px] font-medium text-slate-400 transition hover:bg-slate-800 hover:text-slate-100"
+              >
+                View full lineage
+              </button>
+            </div>
           </div>
-          <div className="h-48 w-full overflow-hidden rounded-xl border border-line bg-white">
+          <div className="h-60 overflow-hidden bg-slate-950">
             <iframe
               src={run.config._wandb_url}
               className="h-full w-full border-none"

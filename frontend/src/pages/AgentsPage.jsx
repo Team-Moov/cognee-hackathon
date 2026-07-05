@@ -26,10 +26,12 @@ export default function AgentsPage() {
     }
   }, [experiment]);
 
-  useEffect(() => { fetchSuggestions(); }, [fetchSuggestions]);
+  useEffect(() => {
+    fetchSuggestions();
+  }, [fetchSuggestions]);
 
   function handleDismissed(id) {
-    setSuggestions(prev => prev.filter(s => s.id !== id));
+    setSuggestions((prev) => prev.filter((s) => s.id !== id));
   }
 
   async function handleReport() {
@@ -59,7 +61,7 @@ export default function AgentsPage() {
           type="text"
           placeholder="Filter by experiment name…"
           value={experiment}
-          onChange={e => setExperiment(e.target.value)}
+          onChange={(e) => setExperiment(e.target.value)}
           className="min-w-48 flex-1 rounded-xl border border-line bg-card px-3 py-2 text-sm text-cocoa placeholder-muted/70 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
         />
         <button
@@ -87,7 +89,9 @@ export default function AgentsPage() {
       {report && (
         <div className="mb-6 rounded-2xl border border-line bg-card p-4 shadow-soft">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-espresso">Generated Report</h2>
+            <h2 className="text-sm font-semibold text-espresso">
+              Generated Report
+            </h2>
             <button
               onClick={() => setReport(null)}
               className="text-xs text-muted hover:text-cocoa"
@@ -95,13 +99,17 @@ export default function AgentsPage() {
               Close
             </button>
           </div>
-          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-cocoa">{report}</pre>
+          <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-cocoa">
+            {report}
+          </pre>
         </div>
       )}
 
       {/* Suggestions list */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-muted">Loading suggestions…</div>
+        <div className="py-12 text-center text-sm text-muted">
+          Loading suggestions…
+        </div>
       ) : suggestions.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-line bg-card/50 py-16 text-center text-sm text-muted">
           No active suggestions.
@@ -109,7 +117,7 @@ export default function AgentsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {suggestions.map(s => (
+          {suggestions.map((s) => (
             <AgentSuggestionCard
               key={s.id}
               suggestion={s}

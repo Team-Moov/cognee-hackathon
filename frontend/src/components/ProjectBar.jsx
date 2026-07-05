@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { listProjects, setCurrentProject, getCurrentProject, toggleWandbSync, deleteProject } from "../services/api";
+import {
+  listProjects,
+  setCurrentProject,
+  getCurrentProject,
+  toggleWandbSync,
+  deleteProject,
+} from "../services/api";
 import ProjectModal from "./ProjectModal";
 import ProjectConnectInfo from "./ProjectConnectInfo";
 
@@ -33,7 +39,12 @@ export default function ProjectBar({ collapsed = false }) {
 
   async function onDelete() {
     if (!activeProject) return;
-    if (!window.confirm(`Delete project "${activeProject.name}" and ALL its runs, findings, and insights? This cannot be undone.`)) return;
+    if (
+      !window.confirm(
+        `Delete project "${activeProject.name}" and ALL its runs, findings, and insights? This cannot be undone.`,
+      )
+    )
+      return;
     setBusy(true);
     try {
       await deleteProject(activeProject.project_id);
@@ -50,7 +61,7 @@ export default function ProjectBar({ collapsed = false }) {
       <div className="flex w-full justify-center border-b border-line px-2 py-3">
         <button
           onClick={() => setShowModal(true)}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-line bg-card text-lg font-semibold text-cocoa shadow-sm transition hover:bg-hover"
+          className="inline-flex h-11 w-11 items-center justify-center text-lg font-semibold text-cocoa transition hover:text-coffee"
           title="Create project"
           aria-label="Create project"
         >
@@ -63,16 +74,16 @@ export default function ProjectBar({ collapsed = false }) {
   }
 
   return (
-    <div className="border-b border-line px-4 py-3">
+    <div className="px-4 py-3">
       <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-muted">
         Project
       </div>
 
-      <div className="rounded-3xl border border-line bg-card p-2">
+      <div className="p-2">
         <select
           value={current}
           onChange={onSelect}
-          className="w-full rounded-2xl border border-line bg-paper px-3 py-2 text-sm text-cocoa outline-none ring-0 focus:border-coffee"
+          className="w-full bg-transparent px-3 py-2 text-sm text-espresso outline-none ring-0"
         >
           <option value="">All memory</option>
           {projects.map((p) => (
@@ -85,23 +96,23 @@ export default function ProjectBar({ collapsed = false }) {
 
       <button
         onClick={() => setShowModal(true)}
-        className="mt-2 w-full rounded-2xl border border-line bg-card py-2 text-xs font-semibold text-cocoa transition-colors hover:bg-hover"
+        className="mt-2 w-full rounded-2xl bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-100 transition duration-200 hover:bg-slate-800/80"
       >
         + New project
       </button>
 
       {activeProject && (
-        <div className="mt-2 flex gap-2">
+        <div className="mt-3 flex gap-2">
           <button
             onClick={() => setShowConnect(true)}
-            className="flex-1 rounded-lg border border-stone-200 bg-white py-1.5 text-xs text-stone-700 transition-colors hover:bg-stone-100"
+            className="flex-1 rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-xs font-semibold text-sky-300 transition duration-200 hover:bg-slate-800"
           >
             Connect
           </button>
           <button
             onClick={onDelete}
             disabled={busy}
-            className="flex-1 rounded-lg border border-rose-200 bg-rose-50 py-1.5 text-xs text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50"
+            className="flex-1 rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-xs font-semibold text-rose-300 transition duration-200 hover:bg-slate-800 disabled:opacity-50"
           >
             {busy ? "Deleting…" : "Delete"}
           </button>
@@ -109,11 +120,24 @@ export default function ProjectBar({ collapsed = false }) {
       )}
 
       {showConnect && activeProject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowConnect(false)}>
-          <div className="w-full max-w-lg rounded-3xl border border-line bg-card p-6 shadow-lift" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setShowConnect(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-card p-6 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-espresso">Connect to “{activeProject.name}”</h2>
-              <button onClick={() => setShowConnect(false)} className="text-muted hover:text-cocoa">✕</button>
+              <h2 className="text-lg font-semibold text-espresso">
+                Connect to “{activeProject.name}”
+              </h2>
+              <button
+                onClick={() => setShowConnect(false)}
+                className="text-muted hover:text-cocoa"
+              >
+                ✕
+              </button>
             </div>
             <ProjectConnectInfo project={activeProject} />
           </div>
@@ -121,20 +145,32 @@ export default function ProjectBar({ collapsed = false }) {
       )}
 
       {activeProject && activeProject.wandb?.configured && (
-        <div className="mt-3 flex items-center justify-between rounded-xl border border-stone-200 bg-stone-50 p-2.5">
+        <div className="mt-3 flex items-center justify-between px-2 py-2">
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-stone-800">W&B Auto-Sync</span>
-            <span className="mt-0.5 text-[10px] leading-tight text-stone-500">Polls in background</span>
+            <span className="text-xs font-semibold text-espresso">
+              W&B Auto-Sync
+            </span>
+            <span className="mt-0.5 text-[10px] leading-tight text-stone-500">
+              Polls in background
+            </span>
           </div>
           <button
             onClick={async () => {
               const newState = !activeProject.wandb.sync_enabled;
               await toggleWandbSync(activeProject.project_id, newState);
-              setProjects(projects.map(p => p.project_id === activeProject.project_id ? { ...p, wandb: { ...p.wandb, sync_enabled: newState } } : p));
+              setProjects(
+                projects.map((p) =>
+                  p.project_id === activeProject.project_id
+                    ? { ...p, wandb: { ...p.wandb, sync_enabled: newState } }
+                    : p,
+                ),
+              );
             }}
-            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${activeProject.wandb.sync_enabled ? "bg-stone-800" : "bg-stone-300"}`}
+            className={`relative inline-flex h-5 w-9 items-center transition-colors ${activeProject.wandb.sync_enabled ? "bg-espresso/60" : "bg-paper/20"}`}
           >
-            <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${activeProject.wandb.sync_enabled ? "translate-x-5" : "translate-x-1"}`} />
+            <span
+              className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${activeProject.wandb.sync_enabled ? "translate-x-5" : "translate-x-1"}`}
+            />
           </button>
         </div>
       )}

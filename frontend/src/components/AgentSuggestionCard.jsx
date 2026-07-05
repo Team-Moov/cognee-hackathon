@@ -2,11 +2,11 @@
 import { dismissSuggestion } from "../services/api";
 
 const AGENT_META = {
-  config_proposer:  { label: "Config Proposer",   color: "text-coffee     border-coffee/30     bg-coffee/8"     },
-  triage:           { label: "Triage",            color: "text-terracotta border-terracotta/30 bg-terracotta/10" },
-  literature:       { label: "Literature Review", color: "text-coffee-deep border-coffee/25    bg-sand"          },
-  dataset_steward:  { label: "Dataset Steward",   color: "text-ochre      border-ochre/30      bg-ochre/10"     },
-  report:           { label: "Report",            color: "text-cocoa      border-line          bg-sand"          },
+  config_proposer:  { label: "Config Proposer",   color: "text-sky-300 border-sky-500/20 bg-slate-900" },
+  triage:           { label: "Triage",            color: "text-rose-300 border-rose-500/20 bg-slate-900" },
+  literature:       { label: "Literature Review", color: "text-slate-200 border-slate-700/30 bg-slate-900" },
+  dataset_steward:  { label: "Dataset Steward",   color: "text-emerald-300 border-emerald-500/20 bg-slate-900" },
+  report:           { label: "Report",            color: "text-slate-300 border-slate-700/30 bg-slate-900" },
 };
 
 export default function AgentSuggestionCard({ suggestion, onDismissed }) {
@@ -28,28 +28,28 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
   const payload = suggestion.payload || {};
 
   return (
-    <div className={`rounded-2xl border p-4 shadow-soft ${meta.color.split(" ").slice(1).join(" ")}`}>
+    <div className={`rounded-2xl border border-slate-800/70 bg-slate-900/80 p-4 ${meta.color.split(" ").slice(1).join(" ")}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
           <span className={`h-4 w-1 rounded-full ${meta.color.split(" ")[0].replace("text-", "bg-")}`} />
-          <span className={`text-xs font-semibold uppercase tracking-wider ${meta.color.split(" ")[0]}`}>
+          <span className={`text-xs font-semibold uppercase tracking-[0.08em] ${meta.color.split(" ")[0]}`}>
             {meta.label}
           </span>
           {suggestion.experiment && (
             <span className="text-xs text-muted font-mono">{suggestion.experiment}</span>
           )}
           {suggestion.severity && (
-            <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
-              suggestion.severity === "high" ? "bg-terracotta/15 text-terracotta" :
-              suggestion.severity === "medium" ? "bg-ochre/15 text-ochre" :
-              "bg-sand text-muted"
+            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+              suggestion.severity === "high" ? "bg-rose-500/10 text-rose-200 border border-rose-400/20" :
+              suggestion.severity === "medium" ? "bg-amber-500/10 text-amber-200 border border-amber-400/20" :
+              "bg-slate-800 text-slate-300"
             }`}>{suggestion.severity}</span>
           )}
         </div>
         <button
           onClick={handleDismiss}
           disabled={dismissing}
-          className="text-xs text-muted hover:text-cocoa transition-colors shrink-0"
+          className="rounded-full border border-white/15 bg-white/7 px-2 py-1 text-[10px] text-muted/80 transition hover:bg-white/15 hover:text-espresso shrink-0"
         >
           {dismissing ? "…" : "Dismiss"}
         </button>
@@ -57,13 +57,13 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
 
       {/* Main content */}
       {payload.rationale && (
-        <p className="mt-2 text-sm text-cocoa">{payload.rationale}</p>
+        <p className="mt-2 text-sm text-slate-100 leading-relaxed">{payload.rationale}</p>
       )}
       {payload.message && (
-        <p className="mt-2 text-sm text-cocoa">{payload.message}</p>
+        <p className="mt-2 text-sm text-slate-100 leading-relaxed">{payload.message}</p>
       )}
       {payload.recommendation && (
-        <p className="mt-2 text-xs text-muted">{payload.recommendation}</p>
+        <p className="mt-2 text-xs text-slate-400">{payload.recommendation}</p>
       )}
 
       {/* Config Proposer extras */}
@@ -98,8 +98,7 @@ export default function AgentSuggestionCard({ suggestion, onDismissed }) {
         </ul>
       )}
 
-      <div className="mt-2 text-xs text-muted/70">
-        {suggestion.run_id && <span className="font-mono mr-2">{suggestion.run_id}</span>}
+      <div className="mt-2 text-xs text-muted/70 font-mono">
         {suggestion.timestamp && new Date(suggestion.timestamp).toLocaleDateString()}
       </div>
     </div>

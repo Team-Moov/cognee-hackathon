@@ -15,29 +15,44 @@ const EXAMPLES = [
 function renderMarkdown(text) {
   // Very lightweight markdown: bold, code, newlines, tables
   const lines = text.split("\n");
-  return lines.map((line, i) => {
-    if (line.startsWith("|")) {
-      // Table row
-      const cells = line.split("|").filter(c => c.trim());
-      const isSep = cells.every(c => /^[-:]+$/.test(c.trim()));
-      if (isSep) return null;
+  return lines
+    .map((line, i) => {
+      if (line.startsWith("|")) {
+        // Table row
+        const cells = line.split("|").filter((c) => c.trim());
+        const isSep = cells.every((c) => /^[-:]+$/.test(c.trim()));
+        if (isSep) return null;
+        return (
+          <tr key={i} className="border-b border-line">
+            {cells.map((c, j) => (
+              <td
+                key={j}
+                className="px-3 py-1.5 text-xs text-cocoa font-mono"
+                dangerouslySetInnerHTML={{ __html: mdInline(c.trim()) }}
+              />
+            ))}
+          </tr>
+        );
+      }
+      if (line === "") return <br key={i} />;
       return (
-        <tr key={i} className="border-b border-line">
-          {cells.map((c, j) => (
-            <td key={j} className="px-3 py-1.5 text-xs text-cocoa font-mono" dangerouslySetInnerHTML={{ __html: mdInline(c.trim()) }} />
-          ))}
-        </tr>
+        <p
+          key={i}
+          className="text-sm text-cocoa leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: mdInline(line) }}
+        />
       );
-    }
-    if (line === "") return <br key={i} />;
-    return <p key={i} className="text-sm text-cocoa leading-relaxed" dangerouslySetInnerHTML={{ __html: mdInline(line) }} />;
-  }).filter(Boolean);
+    })
+    .filter(Boolean);
 }
 
 function mdInline(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong class="text-espresso">$1</strong>')
-    .replace(/`(.+?)`/g, '<code class="font-mono text-coffee-deep bg-sand px-1 rounded">$1</code>')
+    .replace(
+      /`(.+?)`/g,
+      '<code class="font-mono text-coffee-deep bg-sand px-1 rounded">$1</code>',
+    )
     .replace(/✓/g, '<span class="text-olive">✓</span>')
     .replace(/✗/g, '<span class="text-terracotta">✗</span>')
     .replace(/→/g, '<span class="text-muted">→</span>');
@@ -80,8 +95,8 @@ export default function QueryPage() {
         <input
           type="text"
           value={question}
-          onChange={e => setQuestion(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && handleQuery(question)}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleQuery(question)}
           placeholder="Ask about your experiments…"
           className="flex-1 rounded-2xl border border-line bg-card px-4 py-3 text-sm text-cocoa placeholder-muted/70 focus:border-coffee focus:outline-none focus:ring-2 focus:ring-coffee/20"
         />
@@ -96,10 +111,13 @@ export default function QueryPage() {
 
       {/* Example chips */}
       <div className="mt-3 flex flex-wrap gap-2">
-        {EXAMPLES.map(ex => (
+        {EXAMPLES.map((ex) => (
           <button
             key={ex}
-            onClick={() => { setQuestion(ex); handleQuery(ex); }}
+            onClick={() => {
+              setQuestion(ex);
+              handleQuery(ex);
+            }}
             className="rounded-full border border-line bg-card px-3 py-1.5 text-xs text-cocoa transition-colors hover:bg-sand"
           >
             {ex}
@@ -108,19 +126,28 @@ export default function QueryPage() {
       </div>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-terracotta/25 bg-terracotta/10 p-3 text-sm text-terracotta">{error}</div>
+        <div className="mt-4 rounded-xl border border-terracotta/25 bg-terracotta/10 p-3 text-sm text-terracotta">
+          {error}
+        </div>
       )}
 
       {/* Answer */}
       {result && (
         <div className="fade-in mt-5">
-          <div className="mb-2 text-xs text-muted">Query: <span className="italic text-cocoa">"{result.question}"</span></div>
+          <div className="mb-2 text-xs text-muted">
+            Query:{" "}
+            <span className="italic text-cocoa">"{result.question}"</span>
+          </div>
 
           <div className="rounded-2xl border border-line bg-card p-5 shadow-soft">
-            <div className="mb-3 text-xs font-bold uppercase tracking-wide text-coffee">Memory says:</div>
+            <div className="mb-3 text-xs font-bold uppercase tracking-wide text-coffee">
+              Memory says:
+            </div>
             {hasTable ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left">{renderMarkdown(result.answer)}</table>
+                <table className="w-full text-left">
+                  {renderMarkdown(result.answer)}
+                </table>
               </div>
             ) : (
               <div className="space-y-2">{renderMarkdown(result.answer)}</div>
@@ -131,7 +158,7 @@ export default function QueryPage() {
             <div className="mt-3">
               <div className="mb-2 text-xs text-muted">Sources</div>
               <div className="flex flex-wrap gap-2">
-                {result.citations.map(c => (
+                {result.citations.map((c) => (
                   <button
                     key={c}
                     onClick={() => nav(`/lineage/${c}`)}

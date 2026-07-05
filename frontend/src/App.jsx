@@ -23,12 +23,6 @@ function AppLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === "undefined") return "light";
-    const stored = window.localStorage.getItem("groundhog-theme");
-    if (stored === "light" || stored === "dark") return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
 
   useEffect(() => {
     function onResize() {
@@ -44,12 +38,6 @@ function AppLayout() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem("groundhog-theme", theme);
-  }, [theme]);
-
   function toggleSidebar() {
     if (isDesktop) {
       setIsCollapsed((value) => !value);
@@ -62,19 +50,13 @@ function AppLayout() {
     setIsMobileOpen(false);
   }
 
-  function toggleTheme() {
-    setTheme((value) => (value === "dark" ? "light" : "dark"));
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden bg-paper text-cocoa">
+    <div className="flex h-screen overflow-hidden bg-[#0A0D14] text-slate-100">
       <Sidebar
         collapsed={isCollapsed}
         mobileOpen={isMobileOpen}
         onToggle={toggleSidebar}
         onClose={closeMobileSidebar}
-        theme={theme}
-        onToggleTheme={toggleTheme}
       />
 
       {isMobileOpen && (
@@ -87,11 +69,11 @@ function AppLayout() {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="border-b border-line/70 bg-paper/90 px-4 py-3 backdrop-blur sm:px-6 lg:hidden">
+        <header className="px-4 py-3 sm:px-6 lg:hidden">
           <button
             type="button"
             onClick={toggleSidebar}
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-card px-3 py-2 text-sm font-medium text-cocoa shadow-sm"
+            className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-espresso transition hover:text-coffee"
           >
             <Icon name="menu" size={16} />
             <span>Menu</span>

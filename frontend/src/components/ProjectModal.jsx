@@ -54,7 +54,7 @@ export default function ProjectModal({ onClose }) {
     : "";
 
   const input =
-    "w-full bg-paper border border-line rounded-xl px-3 py-2 text-sm text-cocoa placeholder-muted/70 focus:outline-none focus:border-coffee focus:ring-2 focus:ring-coffee/20";
+    "w-full bg-transparent px-3 py-2 text-sm text-espresso placeholder-muted/70 focus:outline-none ring-0";
   const label = "block text-xs font-medium text-cocoa mb-1";
 
   return (
@@ -63,7 +63,7 @@ export default function ProjectModal({ onClose }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-card border border-line rounded-3xl shadow-lift ring-1 ring-espresso/5 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-lg bg-card max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {!created ? (
@@ -155,10 +155,10 @@ function Field({ label, value, onCopy, copied, mono }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-medium text-cocoa">{label}</span>
+        <span className="text-xs font-medium text-espresso">{label}</span>
         <button onClick={onCopy} className="text-xs text-coffee hover:text-coffee-deep">{copied ? "Copied!" : "Copy"}</button>
       </div>
-      <code className={`block bg-paper border border-line rounded-xl px-3 py-2 text-xs text-cocoa break-all ${mono ? "font-mono" : ""}`}>{value}</code>
+      <code className={`block bg-transparent px-3 py-2 text-xs text-espresso break-all ${mono ? "font-mono" : ""}`}>{value}</code>
     </div>
   );
 }

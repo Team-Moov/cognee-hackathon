@@ -63,7 +63,12 @@ const PATHS = {
   ),
 };
 
-export default function Icon({ name, size = 20, className = "", strokeWidth = 1.75 }) {
+export default function Icon({
+  name,
+  size = 20,
+  className = "",
+  strokeWidth = 1.75,
+}) {
   const body = PATHS[name];
   if (!body) return null;
   return (

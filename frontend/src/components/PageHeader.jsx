@@ -2,16 +2,15 @@ import React from "react";
 
 export default function PageHeader({ title, subtitle }) {
   return (
-    <div className="mb-6 border-b border-line/60 pb-5">
-      <div className="space-y-2">
-        <h1 className="font-title text-3xl font-semibold tracking-[-0.02em] text-espresso sm:text-4xl">
+    <div className="mb-4">
+      <div>
+        <h1 className="font-title text-5xl font-semibold tracking-tight text-slate-100 sm:text-6xl">
           {title}
         </h1>
         {subtitle ? (
-          <p className="max-w-2xl text-sm leading-6 text-muted">{subtitle}</p>
+          <p className="mt-3 text-sm leading-7 text-slate-300 tracking-wide">{subtitle}</p>
         ) : null}
       </div>
-      <div className="mt-4 h-px w-full bg-gradient-to-r from-line via-line/50 to-transparent" />
     </div>
   );
 }

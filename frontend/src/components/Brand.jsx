@@ -11,13 +11,13 @@ export default function Brand({ size = "md", tagline = true }) {
   return (
     <div className="flex items-center gap-3">
       <div
-        className={`${dims.mark} grid place-items-center rounded-2xl bg-coffee text-card shadow-soft`}
+        className={`${dims.mark} grid place-items-center rounded-2xl bg-slate-800 text-slate-100 shadow-soft`}
       >
         🦫
       </div>
       <div className="leading-tight">
         <div className={`font-display font-semibold text-espresso ${dims.name}`}>Groundhog</div>
-        {tagline && <div className={`text-muted ${dims.tag}`}>Research Memory</div>}
+        {tagline && <div className={`text-slate-400 ${dims.tag}`}>Research Memory</div>}
       </div>
     </div>
   );

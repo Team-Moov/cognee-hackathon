@@ -2203,7 +2203,7 @@
       "severity": null,
       "id": "02ae9d61c93e41408d605ebcc999f4fa",
       "timestamp": "2026-07-05T07:59:15.006713",
-      "dismissed": false,
+      "dismissed": true,
       "dedup_key": "dataset_steward:fmnist_cnn_sweep"
     },
     {
@@ -2235,7 +2235,7 @@
       "severity": null,
       "id": "3de8f5152a9b486c92276387cc3a89bc",
       "timestamp": "2026-07-05T07:59:15.305769",
-      "dismissed": false,
+      "dismissed": true,
       "dedup_key": "config_proposer:fmnist_cnn_sweep"
     },
     {
@@ -2266,7 +2266,7 @@
       "severity": null,
       "id": "3b57a606b8e1422ea93f918dd2bd8dca",
       "timestamp": "2026-07-05T08:09:46.974137",
-      "dismissed": false,
+      "dismissed": true,
       "dedup_key": "config_proposer:instructor_test"
     },
     {
@@ -2753,7 +2753,7 @@
         }
       ],
       "summary": "Across 14 completed runs: The most impactful hyperparameter is 'lr' (moves val_accuracy by ~0.099); best value seen: 0.09. 'weight_decay' had the least effect (0.0102). Best on FashionMNIST: val_accuracy=0.87.",
-      "generated_at": "2026-07-05T11:41:54.782430"
+      "generated_at": "2026-07-05T12:35:07.908058"
     },
     "main_dataset": {
       "n_runs": 33,
